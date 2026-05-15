@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - GhanaArtisan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        /* ===== ADMIN LOGIN MODAL ===== */
+        .admin-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 3000;
+            align-items: center; justify-content: center; padding: 1.5rem;
+        }
+        .admin-overlay.active { display: flex; }
+
+        .admin-login-modal {
+            background: white; border-radius: 20px; width: 100%; max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;
+            animation: popIn 0.28s ease; margin: auto;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.93) translateY(-16px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .alm-header {
+            background: linear-gradient(135deg, #004400, #006600);
+            padding: 2rem; border-radius: 20px 20px 0 0; text-align: center;
+            position: relative;
+        }
+        .alm-header .shield-icon {
+            width: 70px; height: 70px; background: rgba(255,255,255,0.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem; font-size: 2rem; color: white;
+        }
+        .alm-header h2 { color: white; font-family: 'Poppins', sans-serif; margin-bottom: 0.3rem; }
+        .alm-header p  { color: rgba(255,255,255,0.8); font-size: 0.88rem; }
+        .alm-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: rgba(255,255,255,0.15); border: none; color: white;
+            width: 30px; height: 30px; border-radius: 50%; font-size: 1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .alm-close:hover { background: rgba(255,255,255,0.3); }
+        .alm-body { padding: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+        .alm-body label { color: #006600; font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 4px; }
+        .alm-btn {
+            width: 100%; padding: 13px; background: #CE1126; color: white; border: none;
+            border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: background 0.2s;
+        }
+        .alm-btn:hover { background: #a00d1e; }
+        .alm-back { display: block; text-align: center; margin-top: 0.5rem; color: #888; font-size: 0.88rem; text-decoration: none; }
+        .alm-back:hover { color: #006600; }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard-wrap {
+            display: none; min-height: 100vh;
+        }
+        .admin-sidebar {
+            width: 250px; background: #006600; min-height: 100vh;
+            padding: 1.5rem; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 500;
+        }
+        .sidebar-logo {
+            color: white; font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 0.3rem;
+        }
+        .sidebar-sub { color: rgba(255,255,255,0.65); font-size: 0.78rem; margin-bottom: 2rem; padding-left: 2px; }
+        .sbtn {
+            width: 100%; text-align: left; background: rgba(255,255,255,0.1); color: white;
+            border: none; padding: 0.85rem 1rem; border-radius: 8px; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 0.88rem;
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 0.35rem; transition: background 0.2s;
+        }
+        .sbtn:hover, .sbtn.active { background: rgba(255,255,255,0.22); }
+        .sbtn.logout { background: #CE1126; margin-top: 1.5rem; }
+        .sbtn.logout:hover { background: #a00d1e; }
+
+        .admin-main { margin-left: 250px; padding: 2rem; background: #f4f4f4; min-height: 100vh; }
+
+        /* Stat cards */
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+        .stat-card { background: white; border-radius: 12px; padding: 1.4rem; box-shadow: 0 3px 12px rgba(0,0,0,0.07); text-align: center; }
+        .stat-val { font-size: 2rem; font-weight: 700; color: #006600; font-family: 'Poppins', sans-serif; }
+        .stat-lbl { color: #888; font-size: 0.82rem; margin-top: 3px; }
+
+        /* Table */
+        .table-wrap { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.07); margin-bottom: 1.5rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 500px; }
+        thead tr { background: #006600; color: white; }
+        thead th { padding: 0.9rem 1rem; text-align: left; font-weight: 600; white-space: nowrap; }
+        tbody tr { border-bottom: 1px solid #eee; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody td { padding: 0.8rem 1rem; color: #333; vertical-align: middle; }
+        tbody tr:hover { background: #fafafa; }
+
+        .tbtn {
+            padding: 4px 11px; border: none; border-radius: 6px; cursor: pointer;
+            font-size: 0.8rem; font-weight: 600; margin-right: 3px; transition: opacity 0.2s;
+        }
+        .tbtn:hover { opacity: 0.82; }
+        .tbtn.green { background: #25D366; color: white; }
+        .tbtn.red   { background: #CE1126; color: white; }
+        .tbtn.blue  { background: #006600; color: white; }
+
+        /* Edit / register form */
+        .edit-card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 3px 12px rgba(0,0,0,0.07); }
+        .eg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        @media(max-width:600px){ .eg2 { grid-template-columns: 1fr; } }
+        .elabel { color: #006600; font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 4px; }
+        .ev-row { display: flex; align-items: center; gap: 10px; margin: 0.8rem 0; }
+        .ev-row input { width: auto; }
+        .ev-row label { color: #006600; font-weight: 600; font-size: 0.9rem; }
+
+        .pbar-wrap { background: #eee; border-radius: 4px; height: 8px; overflow: hidden; margin-top: 5px; }
+        .pbar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+
+        /* Mobile sidebar */
+        .sidebar-toggle { display: none; position: fixed; top: 12px; left: 12px; z-index: 600; background: #006600; color: white; border: none; border-radius: 8px; padding: 8px 11px; cursor: pointer; font-size: 1rem; }
+        @media(max-width: 768px){
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            .admin-main { margin-left: 0; }
+            .sidebar-toggle { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Login Modal -->
+    <div class="admin-overlay active" id="admin-overlay">
+        <div class="admin-login-modal">
+            <div class="alm-header">
+                <button class="alm-close" onclick="goBack()" title="Back to site">&times;</button>
+                <div class="shield-icon"><i class="fas fa-user-shield"></i></div>
+                <h2>Admin Login</h2>
+                <p>GhanaArtisan Administration Panel</p>
+            </div>
+            <div class="alm-body">
+                <div>
+                    <label>Username</label>
+                    <input type="text" id="admin-username" placeholder="Enter admin username">
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input type="password" id="admin-password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') doAdminLogin()">
+                </div>
+                <button class="alm-btn" onclick="doAdminLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login as Admin
+                </button>
+                <a href="index.html" class="alm-back"><i class="fas fa-arrow-left"></i> Back to Website</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard (hidden until login) -->
+    <div class="dashboard-wrap" id="dashboard-wrap">
+        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+
+        <div class="admin-sidebar" id="admin-sidebar">
+            <div class="sidebar-logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
+            <div class="sidebar-sub">GhanaArtisan Management</div>
+            <button class="sbtn active" onclick="showSection('dashboard')"><i class="fas fa-chart-bar"></i> Dashboard</button>
+            <button class="sbtn" onclick="showSection('job-requests')"><i class="fas fa-clipboard-list"></i> Job Requests <span id="jr-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
+            <button class="sbtn" onclick="showSection('artisans')"><i class="fas fa-tools"></i> Artisans</button>
+            <button class="sbtn" onclick="showSection('customers')"><i class="fas fa-users"></i> Customers</button>
+            <button class="sbtn" onclick="showSection('verifications')"><i class="fas fa-check-circle"></i> Verifications <span id="verify-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
+            <button class="sbtn" onclick="showSection('work-updates')"><i class="fas fa-camera"></i> Work Updates <span id="wu-badge" style="background:#1e90ff;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
+            <button class="sbtn" onclick="showSection('payments')"><i class="fas fa-credit-card"></i> Payments</button>
+            <button class="sbtn" onclick="showSection('reports')"><i class="fas fa-file-alt"></i> Reports</button>
+            <button class="sbtn" onclick="showSection('register-artisan')"><i class="fas fa-user-plus"></i> Register Artisan</button>
+            <button class="sbtn logout" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <div class="admin-main" id="admin-content"></div>
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+
+        function goBack() { window.location.href = 'index.html'; }
+
+        // ---- Admin Login ----
+        function doAdminLogin() {
+            const u = document.getElementById('admin-username').value.trim();
+            const p = document.getElementById('admin-password').value;
+            if (u === adminCredentials.username && p === adminCredentials.password) {
+                // Merge any newly registered artisans from localStorage into sampleArtisans
+                mergeArtisanPoolIntoSample();
+                mergeClientPoolIntoSample();
+                document.getElementById('admin-overlay').classList.remove('active');
+                document.getElementById('dashboard-wrap').style.display = 'block';
+                showSection('dashboard');
+                showNotification('Welcome, Admin ARTISANCONNECT!', 'success');
+            } else {
+                showNotification('Invalid admin credentials', 'error');
+            }
+        }
+
+        function adminLogout() {
+            document.getElementById('dashboard-wrap').style.display = 'none';
+            document.getElementById('admin-username').value = '';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-overlay').classList.add('active');
+            showNotification('Admin logged out', 'info');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('admin-sidebar').classList.toggle('open');
+        }
+
+        function setActiveBtn(section) {
+            document.querySelectorAll('.sbtn:not(.logout)').forEach(b => b.classList.remove('active'));
+            const map  = ['dashboard','job-requests','artisans','verifications','work-updates','payments','reports','register-artisan'];
+            const btns = document.querySelectorAll('.sbtn:not(.logout)');
+            const idx  = map.indexOf(section);
+            if (idx >= 0 && btns[idx]) btns[idx].classList.add('active');
+
+            // Update pending job requests badge
+            const pendingJobs = serviceRequests.filter(r => r.status === 'pending_admin').length;
+            const jrBadge = document.getElementById('jr-badge');
+            if (jrBadge) jrBadge.textContent = pendingJobs > 0 ? pendingJobs : '';
+
+            // Update pending verification badge
+            const pendingVerify = sampleArtisans.filter(a => !a.verified).length;
+            const vBadge = document.getElementById('verify-badge');
+            if (vBadge) vBadge.textContent = pendingVerify > 0 ? pendingVerify : '';
+
+            // Update work updates badge
+            const wuCount = sampleArtisans.reduce((s, a) => s + (a.workUpdates?.length || 0), 0);
+            const wuBadge = document.getElementById('wu-badge');
+            if (wuBadge) wuBadge.textContent = wuCount > 0 ? wuCount : '';
+        }
+
+        // ---- Section renderer ----
+        function showSection(section) {
+            setActiveBtn(section);
+            const el       = document.getElementById('admin-content');
+            const pending  = sampleArtisans.filter(a => !a.verified);
+            const verified = sampleArtisans.filter(a => a.verified);
+            let allPayments = [];
+            sampleArtisans.forEach(a => { if (a.payments) allPayments = allPayments.concat(a.payments.map(p => ({...p, artisanName: a.name}))); });
+            const totalRev     = allPayments.reduce((s,p) => s + (parseFloat(p.amount.replace('₵','')) || 0), 0);
+            const completedPay = allPayments.filter(p => p.status === 'completed');
+            const pendingPay   = allPayments.filter(p => p.status === 'pending');
+
+            switch(section) {
+
+                // ---- JOB REQUESTS ----
+                case 'job-requests':
+                    const allReqs = serviceRequests;
+                    const pendingReqs    = allReqs.filter(r => r.status === 'pending_admin');
+                    const approvedReqs   = allReqs.filter(r => r.status === 'approved');
+                    const reassignedReqs = allReqs.filter(r => r.status === 'reassigned');
+
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:0.3rem;font-family:'Poppins',sans-serif;"><i class="fas fa-clipboard-list"></i> Job Requests</h2>
+                        <p style="color:#888;font-size:0.88rem;margin-bottom:1.5rem;">All customer service requests. Approve, reassign, or reject each one.</p>
+
+                        <div class="stat-grid" style="margin-bottom:1.5rem;">
+                            <div class="stat-card"><div class="stat-val" style="color:#FF9900;">${pendingReqs.length}</div><div class="stat-lbl">Awaiting Action</div></div>
+                            <div class="stat-card"><div class="stat-val" style="color:#25D366;">${approvedReqs.length}</div><div class="stat-lbl">Approved</div></div>
+                            <div class="stat-card"><div class="stat-val" style="color:#1e90ff;">${reassignedReqs.length}</div><div class="stat-lbl">Reassigned</div></div>
+                            <div class="stat-card"><div class="stat-val">${allReqs.length}</div><div class="stat-lbl">Total Requests</div></div>
+                        </div>
+
+                        ${pendingReqs.length > 0 ? `
+                        <h3 style="color:#cc7700;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">
+                            <i class="fas fa-clock"></i> Pending Approval (${pendingReqs.length})
+                        </h3>
+                        <div style="display:grid;gap:1rem;margin-bottom:2rem;">
+                            ${pendingReqs.map(r => jobRequestCardHTML(r)).join('')}
+                        </div>` : ''}
+
+                        ${approvedReqs.length > 0 || reassignedReqs.length > 0 ? `
+                        <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">
+                            <i class="fas fa-check-circle"></i> Processed Requests
+                        </h3>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Customer</th><th>Artisan</th><th>Description</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody>
+                                ${[...approvedReqs, ...reassignedReqs].map(r => `<tr>
+                                    <td><strong>${r.clientName}</strong><br><span style="color:#888;font-size:0.78rem;">${r.clientPhone}</span></td>
+                                    <td>${r.artisanName}</td>
+                                    <td style="max-width:200px;font-size:0.85rem;">${r.description.substring(0,60)}${r.description.length>60?'...':''}</td>
+                                    <td>${r.date}</td>
+                                    <td><span class="status-${r.status==='approved'?'verified':'pending'}">${r.status}</span></td>
+                                    <td><button onclick="showReassignModal(${r.id})" class="tbtn blue">Reassign</button></td>
+                                </tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>` : ''}
+
+                        ${allReqs.length === 0 ? `
+                        <div class="edit-card" style="text-align:center;padding:3rem;">
+                            <i class="fas fa-clipboard-list" style="font-size:3rem;color:#ddd;margin-bottom:1rem;display:block;"></i>
+                            <h3 style="color:#888;">No job requests yet</h3>
+                            <p style="color:#aaa;">Customer requests will appear here.</p>
+                        </div>` : ''}
+
+                        <!-- Reassign Modal -->
+                        <div id="reassign-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;padding:1.5rem;" onclick="closeReassign(event)">
+                            <div style="background:white;border-radius:16px;max-width:480px;width:100%;padding:0;overflow:hidden;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+                                <div style="background:linear-gradient(135deg,#1e90ff,#006600);padding:1.5rem 2rem;color:white;">
+                                    <h3 style="font-family:'Poppins',sans-serif;margin-bottom:0.2rem;">Reassign Job Request</h3>
+                                    <p style="opacity:.85;font-size:0.85rem;" id="reassign-label">Select a different artisan</p>
+                                </div>
+                                <div style="padding:1.8rem;display:flex;flex-direction:column;gap:1rem;">
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Reassign to Artisan</label>
+                                        <select id="reassign-artisan-sel" style="width:100%;"></select>
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Note for Customer (optional)</label>
+                                        <textarea id="reassign-note" rows="3" placeholder="e.g. Your original artisan is unavailable. We have assigned a specialist in your area." style="width:100%;"></textarea>
+                                    </div>
+                                    <div style="display:flex;gap:0.8rem;">
+                                        <button onclick="confirmReassign()" style="flex:1;padding:12px;background:#1e90ff;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;">
+                                            <i class="fas fa-exchange-alt"></i> Confirm Reassign
+                                        </button>
+                                        <button onclick="closeReassign()" style="padding:12px 20px;background:#eee;color:#555;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                // ---- DASHBOARD ----
+                case 'dashboard':
+                    const wuTotal = sampleArtisans.reduce((s,a) => s + (a.workUpdates?.length||0), 0);
+                    const pendingJobsCount = serviceRequests.filter(r=>r.status==='pending_admin').length;
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-chart-bar"></i> Dashboard Overview</h2>
+                        <div class="stat-grid">
+                            <div class="stat-card" style="cursor:pointer;" onclick="showSection('artisans')"><div class="stat-val">${sampleArtisans.length}</div><div class="stat-lbl">Total Artisans</div></div>
+                            <div class="stat-card" style="cursor:pointer;" onclick="showSection('verifications')"><div class="stat-val" style="color:#FF9900;">${pending.length}</div><div class="stat-lbl">Pending Verification</div></div>
+                            <div class="stat-card" style="cursor:pointer;" onclick="showSection('job-requests')"><div class="stat-val" style="color:#CE1126;">${pendingJobsCount}</div><div class="stat-lbl">Pending Job Requests</div></div>
+                            <div class="stat-card" style="cursor:pointer;" onclick="showSection('work-updates')"><div class="stat-val" style="color:#1e90ff;">${wuTotal}</div><div class="stat-lbl">Work Updates</div></div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-bottom:2rem;">
+                            <div class="edit-card">
+                                <h4 style="color:#006600;margin-bottom:1rem;">Payment Status</h4>
+                                <div style="margin-bottom:0.8rem;">
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:0.88rem;">
+                                        <span>Completed</span><strong style="color:#25D366;">${completedPay.length}</strong>
+                                    </div>
+                                    <div class="pbar-wrap"><div class="pbar-fill" style="width:${allPayments.length?Math.round(completedPay.length/allPayments.length*100):0}%;background:#25D366;"></div></div>
+                                </div>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:0.88rem;">
+                                        <span>Pending</span><strong style="color:#FF9900;">${pendingPay.length}</strong>
+                                    </div>
+                                    <div class="pbar-wrap"><div class="pbar-fill" style="width:${allPayments.length?Math.round(pendingPay.length/allPayments.length*100):0}%;background:#FF9900;"></div></div>
+                                </div>
+                                <div style="margin-top:1rem;text-align:center;">
+                                    <strong style="color:#006600;font-size:1.1rem;">₵${totalRev.toFixed(2)}</strong>
+                                    <div style="color:#888;font-size:0.78rem;">Total Platform Revenue</div>
+                                </div>
+                            </div>
+                            <div class="edit-card">
+                                <h4 style="color:#006600;margin-bottom:1rem;">Recent Artisans</h4>
+                                ${sampleArtisans.slice(-5).reverse().map(a => `
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #eee;">
+                                        <div>
+                                            <div style="font-weight:500;color:#006600;font-size:0.88rem;">${a.name}</div>
+                                            <div style="color:#888;font-size:0.78rem;">${a.category} · ${a.district||'—'}</div>
+                                        </div>
+                                        <span class="${a.verified?'status-verified':'status-pending'}" style="cursor:pointer;" onclick="showSection('verifications')">${a.verified?'Verified':'Pending'}</span>
+                                    </div>`).join('')}
+                            </div>
+                        </div>`;
+                    break;
+
+                // ---- ARTISANS ----
+                case 'artisans':
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-tools"></i> Manage Artisans</h2>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Name</th><th>Region / District</th><th>Category</th><th>ID</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody>
+                                    ${sampleArtisans.map(a => `<tr>
+                                        <td><strong>${a.name}</strong><br><span style="color:#888;font-size:0.78rem;">${a.email}</span></td>
+                                        <td>${a.district}<br><span style="color:#888;font-size:0.78rem;">${a.region}</span></td>
+                                        <td>${categories.find(c=>c.id===a.category)?.name||a.category}</td>
+                                        <td>${a.idNumber?`<span style="color:#25D366;"><i class="fas fa-check-circle"></i> Yes</span>`:`<span style="color:#FF9900;"><i class="fas fa-clock"></i> No</span>`}</td>
+                                        <td><span class="${a.verified?'status-verified':'status-pending'}">${a.verified?'Verified':'Pending'}</span></td>
+                                        <td>
+                                            <button onclick="showEditArtisan(${a.id})" class="tbtn blue"><i class="fas fa-edit"></i> Edit</button>
+                                            ${!a.verified?`<button onclick="verifyArtisan(${a.id})" class="tbtn green"><i class="fas fa-check"></i> Verify</button>`:''}
+                                            <button onclick="deleteArtisan(${a.id},'${a.name.replace(/'/g,`&#39;`)}')" class="tbtn" style="background:#CE1126;color:white;border:none;"><i class="fas fa-trash"></i> Delete</button>
+                                        </td>
+                                    </tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>`;
+                    break;
+
+                // ---- VERIFICATIONS ----
+                case 'verifications':
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-check-circle"></i> ID Verification Requests</h2>
+                        ${pending.length > 0 ? `
+                            <div style="display:grid;gap:1.2rem;">
+                                ${pending.map(a => `
+                                    <div class="edit-card">
+                                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;margin-bottom:1rem;">
+                                            <div>
+                                                <h3 style="color:#006600;margin-bottom:3px;">${a.name}</h3>
+                                                <div style="color:#888;font-size:0.88rem;">${a.district}, ${a.region}</div>
+                                            </div>
+                                            <span class="status-pending">Pending Verification</span>
+                                        </div>
+                                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.8rem;margin-bottom:1rem;">
+                                            <div><div style="color:#888;font-size:0.78rem;">ID Type</div><strong style="color:#006600;">${a.idType.replace(/\_/g,' ').toUpperCase()}</strong></div>
+                                            <div><div style="color:#888;font-size:0.78rem;">ID Number</div><strong style="color:#006600;">${a.idNumber}</strong></div>
+                                            <div><div style="color:#888;font-size:0.78rem;">Email</div><strong style="color:#006600;">${a.email}</strong></div>
+                                            <div><div style="color:#888;font-size:0.78rem;">Phone</div><strong style="color:#006600;">${a.phone}</strong></div>
+                                        </div>
+                                        <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+                                            <button onclick="verifyArtisan(${a.id})" class="ghana-btn" style="background:#25D366;padding:8px 16px;"><i class="fas fa-check"></i> Approve</button>
+                                            <button onclick="rejectArtisan(${a.id})" class="ghana-btn red" style="padding:8px 16px;"><i class="fas fa-times"></i> Reject</button>
+                                            <button onclick="showEditArtisan(${a.id})" class="ghana-btn secondary" style="padding:8px 16px;"><i class="fas fa-edit"></i> Edit</button>
+                                        </div>
+                                    </div>`).join('')}
+                            </div>` : `
+                            <div class="edit-card" style="text-align:center;padding:3rem;">
+                                <i class="fas fa-check-circle" style="font-size:3rem;color:#25D366;margin-bottom:1rem;display:block;"></i>
+                                <h3 style="color:#006600;">All artisans are verified!</h3>
+                                <p style="color:#888;">No pending ID verification requests.</p>
+                            </div>`}`;
+                    break;
+
+                // ---- WORK UPDATES ----
+                case 'work-updates':
+                    const allUpdates = [];
+                    sampleArtisans.forEach(a => {
+                        (a.workUpdates || []).forEach(w => {
+                            allUpdates.push({ ...w, artisanName: a.name, artisanCategory: a.category, artisanId: a.id });
+                        });
+                    });
+                    allUpdates.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:0.3rem;font-family:'Poppins',sans-serif;"><i class="fas fa-camera"></i> Artisan Work Updates</h2>
+                        <p style="color:#888;font-size:0.88rem;margin-bottom:1.5rem;">Before & after photos submitted by artisans for each completed job.</p>
+
+                        <div class="stat-grid" style="margin-bottom:1.5rem;">
+                            <div class="stat-card"><div class="stat-val">${allUpdates.length}</div><div class="stat-lbl">Total Updates</div></div>
+                            <div class="stat-card"><div class="stat-val" style="color:#25D366;">${allUpdates.filter(w=>w.status==='completed').length}</div><div class="stat-lbl">Completed Jobs</div></div>
+                            <div class="stat-card"><div class="stat-val" style="color:#FF9900;">${allUpdates.filter(w=>w.status==='in_progress').length}</div><div class="stat-lbl">In Progress</div></div>
+                        </div>
+
+                        ${allUpdates.length === 0 ? `
+                        <div class="edit-card" style="text-align:center;padding:3rem;">
+                            <i class="fas fa-camera" style="font-size:3rem;color:#ddd;margin-bottom:1rem;display:block;"></i>
+                            <h3 style="color:#888;">No work updates yet</h3>
+                            <p style="color:#aaa;">Artisans will post before & after photos from their portal.</p>
+                        </div>` : `
+                        <div style="display:grid;gap:1.5rem;">
+                            ${allUpdates.map(w => `
+                            <div class="edit-card" style="padding:0;overflow:hidden;border-radius:14px;">
+                                <!-- Card Header -->
+                                <div style="background:linear-gradient(135deg,#006600,#009900);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                                    <div>
+                                        <div style="color:white;font-weight:700;font-family:'Poppins',sans-serif;font-size:1rem;">${w.jobDesc}</div>
+                                        <div style="color:rgba(255,255,255,0.8);font-size:0.82rem;margin-top:3px;">
+                                            <i class="fas fa-hard-hat"></i> ${w.artisanName}
+                                            &nbsp;·&nbsp;
+                                            <i class="fas fa-calendar-alt"></i> ${w.date}
+                                        </div>
+                                    </div>
+                                    <span style="background:${w.status==='completed'?'rgba(37,211,102,0.25)':'rgba(255,153,0,0.25)'};color:${w.status==='completed'?'#b8ffda':'#FFD580'};padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;border:1px solid ${w.status==='completed'?'rgba(37,211,102,0.4)':'rgba(255,153,0,0.4)'};">
+                                        ${w.status==='completed'?'✅ Completed':'🔄 In Progress'}
+                                    </span>
+                                </div>
+
+                                <!-- Before / After Photos -->
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+                                    <!-- BEFORE -->
+                                    <div style="border-right:1px solid #eee;">
+                                        <div style="background:rgba(206,17,38,0.08);color:#CE1126;padding:8px 14px;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #eee;">
+                                            <i class="fas fa-times-circle"></i> Before
+                                        </div>
+                                        ${w.beforePhoto
+                                            ? `<img src="${w.beforePhoto}" style="width:100%;height:200px;object-fit:cover;display:block;" alt="Before">`
+                                            : `<div style="height:200px;display:flex;align-items:center;justify-content:center;background:#f9f9f9;"><i class="fas fa-image" style="font-size:2.5rem;color:#ddd;"></i></div>`}
+                                        ${w.beforeNote ? `<div style="padding:10px 14px;font-size:0.84rem;color:#555;line-height:1.5;border-top:1px solid #eee;background:#fafafa;">${w.beforeNote}</div>` : ''}
+                                    </div>
+                                    <!-- AFTER -->
+                                    <div>
+                                        <div style="background:rgba(37,211,102,0.08);color:#1a9e4e;padding:8px 14px;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #eee;">
+                                            <i class="fas fa-check-circle"></i> After
+                                        </div>
+                                        ${w.afterPhoto
+                                            ? `<img src="${w.afterPhoto}" style="width:100%;height:200px;object-fit:cover;display:block;" alt="After">`
+                                            : `<div style="height:200px;display:flex;align-items:center;justify-content:center;background:#f9f9f9;"><i class="fas fa-image" style="font-size:2.5rem;color:#ddd;"></i></div>`}
+                                        ${w.afterNote ? `<div style="padding:10px 14px;font-size:0.84rem;color:#555;line-height:1.5;border-top:1px solid #eee;background:#fafafa;">${w.afterNote}</div>` : ''}
+                                    </div>
+                                </div>
+                            </div>`).join('')}
+                        </div>`}
+                    `;
+                    break;
+
+                // ---- PAYMENTS ----
+                case 'payments':
+                    // Revenue = money received FROM clients (serviceRequests payments)
+                    const revenueRows = serviceRequests.map(r => ({
+                        type:       'revenue',
+                        from:       r.clientName,
+                        fromPhone:  r.clientPhone,
+                        to:         r.artisanName,
+                        description: r.description.substring(0, 50) + (r.description.length > 50 ? '...' : ''),
+                        amount:     r.amount ? parseFloat(r.amount.replace('₵','')) || 0 : 0,
+                        amountStr:  r.amount || '—',
+                        date:       r.date,
+                        status:     r.paymentStatus || 'not_paid',
+                        reqId:      r.id,
+                        category:   r.category
+                    }));
+
+                    // Expenditure = money paid OUT to artisans (artisan payment records)
+                    const expendRows = [];
+                    sampleArtisans.forEach(a => {
+                        (a.payments || []).forEach(p => {
+                            expendRows.push({
+                                type:       'expenditure',
+                                artisan:    a.name,
+                                artisanId:  a.id,
+                                client:     p.client || '—',
+                                amount:     parseFloat(p.amount?.replace('₵','')) || 0,
+                                amountStr:  p.amount || '—',
+                                date:       p.date,
+                                status:     p.status,
+                                month:      p.month || '—',
+                                payId:      p.id
+                            });
+                        });
+                    });
+
+                    const totalRevenue     = revenueRows.reduce((s,r) => s + r.amount, 0);
+                    const totalReceived    = revenueRows.filter(r => r.status === 'paid').reduce((s,r) => s + r.amount, 0);
+                    const totalExpenditure = expendRows.reduce((s,r) => s + r.amount, 0);
+                    const totalPaidOut     = expendRows.filter(r => r.status === 'completed').reduce((s,r) => s + r.amount, 0);
+                    const netBalance       = totalReceived - totalPaidOut;
+
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:0.3rem;font-family:'Poppins',sans-serif;"><i class="fas fa-credit-card"></i> Payment Management</h2>
+                        <p style="color:#888;font-size:0.88rem;margin-bottom:1.5rem;">Track money received from clients (Revenue) and payments made to artisans (Expenditure).</p>
+
+                        <!-- Summary Stats -->
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
+                            <div class="stat-card" style="border-top:4px solid #25D366;">
+                                <div class="stat-val" style="color:#25D366;">₵${totalReceived.toFixed(2)}</div>
+                                <div class="stat-lbl">Revenue Received</div>
+                                <div style="font-size:0.75rem;color:#aaa;margin-top:4px;">of ₵${totalRevenue.toFixed(2)} billed</div>
+                            </div>
+                            <div class="stat-card" style="border-top:4px solid #CE1126;">
+                                <div class="stat-val" style="color:#CE1126;">₵${totalPaidOut.toFixed(2)}</div>
+                                <div class="stat-lbl">Paid to Artisans</div>
+                                <div style="font-size:0.75rem;color:#aaa;margin-top:4px;">of ₵${totalExpenditure.toFixed(2)} owed</div>
+                            </div>
+                            <div class="stat-card" style="border-top:4px solid ${netBalance >= 0 ? '#006600' : '#FF9900'};">
+                                <div class="stat-val" style="color:${netBalance >= 0 ? '#006600' : '#FF9900'};">₵${Math.abs(netBalance).toFixed(2)}</div>
+                                <div class="stat-lbl">Net ${netBalance >= 0 ? 'Surplus' : 'Deficit'}</div>
+                                <div style="font-size:0.75rem;color:#aaa;margin-top:4px;">${netBalance >= 0 ? 'Platform profit' : 'Outstanding to artisans'}</div>
+                            </div>
+                            <div class="stat-card" style="border-top:4px solid #FF9900;">
+                                <div class="stat-val" style="color:#FF9900;">${revenueRows.filter(r=>r.status!=='paid').length}</div>
+                                <div class="stat-lbl">Unpaid Invoices</div>
+                                <div style="font-size:0.75rem;color:#aaa;margin-top:4px;">from clients</div>
+                            </div>
+                        </div>
+
+                        <!-- TAB SWITCHER -->
+                        <div style="display:flex;background:#f0f0f0;border-radius:12px;padding:4px;margin-bottom:1.5rem;gap:4px;max-width:500px;">
+                            <button onclick="showPayTab('revenue')" id="ptab-revenue"
+                                style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                                <i class="fas fa-arrow-down" style="color:#25D366;"></i> Revenue
+                            </button>
+                            <button onclick="showPayTab('expenditure')" id="ptab-expenditure"
+                                style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.9rem;">
+                                <i class="fas fa-arrow-up" style="color:#CE1126;"></i> Expenditure
+                            </button>
+                        </div>
+
+                        <!-- REVENUE TABLE (money from clients) -->
+                        <div id="pay-revenue-panel">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;">
+                                    <i class="fas fa-arrow-circle-down" style="color:#25D366;"></i> Revenue — Money from Clients
+                                </h3>
+                                <span style="background:rgba(37,211,102,0.1);color:#1a9e4e;padding:5px 14px;border-radius:20px;font-size:0.82rem;font-weight:700;border:1px solid rgba(37,211,102,0.25);">
+                                    Total Billed: ₵${totalRevenue.toFixed(2)}
+                                </span>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr style="background:#006600;">
+                                            <th>Client</th>
+                                            <th>Artisan</th>
+                                            <th>Service</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${revenueRows.length > 0 ? revenueRows.map(r => `<tr>
+                                            <td>
+                                                <strong>${r.from}</strong>
+                                                <div style="color:#888;font-size:0.75rem;">${r.fromPhone}</div>
+                                            </td>
+                                            <td>${r.to}</td>
+                                            <td style="max-width:180px;font-size:0.83rem;color:#555;">${r.description}</td>
+                                            <td><strong style="color:#006600;font-size:1rem;">${r.amountStr}</strong></td>
+                                            <td>${r.date}</td>
+                                            <td>
+                                                <span style="padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;
+                                                    background:${r.status==='paid'?'rgba(37,211,102,0.15)':r.status==='pending'?'rgba(255,153,0,0.15)':'rgba(200,200,200,0.2)'};
+                                                    color:${r.status==='paid'?'#1a9e4e':r.status==='pending'?'#cc7700':'#888'};">
+                                                    ${r.status==='paid'?'✅ Received':r.status==='pending'?'⏳ Pending':'—'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                ${r.status !== 'paid' && r.amountStr !== '—' ? `
+                                                <button onclick="markRevenuePaid(${r.reqId})" class="tbtn green">
+                                                    <i class="fas fa-check"></i> Mark Received
+                                                </button>` : r.amountStr === '—' ? `
+                                                <button onclick="setRevenueAmount(${r.reqId})" class="tbtn blue">
+                                                    <i class="fas fa-pencil-alt"></i> Set Amount
+                                                </button>` : '—'}
+                                            </td>
+                                        </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;color:#888;padding:2rem;">No revenue records yet</td></tr>`}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- EXPENDITURE TABLE (money to artisans) -->
+                        <div id="pay-expenditure-panel" style="display:none;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem;">
+                                <h3 style="color:#CE1126;font-family:'Poppins',sans-serif;font-size:1rem;">
+                                    <i class="fas fa-arrow-circle-up" style="color:#CE1126;"></i> Expenditure — Payments to Artisans
+                                </h3>
+                                <span style="background:rgba(206,17,38,0.08);color:#CE1126;padding:5px 14px;border-radius:20px;font-size:0.82rem;font-weight:700;border:1px solid rgba(206,17,38,0.2);">
+                                    Total Paid Out: ₵${totalPaidOut.toFixed(2)}
+                                </span>
+                            </div>
+
+                            <!-- Add Expenditure Form -->
+                            <div style="background:rgba(206,17,38,0.03);border:1px solid rgba(206,17,38,0.15);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;">
+                                <h4 style="color:#CE1126;margin-bottom:0.8rem;font-size:0.9rem;"><i class="fas fa-plus-circle"></i> Record New Artisan Payment</h4>
+                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.8rem;margin-bottom:0.8rem;">
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.78rem;display:block;margin-bottom:3px;">Artisan</label>
+                                        <select id="exp-artisan" style="width:100%;padding:9px;border:2px solid rgba(206,17,38,0.2);border-radius:8px;font-family:inherit;">
+                                            <option value="">Select Artisan</option>
+                                            ${sampleArtisans.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.78rem;display:block;margin-bottom:3px;">Amount (₵)</label>
+                                        <input type="number" id="exp-amount" placeholder="e.g. 450" min="0" style="width:100%;padding:9px;border:2px solid rgba(206,17,38,0.2);border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.78rem;display:block;margin-bottom:3px;">For Client</label>
+                                        <input type="text" id="exp-client" placeholder="Client name" style="width:100%;padding:9px;border:2px solid rgba(206,17,38,0.2);border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.78rem;display:block;margin-bottom:3px;">Month</label>
+                                        <input type="month" id="exp-month" style="width:100%;padding:9px;border:2px solid rgba(206,17,38,0.2);border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                                    </div>
+                                </div>
+                                <button onclick="recordExpenditure()" style="background:linear-gradient(135deg,#CE1126,#a80d1f);color:white;border:none;padding:10px 22px;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.88rem;display:inline-flex;align-items:center;gap:7px;">
+                                    <i class="fas fa-paper-plane"></i> Record Payment to Artisan
+                                </button>
+                            </div>
+
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr style="background:#CE1126;">
+                                            <th>Artisan</th>
+                                            <th>For Client</th>
+                                            <th>Amount Paid</th>
+                                            <th>Month</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="expenditure-tbody">
+                                        ${expendRows.length > 0 ? expendRows.map(r => `<tr>
+                                            <td><strong>${r.artisan}</strong></td>
+                                            <td>${r.client}</td>
+                                            <td><strong style="color:#CE1126;font-size:1rem;">${r.amountStr}</strong></td>
+                                            <td>${r.month}</td>
+                                            <td>${r.date}</td>
+                                            <td>
+                                                <span style="padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;
+                                                    background:${r.status==='completed'?'rgba(37,211,102,0.15)':'rgba(255,153,0,0.15)'};
+                                                    color:${r.status==='completed'?'#1a9e4e':'#cc7700'};">
+                                                    ${r.status==='completed'?'✅ Paid':'⏳ Pending'}
+                                                </span>
+                                            </td>
+                                            <td>${r.status!=='completed'?`<button onclick="markExpenditurePaid(${r.artisanId},${r.payId})" class="tbtn green"><i class="fas fa-check"></i> Mark Paid</button>`:'—'}</td>
+                                        </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;color:#888;padding:2rem;">No expenditure records yet. Use the form above to record artisan payments.</td></tr>`}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+
+                    // Tab switcher function (scoped after innerHTML is set)
+                    window.showPayTab = function(tab) {
+                        document.getElementById('pay-revenue-panel').style.display     = tab === 'revenue'     ? 'block' : 'none';
+                        document.getElementById('pay-expenditure-panel').style.display = tab === 'expenditure' ? 'block' : 'none';
+                        document.getElementById('ptab-revenue').style.cssText     = tab === 'revenue'
+                            ? 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);'
+                            : 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.9rem;';
+                        document.getElementById('ptab-expenditure').style.cssText = tab === 'expenditure'
+                            ? 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#CE1126;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);'
+                            : 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.9rem;';
+                    };
+                    break;
+
+                // ---- REPORTS ----
+                case 'reports':
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-file-alt"></i> Reports</h2>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;">
+                            ${['Artisans Report','Payments Report','Verifications Report','Regional Report'].map(r => `
+                                <div class="edit-card" style="text-align:center;">
+                                    <i class="fas fa-file-download" style="font-size:2.5rem;color:#006600;margin-bottom:1rem;display:block;"></i>
+                                    <h4 style="color:#006600;margin-bottom:1rem;">${r}</h4>
+                                    <button onclick="showNotification('${r} generated! In production this downloads a file.','success')" class="ghana-btn" style="background:#006600;width:100%;">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                </div>`).join('')}
+                        </div>`;
+                    break;
+
+                // ---- REGISTER ARTISAN ----
+                case 'register-artisan':
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-user-plus"></i> Register New Artisan</h2>
+                        <div class="edit-card">
+                            <form onsubmit="adminRegisterArtisan(event)" style="display:flex;flex-direction:column;gap:1rem;">
+                                <div class="eg2">
+                                    <div><label class="elabel">Full Name</label><input type="text" id="ar-name" required></div>
+                                    <div><label class="elabel">Email</label><input type="email" id="ar-email" required></div>
+                                    <div><label class="elabel">Phone</label><input type="tel" id="ar-phone" required></div>
+                                    <div><label class="elabel">Category</label><select id="ar-category"></select></div>
+                                    <div><label class="elabel">Region</label><select id="ar-region" onchange="arRegionChange()"></select></div>
+                                    <div><label class="elabel">District</label><select id="ar-district"></select></div>
+                                    <div><label class="elabel">Experience (years)</label><input type="number" id="ar-exp" min="0"></div>
+                                    <div><label class="elabel">Hourly Rate</label><input type="text" id="ar-price" placeholder="₵100/hour"></div>
+                                    <div><label class="elabel">ID Type</label>
+                                        <select id="ar-id-type" onchange="adminIdTypeChange('ar')">
+                                            <option value="ecowascard">ECOWAS Card</option>
+                                            <option value="voters_id">Voter's ID</option>
+                                            <option value="drivers_license">Driver's License</option>
+                                            <option value="passport">Passport</option>
+                                            <option value="nhis">NHIS Card</option>
+                                            <option value="ssnit">SSNIT Card</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="elabel">ID Number</label>
+                                        <input type="text" id="ar-id-number" placeholder="GHA-XXXXXXXXX-D" oninput="adminFormatId(this,'ar')" maxlength="17">
+                                        <small id="ar-id-hint" style="color:#006600;font-size:0.72rem;margin-top:2px;display:block;font-weight:600;">Format: GHA-721233479-8</small>
+                                    </div>
+                                </div>
+                                <div><label class="elabel">Skills (comma-separated)</label><input type="text" id="ar-skills" placeholder="Skill 1, Skill 2"></div>
+                                <div><label class="elabel">Bio / Description</label><textarea id="ar-bio" rows="3"></textarea></div>
+                                <div><label class="elabel">Address</label><textarea id="ar-address" rows="2"></textarea></div>
+                                <div class="ev-row">
+                                    <input type="checkbox" id="ar-verified">
+                                    <label for="ar-verified">Mark as Verified immediately</label>
+                                </div>
+                                <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                                    <button type="submit" class="ghana-btn" style="background:#006600;"><i class="fas fa-save"></i> Register Artisan</button>
+                                    <button type="button" onclick="showSection('artisans')" class="ghana-btn red"><i class="fas fa-times"></i> Cancel</button>
+                                </div>
+                            </form>
+                        </div>`;
+                    loadRegionsIntoSelect(document.getElementById('ar-region'));
+                    loadCategoriesIntoSelect(document.getElementById('ar-category'));
+                    break;
+
+                // ---- CUSTOMERS ----
+                case 'customers':
+                    // Merge any localStorage customer into sampleClients for display
+                    const savedCust = loadClientProfile();
+                    if (savedCust && !sampleClients.find(c => c.id === savedCust.id)) sampleClients.push(savedCust);
+
+                    el.innerHTML = `
+                        <h2 style="color:#FF9900;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-users"></i> Manage Customers</h2>
+                        <div style="background:white;border-radius:12px;padding:1rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+                            <div style="background:rgba(255,153,0,0.1);border-radius:10px;padding:0.8rem 1.4rem;text-align:center;">
+                                <div style="font-size:1.6rem;font-weight:700;color:#cc7700;font-family:'Poppins',sans-serif;">${sampleClients.length}</div>
+                                <div style="color:#888;font-size:0.8rem;">Total Customers</div>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Region</th><th>Jobs Requested</th><th>Actions</th></tr></thead>
+                                <tbody>
+                                    ${sampleClients.length > 0 ? sampleClients.map(c => `<tr>
+                                        <td><strong>${c.name}</strong></td>
+                                        <td style="color:#888;font-size:0.85rem;">${c.email || '—'}</td>
+                                        <td style="font-size:0.85rem;">${c.phone || '—'}</td>
+                                        <td style="font-size:0.85rem;">${c.region || '—'}</td>
+                                        <td style="text-align:center;"><span style="background:rgba(255,153,0,0.1);color:#cc7700;padding:3px 10px;border-radius:10px;font-weight:700;font-size:0.82rem;">${c.jobsRequested || 0}</span></td>
+                                        <td>
+                                            <button onclick="showEditCustomer(${c.id})" class="tbtn blue"><i class="fas fa-edit"></i> Edit</button>
+                                            <button onclick="deleteCustomer(${c.id},'${c.name.replace(/'/g,`&#39;`)}')" class="tbtn" style="background:#CE1126;color:white;border:none;"><i class="fas fa-trash"></i> Delete</button>
+                                        </td>
+                                    </tr>`).join('') : `<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No customers registered yet.</td></tr>`}
+                                </tbody>
+                            </table>
+                        </div>`;
+                    break;
+            }
+        }
+
+        // ---- ECOWAS Card auto-formatter (shared by register & edit forms) ----
+        function adminIdTypeChange(prefix) {
+            const type  = document.getElementById(prefix + '-id-type').value;
+            const input = document.getElementById(prefix + '-id-number');
+            const hint  = document.getElementById(prefix + '-id-hint');
+            input.value = '';
+            if (type === 'ecowascard') {
+                input.placeholder = 'GHA-XXXXXXXXX-D';
+                input.maxLength   = 17;
+                if (hint) { hint.textContent = 'Format: GHA-721233479-8'; hint.style.display = 'block'; }
+            } else {
+                input.placeholder = 'ID Number';
+                input.maxLength   = 30;
+                if (hint) hint.style.display = 'none';
+            }
+        }
+
+        function adminFormatId(input, prefix) {
+            const type = document.getElementById(prefix + '-id-type').value;
+            if (type !== 'ecowascard') return;
+            const digits = input.value.replace(/[^0-9]/g, '');
+            let formatted = 'GHA-';
+            if (digits.length <= 9) {
+                formatted += digits;
+            } else {
+                formatted += digits.substring(0, 9) + '-' + digits.substring(9, 10);
+            }
+            input.value = formatted;
+        }
+
+        function validateEcowasCard(value) {
+            return /^GHA-\d{9}-\d$/.test(value);
+        }
+
+        // ---- Edit Artisan ----
+        function showEditArtisan(artisanId) {
+            const a = sampleArtisans.find(x => x.id === artisanId);
+            if (!a) return;
+            const el = document.getElementById('admin-content');
+            el.innerHTML = `
+                <h2 style="color:#006600;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-edit"></i> Edit — ${a.name}</h2>
+                <div class="edit-card">
+                    <form onsubmit="saveArtisan(event,${a.id})" style="display:flex;flex-direction:column;gap:1rem;">
+                        <div class="eg2">
+                            <div><label class="elabel">Name</label><input type="text" id="ea-name" value="${a.name}"></div>
+                            <div><label class="elabel">Email</label><input type="email" id="ea-email" value="${a.email}"></div>
+                            <div><label class="elabel">Phone</label><input type="tel" id="ea-phone" value="${a.phone}"></div>
+                            <div><label class="elabel">Category</label><select id="ea-category"></select></div>
+                            <div><label class="elabel">Region</label><select id="ea-region" onchange="editRegionChange()"></select></div>
+                            <div><label class="elabel">District</label><select id="ea-district"></select></div>
+                            <div><label class="elabel">Experience (yrs)</label><input type="number" id="ea-exp" value="${a.experience}"></div>
+                            <div><label class="elabel">Rate</label><input type="text" id="ea-price" value="${a.price}"></div>
+                            <div><label class="elabel">ID Type</label>
+                                <select id="ea-id-type" onchange="adminIdTypeChange('ea')">
+                                    <option value="ecowascard" ${(a.idType==='ecowascard'||a.idType==='ghanacard')?'selected':''}>ECOWAS Card</option>
+                                    <option value="voters_id"         ${a.idType==='voters_id'?'selected':''}>Voter's ID</option>
+                                    <option value="drivers_license"   ${a.idType==='drivers_license'?'selected':''}>Driver's License</option>
+                                    <option value="passport"          ${a.idType==='passport'?'selected':''}>Passport</option>
+                                    <option value="nhis"              ${a.idType==='nhis'?'selected':''}>NHIS Card</option>
+                                    <option value="ssnit"             ${a.idType==='ssnit'?'selected':''}>SSNIT Card</option>
+                                    <option value="birth_certificate" ${a.idType==='birth_certificate'?'selected':''}>Birth Certificate</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="elabel">ID Number</label>
+                                <input type="text" id="ea-id-number" value="${a.idNumber}" oninput="adminFormatId(this,'ea')" maxlength="17" placeholder="GHA-XXXXXXXXX-D">
+                                <small id="ea-id-hint" style="color:#006600;font-size:0.72rem;margin-top:2px;display:${(a.idType==='ecowascard'||a.idType==='ghanacard')?'block':'none'};font-weight:600;">Format: GHA-721233479-8</small>
+                            </div>
+                        </div>
+                        <div><label class="elabel">Skills (comma-separated)</label><input type="text" id="ea-skills" value="${a.skills.join(', ')}"></div>
+                        <div><label class="elabel">Bio</label><textarea id="ea-bio" rows="3">${a.bio}</textarea></div>
+                        <div><label class="elabel">Address</label><textarea id="ea-address" rows="2">${a.address}</textarea></div>
+                        <div class="ev-row">
+                            <input type="checkbox" id="ea-verified" ${a.verified?'checked':''}>
+                            <label for="ea-verified">Verified (visible on website)</label>
+                        </div>
+                        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                            <button type="submit" class="ghana-btn" style="background:#006600;"><i class="fas fa-save"></i> Save Changes</button>
+                            <button type="button" onclick="showSection('artisans')" class="ghana-btn red"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>`;
+            loadCategoriesIntoSelect(document.getElementById('ea-category'));
+            document.getElementById('ea-category').value = a.category;
+            loadRegionsIntoSelect(document.getElementById('ea-region'));
+            document.getElementById('ea-region').value = a.region;
+            loadDistrictsIntoSelect(document.getElementById('ea-district'), a.region);
+            document.getElementById('ea-district').value = a.district;
+        }
+
+        function editRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('ea-district'), document.getElementById('ea-region').value);
+        }
+
+        function saveArtisan(e, artisanId) {
+            e.preventDefault();
+            const idx = sampleArtisans.findIndex(a => a.id === artisanId);
+            if (idx === -1) return;
+            const g = id => document.getElementById(id).value;
+            sampleArtisans[idx] = {
+                ...sampleArtisans[idx],
+                name: g('ea-name'), email: g('ea-email'), phone: g('ea-phone'),
+                category: g('ea-category'), region: g('ea-region'), district: g('ea-district'),
+                experience: parseInt(g('ea-exp')) || 0, price: g('ea-price'),
+                idType: g('ea-id-type'), idNumber: g('ea-id-number'),
+                skills: g('ea-skills').split(',').map(s => s.trim()).filter(Boolean),
+                bio: g('ea-bio'), address: g('ea-address'),
+                verified: document.getElementById('ea-verified').checked,
+            };
+            showNotification('Artisan updated successfully!', 'success');
+            showSection('artisans');
+        }
+
+        // ---- Delete Artisan ----
+        function deleteArtisan(artisanId, artisanName) {
+            if (!confirm(`Delete artisan "${artisanName}"? This cannot be undone.`)) return;
+            const idx = sampleArtisans.findIndex(a => a.id === artisanId);
+            if (idx !== -1) sampleArtisans.splice(idx, 1);
+            // Also clear localStorage if it's the same artisan
+            const saved = loadArtisanProfile();
+            if (saved && saved.id === artisanId) localStorage.removeItem('artisanProfile');
+            showNotification(`Artisan "${artisanName}" deleted successfully.`, 'success');
+            showSection('artisans');
+        }
+
+        // ---- Edit Customer ----
+        function showEditCustomer(customerId) {
+            const c = sampleClients.find(x => x.id === customerId);
+            if (!c) return;
+            const el = document.getElementById('admin-content');
+            el.innerHTML = `
+                <h2 style="color:#FF9900;margin-bottom:1.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-edit"></i> Edit Customer — ${c.name}</h2>
+                <div class="edit-card">
+                    <form onsubmit="saveCustomer(event,${c.id})" style="display:flex;flex-direction:column;gap:1rem;">
+                        <div class="eg2">
+                            <div>
+                                <label class="elabel">Full Name</label>
+                                <input type="text" id="ec-name" value="${c.name}">
+                            </div>
+                            <div>
+                                <label class="elabel">Email</label>
+                                <input type="email" id="ec-email" value="${c.email || ''}">
+                            </div>
+                            <div>
+                                <label class="elabel">Phone</label>
+                                <input type="tel" id="ec-phone" value="${c.phone || ''}">
+                            </div>
+                            <div>
+                                <label class="elabel">Region</label>
+                                <select id="ec-region" onchange="ecRegionChange()"></select>
+                            </div>
+                            <div>
+                                <label class="elabel">District</label>
+                                <select id="ec-district"></select>
+                            </div>
+                            <div>
+                                <label class="elabel">New Password <span style="color:#aaa;font-weight:400;">(leave blank to keep current)</span></label>
+                                <input type="password" id="ec-password" placeholder="Enter new password (optional)">
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.5rem;">
+                            <button type="submit" class="ghana-btn" style="background:#FF9900;box-shadow:0 4px 15px rgba(255,153,0,0.3);"><i class="fas fa-save"></i> Save Changes</button>
+                            <button type="button" onclick="showSection('customers')" class="ghana-btn red"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>`;
+            loadRegionsIntoSelect(document.getElementById('ec-region'));
+            document.getElementById('ec-region').value = c.region || '';
+            if (c.region) {
+                loadDistrictsIntoSelect(document.getElementById('ec-district'), c.region);
+                document.getElementById('ec-district').value = c.district || '';
+            }
+        }
+
+        function ecRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('ec-district'), document.getElementById('ec-region').value);
+        }
+
+        function saveCustomer(e, customerId) {
+            e.preventDefault();
+            const idx = sampleClients.findIndex(c => c.id === customerId);
+            if (idx === -1) return;
+            const g = id => document.getElementById(id).value;
+            const newPw = g('ec-password');
+            sampleClients[idx] = {
+                ...sampleClients[idx],
+                name:     g('ec-name'),
+                email:    g('ec-email'),
+                phone:    g('ec-phone'),
+                region:   g('ec-region'),
+                district: g('ec-district'),
+                ...(newPw ? { password: newPw } : {})
+            };
+            // Sync localStorage if it's the same customer
+            const saved = loadClientProfile();
+            if (saved && saved.id === customerId) {
+                saveClientProfile(sampleClients[idx]);
+            }
+            showNotification('Customer updated successfully!', 'success');
+            showSection('customers');
+        }
+
+        // ---- Delete Customer ----
+        function deleteCustomer(customerId, customerName) {
+            if (!confirm(`Delete customer "${customerName}"? This cannot be undone.`)) return;
+            const idx = sampleClients.findIndex(c => c.id === customerId);
+            if (idx !== -1) sampleClients.splice(idx, 1);
+            const saved = loadClientProfile();
+            if (saved && saved.id === customerId) localStorage.removeItem('clientProfile');
+            showNotification(`Customer "${customerName}" deleted successfully.`, 'success');
+            showSection('customers');
+        }
+
+        // ---- Register Artisan (admin) ----
+        function arRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('ar-district'), document.getElementById('ar-region').value);
+        }
+
+        function adminRegisterArtisan(e) {
+            e.preventDefault();
+            const g = id => document.getElementById(id).value;
+            const name     = g('ar-name').trim();
+            const email    = g('ar-email').trim();
+            const idType   = g('ar-id-type');
+            const idNumber = g('ar-id-number').trim();
+
+            if (sampleArtisans.find(a => a.email === email)) { showNotification('Artisan with this email already exists', 'error'); return; }
+            if (!idNumber) { showNotification('Please enter the ID Number', 'error'); return; }
+            if (idType === 'ecowascard' && !validateEcowasCard(idNumber)) {
+                showNotification('ECOWAS Card must be in format: GHA-721233479-8', 'error'); return;
+            }
+
+            sampleArtisans.push({
+                id: Date.now(), name, email, phone: g('ar-phone'),
+                password: 'changeme123', category: g('ar-category'),
+                skills: g('ar-skills').split(',').map(s=>s.trim()).filter(Boolean),
+                region: g('ar-region'), district: g('ar-district'), address: g('ar-address'),
+                experience: parseInt(g('ar-exp')) || 0, price: g('ar-price') || '₵100/hour',
+                bio: g('ar-bio'), idType, idNumber,
+                rating: 0, completedJobs: 0,
+                verified: document.getElementById('ar-verified').checked,
+                credentials: [], jobRequests: [], payments: [], workUpdates: []
+            });
+            showNotification(`Artisan ${name} registered successfully!`, 'success');
+            showSection('artisans');
+        }
+
+        // ---- Job Request Helpers ----
+        function jobRequestCardHTML(r) {
+            const artisan = sampleArtisans.find(a => a.id === r.artisanId);
+            const cat = categories.find(c => c.id === r.category);
+            return `
+            <div style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,0.07);border:1px solid rgba(255,153,0,0.2);">
+                <div style="background:rgba(255,153,0,0.06);padding:1rem 1.4rem;border-bottom:1px solid rgba(255,153,0,0.1);display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;">
+                    <div>
+                        <div style="font-weight:700;color:#006600;font-family:'Poppins',sans-serif;">${r.clientName}</div>
+                        <div style="color:#888;font-size:0.8rem;margin-top:2px;"><i class="fas fa-phone"></i> ${r.clientPhone} &nbsp;|&nbsp; <i class="fas fa-envelope"></i> ${r.clientEmail}</div>
+                    </div>
+                    <span style="background:rgba(255,153,0,0.15);color:#cc7700;padding:5px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;">
+                        <i class="fas fa-clock"></i> Pending Admin Approval
+                    </span>
+                </div>
+                <div style="padding:1.2rem 1.4rem;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.8rem;margin-bottom:1rem;">
+                        <div><div style="color:#aaa;font-size:0.75rem;font-weight:600;text-transform:uppercase;">Requested Artisan</div><div style="color:#006600;font-weight:600;font-size:0.9rem;margin-top:3px;">${r.artisanName}</div></div>
+                        <div><div style="color:#aaa;font-size:0.75rem;font-weight:600;text-transform:uppercase;">Category</div><div style="color:#006600;font-weight:600;font-size:0.9rem;margin-top:3px;">${cat?.name||r.category}</div></div>
+                        <div><div style="color:#aaa;font-size:0.75rem;font-weight:600;text-transform:uppercase;">Location</div><div style="color:#006600;font-weight:600;font-size:0.9rem;margin-top:3px;">${r.district}, ${r.region}</div></div>
+                        <div><div style="color:#aaa;font-size:0.75rem;font-weight:600;text-transform:uppercase;">Date</div><div style="color:#006600;font-weight:600;font-size:0.9rem;margin-top:3px;">${r.date}</div></div>
+                    </div>
+                    <div style="background:#f8f8f8;border-radius:8px;padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.88rem;color:#333;line-height:1.6;">
+                        <strong style="color:#555;">Job Description:</strong><br>${r.description}
+                    </div>
+                    <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+                        <button onclick="approveRequest(${r.id})" style="padding:9px 20px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;font-size:0.88rem;">
+                            <i class="fas fa-check"></i> Approve & Assign
+                        </button>
+                        <button onclick="showReassignModal(${r.id})" style="padding:9px 20px;background:#1e90ff;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;font-size:0.88rem;">
+                            <i class="fas fa-exchange-alt"></i> Reassign to Another
+                        </button>
+                        <button onclick="rejectRequest(${r.id})" style="padding:9px 20px;background:#CE1126;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;font-size:0.88rem;">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function approveRequest(reqId) {
+            const r = serviceRequests.find(x => x.id === reqId);
+            if (!r) return;
+            r.status = 'approved';
+            r.adminNote = 'Your request has been approved. The artisan will contact you shortly.';
+            showNotification(`Request approved for ${r.clientName} → ${r.artisanName}`, 'success');
+            showSection('job-requests');
+        }
+
+        function rejectRequest(reqId) {
+            if (!confirm('Reject this request? The customer will be notified.')) return;
+            const r = serviceRequests.find(x => x.id === reqId);
+            if (!r) return;
+            r.status = 'rejected';
+            r.adminNote = 'Your request could not be fulfilled at this time. Please try again or contact support.';
+            showNotification(`Request from ${r.clientName} rejected`, 'info');
+            showSection('job-requests');
+        }
+
+        let reassignTargetId = null;
+        function showReassignModal(reqId) {
+            reassignTargetId = reqId;
+            const r = serviceRequests.find(x => x.id === reqId);
+            document.getElementById('reassign-label').textContent = `Reassigning request from ${r.clientName} (currently: ${r.artisanName})`;
+            const sel = document.getElementById('reassign-artisan-sel');
+            sel.innerHTML = '';
+            sampleArtisans.filter(a => a.verified && a.id !== r.artisanId).forEach(a => {
+                const o = document.createElement('option');
+                o.value = a.id;
+                o.textContent = `${a.name} — ${categories.find(c=>c.id===a.category)?.name||a.category} (${a.district})`;
+                sel.appendChild(o);
+            });
+            const overlay = document.getElementById('reassign-overlay');
+            overlay.style.display = 'flex';
+        }
+
+        function closeReassign(e) {
+            if (!e || e.target === document.getElementById('reassign-overlay') || !e) {
+                document.getElementById('reassign-overlay').style.display = 'none';
+            }
+        }
+
+        function confirmReassign() {
+            const r = serviceRequests.find(x => x.id === reassignTargetId);
+            if (!r) return;
+            const selId = parseInt(document.getElementById('reassign-artisan-sel').value);
+            const newArtisan = sampleArtisans.find(a => a.id === selId);
+            const note = document.getElementById('reassign-note').value.trim();
+            r.artisanId   = newArtisan.id;
+            r.artisanName = newArtisan.name;
+            r.status      = 'reassigned';
+            r.adminNote   = note || `You have been reassigned to ${newArtisan.name} who will be in touch shortly.`;
+            // Push to new artisan's jobRequests
+            newArtisan.jobRequests.push({
+                id: newArtisan.jobRequests.length + 1,
+                clientName: r.clientName, clientPhone: r.clientPhone, clientEmail: r.clientEmail,
+                description: r.description, date: new Date().toISOString().split('T')[0], status: 'pending'
+            });
+            document.getElementById('reassign-overlay').style.display = 'none';
+            showNotification(`Request reassigned to ${newArtisan.name}`, 'success');
+            showSection('job-requests');
+        }
+
+        // ---- Revenue Actions ----
+        function markRevenuePaid(reqId) {
+            const r = serviceRequests.find(x => x.id === reqId);
+            if (r) {
+                r.paymentStatus = 'paid';
+                showNotification(`✅ Payment from ${r.clientName} marked as received!`, 'success');
+                showSection('payments');
+            }
+        }
+
+        function setRevenueAmount(reqId) {
+            const amt = prompt('Enter the amount received from client (e.g. 450):');
+            if (!amt || isNaN(parseFloat(amt))) { showNotification('Invalid amount', 'error'); return; }
+            const r = serviceRequests.find(x => x.id === reqId);
+            if (r) {
+                r.amount = `₵${parseFloat(amt).toFixed(2)}`;
+                r.paymentStatus = 'pending';
+                showNotification(`Amount set to ₵${parseFloat(amt).toFixed(2)}`, 'success');
+                showSection('payments');
+            }
+        }
+
+        // ---- Expenditure Actions ----
+        function recordExpenditure() {
+            const artisanId = parseInt(document.getElementById('exp-artisan').value);
+            const amount    = parseFloat(document.getElementById('exp-amount').value);
+            const client    = document.getElementById('exp-client').value.trim();
+            const monthRaw  = document.getElementById('exp-month').value; // "2024-01"
+
+            if (!artisanId) { showNotification('Please select an artisan', 'error'); return; }
+            if (!amount || amount <= 0) { showNotification('Please enter a valid amount', 'error'); return; }
+
+            const artisan = sampleArtisans.find(a => a.id === artisanId);
+            if (!artisan) { showNotification('Artisan not found', 'error'); return; }
+            if (!artisan.payments) artisan.payments = [];
+
+            // Format month label e.g. "January 2024"
+            let monthLabel = 'This Month';
+            if (monthRaw) {
+                const [yr, mo] = monthRaw.split('-');
+                monthLabel = new Date(parseInt(yr), parseInt(mo)-1, 1)
+                    .toLocaleDateString('en-GH', { month:'long', year:'numeric' });
+            }
+
+            artisan.payments.push({
+                id:     Date.now(),
+                client: client || 'Admin Payment',
+                amount: `₵${amount.toFixed(2)}`,
+                date:   new Date().toISOString().split('T')[0],
+                status: 'pending',
+                month:  monthLabel
+            });
+
+            // Clear form
+            document.getElementById('exp-artisan').value = '';
+            document.getElementById('exp-amount').value  = '';
+            document.getElementById('exp-client').value  = '';
+            document.getElementById('exp-month').value   = '';
+
+            showNotification(`₵${amount.toFixed(2)} payment recorded for ${artisan.name}`, 'success');
+            showSection('payments');
+            // Switch to expenditure tab after recording
+            setTimeout(() => { if (window.showPayTab) window.showPayTab('expenditure'); }, 100);
+        }
+
+        function markExpenditurePaid(artisanId, payId) {
+            const artisan = sampleArtisans.find(a => a.id === artisanId);
+            if (!artisan) return;
+            const pay = artisan.payments.find(p => p.id === payId);
+            if (pay) {
+                pay.status = 'completed';
+                showNotification(`✅ Payment to ${artisan.name} marked as paid!`, 'success');
+                showSection('payments');
+                setTimeout(() => { if (window.showPayTab) window.showPayTab('expenditure'); }, 100);
+            }
+        }
+
+        // ---- Verify / Reject ----
+        function verifyArtisan(id) {
+            const a = sampleArtisans.find(x => x.id === id);
+            if (a) {
+                a.verified = true;
+                // Update in localStorage pool so artisan sees verified status
+                const pool = loadArtisanPool();
+                const pi = pool.findIndex(x => x.email === a.email);
+                if (pi >= 0) { pool[pi].verified = true; localStorage.setItem('ghanaArtisanPool', JSON.stringify(pool)); }
+                // Also update current artisan profile if it matches
+                const saved = loadArtisanProfile();
+                if (saved && saved.email === a.email) { saved.verified = true; saveArtisanProfile(saved); }
+                showNotification(`✅ ${a.name} is now verified and visible on the platform!`, 'success');
+                showSection('verifications');
+            }
+        }
+
+        function rejectArtisan(id) {
+            if (confirm('Reject this artisan? They will be removed and must re-register.')) {
+                const a = sampleArtisans.find(x => x.id === id);
+                const idx = sampleArtisans.findIndex(x => x.id === id);
+                if (idx !== -1) {
+                    const name = sampleArtisans[idx].name;
+                    sampleArtisans.splice(idx, 1);
+                    // Remove from pool too
+                    if (a) {
+                        let pool = loadArtisanPool();
+                        pool = pool.filter(x => x.email !== a.email);
+                        localStorage.setItem('ghanaArtisanPool', JSON.stringify(pool));
+                        const saved = loadArtisanProfile();
+                        if (saved && saved.email === a.email) clearArtisanProfile();
+                    }
+                    showNotification(`${name} rejected and removed.`, 'info');
+                    showSection('verifications');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

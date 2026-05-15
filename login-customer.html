@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Login - GhanaArtisan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        .page-bg {
+            min-height: 100vh;
+            display: grid; grid-template-columns: 1fr 1fr;
+            padding-top: 65px;
+        }
+        @media(max-width: 860px) { .page-bg { grid-template-columns: 1fr; } }
+
+        /* ---- Left panel ---- */
+        .left-panel {
+            background: linear-gradient(160deg, #7a4800 0%, #cc7700 55%, #FF9900 100%);
+            padding: 3rem; display: flex; flex-direction: column;
+            justify-content: center; position: relative; overflow: hidden;
+        }
+        .left-panel::before {
+            content: ''; position: absolute; top: -80px; right: -80px;
+            width: 300px; height: 300px; border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+        }
+        .left-panel::after {
+            content: ''; position: absolute; bottom: -60px; left: -60px;
+            width: 250px; height: 250px; border-radius: 50%;
+            background: rgba(0,102,0,0.1);
+        }
+        @media(max-width: 860px) { .left-panel { display: none; } }
+
+        .left-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.9rem;
+            margin-bottom: 3rem; transition: color 0.2s;
+        }
+        .left-back:hover { color: white; }
+
+        .left-icon {
+            width: 90px; height: 90px; background: rgba(255,255,255,0.15);
+            border-radius: 24px; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; color: white; margin-bottom: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .left-panel h2 {
+            font-family: 'Poppins', sans-serif; color: white;
+            font-size: 2.2rem; margin-bottom: 1rem; line-height: 1.25;
+        }
+        .left-panel h2 span { color: #006600; }
+        .left-panel p { color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2.5rem; }
+
+        .left-perks { list-style: none; }
+        .left-perks li {
+            display: flex; align-items: center; gap: 12px;
+            color: rgba(255,255,255,0.9); font-size: 0.9rem; padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+        .left-perks li:last-child { border-bottom: none; }
+        .left-perks li .perk-icon {
+            width: 32px; height: 32px; background: rgba(255,255,255,0.18);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; color: white; flex-shrink: 0;
+        }
+
+        .left-trust {
+            margin-top: 2.5rem; background: rgba(255,255,255,0.12);
+            border-radius: 14px; padding: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .left-trust p {
+            color: white; font-size: 0.85rem; font-weight: 600;
+            margin-bottom: 0.6rem; opacity: 0.9;
+        }
+        .trust-badges { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        .trust-badge {
+            background: rgba(255,255,255,0.2); color: white;
+            padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* ---- Right panel ---- */
+        .right-panel {
+            background: #fafafa; padding: 2.5rem;
+            display: flex; flex-direction: column; justify-content: center; overflow-y: auto;
+        }
+        .form-box { max-width: 460px; margin: 0 auto; width: 100%; }
+
+        .mobile-back {
+            display: none; align-items: center; gap: 8px;
+            color: #cc7700; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        @media(max-width: 860px) { .mobile-back { display: inline-flex; } }
+
+        /* Tab switcher */
+        .tab-switcher {
+            display: flex; background: #eee; border-radius: 12px; padding: 4px;
+            margin-bottom: 2rem; gap: 4px;
+        }
+        .ts-tab {
+            flex: 1; padding: 11px; border: none; border-radius: 9px; background: transparent;
+            color: #888; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+            font-size: 0.9rem; transition: all 0.25s;
+        }
+        .ts-tab.active { background: white; color: #cc7700; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .form-title { font-family: 'Poppins', sans-serif; color: #cc7700; font-size: 1.5rem; margin-bottom: 0.3rem; }
+        .form-sub   { color: #888; font-size: 0.88rem; margin-bottom: 1.8rem; line-height: 1.5; }
+
+        .form-stack { display: flex; flex-direction: column; gap: 1rem; }
+        .flabel { color: #555; font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 4px; }
+
+        .fsb {
+            background: rgba(255,153,0,0.04); padding: 1rem;
+            border-radius: 12px; border: 1px solid rgba(255,153,0,0.18);
+        }
+        .fsb.green { background: rgba(0,102,0,0.04); border-color: rgba(0,102,0,0.15); }
+        .fsb h4 {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.88rem; margin-bottom: 0.9rem; color: #cc7700;
+        }
+        .fsb.green h4 { color: #006600; }
+
+        .fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+        @media(max-width: 500px) { .fg2 { grid-template-columns: 1fr; } }
+
+        /* Password with show/hide */
+        .pw-wrap { position: relative; }
+        .pw-wrap input { padding-right: 44px; }
+        .pw-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #888; cursor: pointer; font-size: 0.95rem; padding: 4px;
+        }
+        .pw-toggle:hover { color: #FF9900; }
+
+        .terms-row { display: flex; align-items: flex-start; gap: 8px; }
+        .terms-row input { width: auto; margin-top: 3px; flex-shrink: 0; }
+        .terms-row label { color: #666; font-size: 0.84rem; line-height: 1.5; }
+        .terms-row a { color: #cc7700; }
+
+        .submit-btn {
+            width: 100%; padding: 14px; background: #FF9900; color: white; border: none;
+            border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(255,153,0,0.35);
+        }
+        .submit-btn:hover { background: #cc7700; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,153,0,0.4); }
+
+        .switch-hint { text-align: center; color: #888; font-size: 0.85rem; margin-top: 0.6rem; }
+        .switch-hint a { color: #cc7700; font-weight: 600; cursor: pointer; text-decoration: none; }
+
+        /* Quick benefits strip */
+        .benefits-strip {
+            display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .benefit-tag {
+            background: rgba(255,153,0,0.1); color: #cc7700;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+            display: flex; align-items: center; gap: 5px;
+            border: 1px solid rgba(255,153,0,0.2);
+        }
+
+        .flag-stripe { height: 5px; background: var(--gradient-ghana); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+    <div class="flag-stripe"></div>
+
+    <div class="page-bg">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <a href="login.html" class="left-back"><i class="fas fa-arrow-left"></i> Change account type</a>
+            <div class="left-icon"><i class="fas fa-user-tie"></i></div>
+            <h2>Customer <span>Portal</span></h2>
+            <p>Find and hire trusted, ID-verified artisans anywhere across Ghana. Quick, safe, and reliable.</p>
+            <ul class="left-perks">
+                <li><span class="perk-icon"><i class="fas fa-search"></i></span> Search artisans by region, district & skill</li>
+                <li><span class="perk-icon"><i class="fas fa-shield-alt"></i></span> All artisans are Ghana ID-verified</li>
+                <li><span class="perk-icon"><i class="fas fa-paper-plane"></i></span> Send job requests directly to artisans</li>
+                <li><span class="perk-icon"><i class="fas fa-star"></i></span> View ratings and completed jobs</li>
+                <li><span class="perk-icon"><i class="fas fa-lock"></i></span> Pay securely via Paystack</li>
+            </ul>
+            <div class="left-trust">
+                <p><i class="fas fa-check-circle"></i> Accepted Ghana IDs</p>
+                <div class="trust-badges">
+                    <span class="trust-badge">ECOWAS Card</span>
+                    <span class="trust-badge">Voter's ID</span>
+                    <span class="trust-badge">Driver's License</span>
+                    <span class="trust-badge">Passport</span>
+                    <span class="trust-badge">NHIS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="form-box">
+                <a href="login.html" class="mobile-back"><i class="fas fa-arrow-left"></i> Back</a>
+
+                <div class="tab-switcher">
+                    <button class="ts-tab active" id="tab-login" onclick="switchTab('login')">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="ts-tab" id="tab-register" onclick="switchTab('register')">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </div>
+
+                <!-- LOGIN PANEL -->
+                <div id="panel-login">
+                    <h2 class="form-title">Customer Login</h2>
+                    <p class="form-sub">Welcome back! Login to find and hire artisans across Ghana.</p>
+
+                    <div class="benefits-strip">
+                        <span class="benefit-tag"><i class="fas fa-map-marker-alt"></i> 16 Regions</span>
+                        <span class="benefit-tag"><i class="fas fa-shield-alt"></i> ID Verified</span>
+                        <span class="benefit-tag"><i class="fas fa-lock"></i> Secure Pay</span>
+                    </div>
+
+                    <div class="form-stack">
+                        <div>
+                            <label class="flabel">Email or Phone Number</label>
+                            <input type="text" id="l-email" placeholder="Enter your email or phone">
+                        </div>
+                        <div>
+                            <label class="flabel">Password</label>
+                            <div class="pw-wrap">
+                                <input type="password" id="l-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter') doLogin()">
+                                <button class="pw-toggle" type="button" onclick="togglePw('l-password', this)"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <button class="submit-btn" onclick="doLogin()">
+                            <i class="fas fa-sign-in-alt"></i> Login as Customer
+                        </button>
+                        <p class="switch-hint" style="margin-top:0.4rem;">
+                            <a onclick="openForgotPassword()" style="color:#888;font-size:0.83rem;cursor:pointer;"><i class="fas fa-lock" style="font-size:0.75rem;"></i> Forgot your password?</a>
+                        </p>
+                        <p class="switch-hint">No account yet? <a onclick="switchTab('register')">Register here — it's free</a></p>
+                        <p class="switch-hint">Are you an artisan? <a href="login-artisan.html">Artisan login</a></p>
+                    </div>
+                </div>
+
+                <!-- REGISTER PANEL -->
+                <div id="panel-register" style="display:none;">
+                    <h2 class="form-title">Create Customer Account</h2>
+                    <p class="form-sub">It's free and takes less than 2 minutes. Start hiring trusted artisans today.</p>
+
+                    <div class="form-stack">
+
+                        <!-- Personal Info -->
+                        <div class="fsb">
+                            <h4><i class="fas fa-user"></i> Your Information</h4>
+                            <div class="form-stack">
+                                <div>
+                                    <label class="flabel">Full Name</label>
+                                    <input type="text" id="r-name" placeholder="Your full name">
+                                </div>
+                                <div class="fg2">
+                                    <div>
+                                        <label class="flabel">Email Address</label>
+                                        <input type="email" id="r-email" placeholder="Email">
+                                    </div>
+                                    <div>
+                                        <label class="flabel">Phone Number</label>
+                                        <input type="tel" id="r-phone" placeholder="024XXXXXXX">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location (optional but helps find artisans nearby) -->
+                        <div class="fsb green">
+                            <h4><i class="fas fa-map-marker-alt"></i> Your Location <span style="font-weight:400;color:#888;font-size:0.78rem;"> — helps find artisans near you</span></h4>
+                            <div class="form-stack">
+                                <div class="fg2">
+                                    <div>
+                                        <label class="flabel">Region</label>
+                                        <select id="r-region" onchange="onRegionChange()"></select>
+                                    </div>
+                                    <div>
+                                        <label class="flabel">District</label>
+                                        <select id="r-district"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security -->
+                        <div class="fsb">
+                            <h4><i class="fas fa-lock"></i> Security</h4>
+                            <div class="fg2">
+                                <div>
+                                    <label class="flabel">Password (min 8 chars)</label>
+                                    <div class="pw-wrap">
+                                        <input type="password" id="r-password" placeholder="Create password">
+                                        <button class="pw-toggle" type="button" onclick="togglePw('r-password', this)"><i class="fas fa-eye"></i></button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="flabel">Confirm Password</label>
+                                    <div class="pw-wrap">
+                                        <input type="password" id="r-confirm" placeholder="Repeat password">
+                                        <button class="pw-toggle" type="button" onclick="togglePw('r-confirm', this)"><i class="fas fa-eye"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="terms-row">
+                            <input type="checkbox" id="r-terms">
+                            <label for="r-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+                        </div>
+
+                        <button class="submit-btn" onclick="doRegister()">
+                            <i class="fas fa-user-plus"></i> Create Customer Account
+                        </button>
+                        <p class="switch-hint">Already registered? <a onclick="switchTab('login')">Login here</a></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FORGOT PASSWORD MODAL ===== -->
+    <div id="fp-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;padding:1rem;">
+        <div style="background:white;border-radius:20px;padding:2.5rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;">
+            <button onclick="closeForgotPassword()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#888;line-height:1;">&times;</button>
+
+            <!-- Step 1 -->
+            <div id="fp-step1">
+                <div style="text-align:center;margin-bottom:1.5rem;">
+                    <div style="width:70px;height:70px;background:rgba(255,153,0,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:#FF9900;">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 style="font-family:'Poppins',sans-serif;color:#cc7700;margin-bottom:0.3rem;">Forgot Password?</h3>
+                    <p style="color:#888;font-size:0.88rem;line-height:1.5;">Enter your registered email or phone. We'll send you a reset code.</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label class="flabel">Email or Phone Number</label>
+                        <input type="text" id="fp-identifier" placeholder="Enter your email or phone">
+                    </div>
+                    <button onclick="sendFpCode()" style="width:100%;padding:13px;background:#FF9900;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <i class="fas fa-paper-plane"></i> Send Reset Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div id="fp-step2" style="display:none;">
+                <div style="text-align:center;margin-bottom:1.5rem;">
+                    <div style="width:70px;height:70px;background:rgba(255,153,0,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:#FF9900;">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3 style="font-family:'Poppins',sans-serif;color:#cc7700;margin-bottom:0.3rem;">Enter Reset Code</h3>
+                    <p id="fp-sent-msg" style="color:#888;font-size:0.88rem;line-height:1.5;">Code sent. Demo mode: your code is shown below.</p>
+                    <div id="fp-demo-code" style="background:rgba(255,153,0,0.1);border:1px dashed rgba(255,153,0,0.4);border-radius:10px;padding:0.7rem 1rem;margin-top:0.8rem;font-size:1rem;font-weight:700;color:#cc7700;letter-spacing:3px;font-family:'Poppins',sans-serif;"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label class="flabel">6-Digit Code</label>
+                        <input type="text" id="fp-code" placeholder="e.g. 482910" maxlength="6" style="letter-spacing:4px;font-size:1.1rem;font-weight:700;text-align:center;">
+                    </div>
+                    <div>
+                        <label class="flabel">New Password (min 8 chars)</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="fp-newpw" placeholder="Enter new password">
+                            <button class="pw-toggle" type="button" onclick="togglePw('fp-newpw',this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flabel">Confirm New Password</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="fp-confirmpw" placeholder="Repeat new password">
+                            <button class="pw-toggle" type="button" onclick="togglePw('fp-confirmpw',this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <button onclick="doResetPassword()" style="width:100%;padding:13px;background:#FF9900;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <i class="fas fa-lock"></i> Reset Password
+                    </button>
+                    <button onclick="document.getElementById('fp-step1').style.display='block';document.getElementById('fp-step2').style.display='none';" style="background:none;border:none;color:#888;font-size:0.85rem;cursor:pointer;font-family:'Inter',sans-serif;">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3 Success -->
+            <div id="fp-step3" style="display:none;text-align:center;padding:1rem 0;">
+                <div style="width:80px;height:80px;background:rgba(37,211,102,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:2.5rem;color:#25D366;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin-bottom:0.5rem;">Password Reset!</h3>
+                <p style="color:#888;font-size:0.9rem;line-height:1.6;margin-bottom:1.5rem;">Your password has been updated. You can now login with your new password.</p>
+                <button onclick="closeForgotPassword()" style="padding:11px 28px;background:#FF9900;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
+                    <i class="fas fa-sign-in-alt"></i> Back to Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('login');
+
+        // Redirect if already logged in as client
+        const existing = loadUser();
+        if (existing && existing.role === 'client') {
+            showNotification(`Welcome back, ${existing.name}!`, 'success');
+            setTimeout(() => { window.location.href = 'customer-portal.html'; }, 1000);
+        }
+
+        // Populate selects
+        loadRegionsIntoSelect(document.getElementById('r-region'));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'register') switchTab('register');
+
+        // ---- Forgot Password ----
+        let fpGeneratedCode = '';
+        let fpMatchedClient = null;
+
+        function openForgotPassword() {
+            document.getElementById('fp-step1').style.display = 'block';
+            document.getElementById('fp-step2').style.display = 'none';
+            document.getElementById('fp-step3').style.display = 'none';
+            document.getElementById('fp-identifier').value = '';
+            document.getElementById('fp-overlay').style.display = 'flex';
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('fp-overlay').style.display = 'none';
+        }
+
+        function sendFpCode() {
+            const identifier = document.getElementById('fp-identifier').value.trim();
+            if (!identifier) { showNotification('Please enter your email or phone', 'error'); return; }
+
+            let client = sampleClients.find(c => c.email === identifier || c.phone === identifier);
+            if (!client) {
+                const saved = loadClientProfile();
+                if (saved && (saved.email === identifier || saved.phone === identifier)) client = saved;
+            }
+
+            if (!client) { showNotification('No customer account found with that email or phone', 'error'); return; }
+
+            fpMatchedClient  = client;
+            fpGeneratedCode  = String(Math.floor(100000 + Math.random() * 900000));
+
+            document.getElementById('fp-demo-code').textContent = fpGeneratedCode;
+            document.getElementById('fp-sent-msg').textContent  =
+                `Code sent to ${client.email || client.phone}. Demo mode: code shown below.`;
+
+            document.getElementById('fp-step1').style.display = 'none';
+            document.getElementById('fp-step2').style.display = 'block';
+            document.getElementById('fp-code').value = '';
+            document.getElementById('fp-newpw').value = '';
+            document.getElementById('fp-confirmpw').value = '';
+        }
+
+        function doResetPassword() {
+            const code    = document.getElementById('fp-code').value.trim();
+            const newpw   = document.getElementById('fp-newpw').value;
+            const confirm = document.getElementById('fp-confirmpw').value;
+
+            if (code !== fpGeneratedCode)   { showNotification('Incorrect reset code', 'error'); return; }
+            if (!newpw || newpw.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (newpw !== confirm)          { showNotification('Passwords do not match', 'error'); return; }
+
+            const idx = sampleClients.findIndex(c => c.id === fpMatchedClient.id);
+            if (idx !== -1) sampleClients[idx].password = newpw;
+
+            const saved = loadClientProfile();
+            if (saved && saved.id === fpMatchedClient.id) {
+                saved.password = newpw;
+                saveClientProfile(saved);
+            }
+
+            document.getElementById('fp-step2').style.display = 'none';
+            document.getElementById('fp-step3').style.display = 'block';
+        }
+
+        function switchTab(tab) {
+            document.getElementById('panel-login').style.display    = tab === 'login'    ? 'block' : 'none';
+            document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function onRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('r-district'), document.getElementById('r-region').value);
+        }
+
+        function togglePw(inputId, btn) {
+            const inp = document.getElementById(inputId);
+            const isText = inp.type === 'text';
+            inp.type = isText ? 'password' : 'text';
+            btn.innerHTML = `<i class="fas fa-eye${isText ? '' : '-slash'}"></i>`;
+        }
+
+        // ---- Login ----
+        function doLogin() {
+            const email    = document.getElementById('l-email').value.trim();
+            const password = document.getElementById('l-password').value;
+            if (!email || !password) { showNotification('Please enter your email/phone and password', 'error'); return; }
+
+            // Check 1: demo/sample clients in memory
+            let client = sampleClients.find(c => (c.email === email || c.phone === email) && c.password === password);
+
+            // Check 2: newly registered customer saved in localStorage
+            if (!client) {
+                const saved = loadClientProfile();
+                if (saved && (saved.email === email || saved.phone === email) && saved.password === password) {
+                    client = saved;
+                }
+            }
+
+            if (client) {
+                saveClientProfile(client); // ensure profile stays in localStorage
+                saveUser({ email: client.email, name: client.name, phone: client.phone, role: 'client' });
+                showNotification(`Welcome back, ${client.name}!`, 'success');
+                setTimeout(() => { window.location.href = 'customer-portal.html'; }, 900);
+                return;
+            }
+
+            // Check if they used artisan credentials by mistake
+            const artisan = sampleArtisans.find(a => (a.email === email || a.phone === email) && a.password === password)
+                         || (() => { const s = loadArtisanProfile(); return s && (s.email === email || s.phone === email) && s.password === password ? s : null; })();
+            if (artisan) {
+                showNotification('This is an artisan account. Please use Artisan Login.', 'error');
+                setTimeout(() => { window.location.href = 'login-artisan.html'; }, 1500);
+                return;
+            }
+            showNotification('Invalid email/phone or password', 'error');
+        }
+
+        // ---- Register ----
+        function doRegister() {
+            const g = id => document.getElementById(id).value;
+            const name     = g('r-name').trim();
+            const email    = g('r-email').trim();
+            const phone    = g('r-phone').trim();
+            const password = g('r-password');
+            const confirm  = g('r-confirm');
+
+            if (!name)    { showNotification('Please enter your full name', 'error'); return; }
+            if (!email)   { showNotification('Please enter your email', 'error'); return; }
+            if (!phone)   { showNotification('Please enter your phone number', 'error'); return; }
+            if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (password !== confirm) { showNotification('Passwords do not match!', 'error'); return; }
+            if (!document.getElementById('r-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
+
+            // Check both in-memory and localStorage for duplicate emails
+            const existingInMemory = sampleClients.find(c => c.email === email);
+            const existingInStorage = loadClientProfile();
+            if (existingInMemory || (existingInStorage && existingInStorage.email === email)) {
+                showNotification('An account with this email already exists', 'error'); return;
+            }
+
+            const newClient = {
+                id: Date.now(), name, email, phone, password,
+                role: 'client', region: g('r-region'), district: g('r-district'),
+                jobsRequested: 0, paymentsMade: []
+            };
+            sampleClients.push(newClient);
+
+            // Persist to localStorage so login works after page reload
+            saveClientProfile(newClient);
+            saveUser({ email, name, phone, role: 'client' });
+            showNotification('Account created! Welcome to GhanaArtisan.', 'success');
+            setTimeout(() => { window.location.href = 'customer-portal.html'; }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - GhanaArtisan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        /* ---- Hero ---- */
+        .contact-hero {
+            background: var(--gradient-primary);
+            padding: 7rem 5% 5rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        .contact-hero::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 50px; background: var(--light);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .contact-hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2rem, 4.5vw, 3rem);
+            margin-bottom: 0.8rem;
+        }
+        .contact-hero p { opacity: .88; font-size: 1.1rem; max-width: 550px; margin: 0 auto; line-height: 1.7; }
+
+        /* ---- Page body ---- */
+        .contact-body {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 5% 5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+        @media(max-width: 768px) { .contact-body { grid-template-columns: 1fr; } }
+
+        /* ---- Info cards column ---- */
+        .info-col { display: flex; flex-direction: column; gap: 1.2rem; }
+
+        .info-card {
+            background: white; border-radius: 16px; padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            border: 1px solid rgba(0,102,0,0.08);
+            display: flex; align-items: flex-start; gap: 1.2rem;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,102,0,0.14);
+        }
+        .info-icon {
+            width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+        }
+        .info-icon.green    { background: rgba(0,102,0,0.1);   color: #006600; }
+        .info-icon.gold     { background: rgba(255,153,0,0.1);  color: #cc7700; }
+        .info-icon.whatsapp { background: rgba(37,211,102,0.1); color: #25D366; }
+        .info-icon.red      { background: rgba(206,17,38,0.1);  color: #CE1126; }
+        .info-icon.blue     { background: rgba(30,144,255,0.1); color: #1e90ff; }
+
+        .info-label {
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.07em; color: #999; margin-bottom: 5px;
+        }
+        .info-value {
+            display: block; color: #006600; font-weight: 600;
+            font-size: 0.95rem; text-decoration: none; line-height: 1.7;
+            transition: color 0.2s;
+        }
+        .info-value:hover { color: #FF9900; }
+        .info-value.plain { color: #333; cursor: default; font-weight: 500; }
+
+        /* Hours table */
+        .hours-table { width: 100%; border-collapse: collapse; margin-top: 2px; }
+        .hours-table td { padding: 3px 0; font-size: 0.9rem; }
+        .hours-table td:first-child { color: #555; font-weight: 500; width: 55%; }
+        .hours-table td:last-child  { color: #006600; font-weight: 600; }
+        .hours-table tr.closed td:last-child { color: #CE1126; }
+
+        /* Socials row */
+        .socials-card {
+            background: white; border-radius: 16px; padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            border: 1px solid rgba(0,102,0,0.08);
+        }
+        .socials-card h4 { color: #006600; font-family: 'Poppins', sans-serif; margin-bottom: 1rem; }
+        .socials-row { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+        .social-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px; color: white;
+            text-decoration: none; font-weight: 600; font-size: 0.88rem;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .social-btn:hover { transform: translateY(-3px); opacity: 0.88; }
+        .social-btn.facebook  { background: #1877F2; }
+        .social-btn.twitter   { background: #1DA1F2; }
+        .social-btn.instagram { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+        .social-btn.whatsapp  { background: #25D366; }
+        .social-btn.tiktok    { background: #010101; }
+
+        /* ---- Contact form column ---- */
+        .form-col {}
+        .contact-form-card {
+            background: white; border-radius: 16px; padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            border: 1px solid rgba(0,102,0,0.08);
+            position: sticky; top: 100px;
+        }
+        .contact-form-card h3 {
+            color: #006600; font-family: 'Poppins', sans-serif;
+            margin-bottom: 0.4rem; font-size: 1.3rem;
+        }
+        .contact-form-card p { color: #888; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+        .cform { display: flex; flex-direction: column; gap: 1rem; }
+        .cform-label { color: #006600; font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 4px; }
+        .cform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media(max-width: 500px) { .cform-grid { grid-template-columns: 1fr; } }
+
+        .subject-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .chip {
+            padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600;
+            border: 2px solid rgba(0,102,0,0.2); color: #006600; background: white;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .chip:hover, .chip.selected { background: #006600; color: white; border-color: #006600; }
+
+        .send-btn {
+            width: 100%; padding: 14px; background: var(--gradient-primary); color: white;
+            border: none; border-radius: 10px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.25s; box-shadow: var(--magic-shadow);
+        }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,102,0,0.35); }
+
+        /* Success state */
+        .form-success {
+            display: none; text-align: center; padding: 2rem;
+        }
+        .form-success i { font-size: 3.5rem; color: #25D366; margin-bottom: 1rem; display: block; }
+        .form-success h4 { color: #006600; font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .form-success p  { color: #666; font-size: 0.9rem; line-height: 1.6; }
+
+        /* Map embed section */
+        .map-section {
+            max-width: 1100px; margin: 0 auto 4rem; padding: 0 5%;
+        }
+        .map-section h3 {
+            color: #006600; font-family: 'Poppins', sans-serif;
+            margin-bottom: 1rem; font-size: 1.2rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .map-placeholder {
+            background: white; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            border: 1px solid rgba(0,102,0,0.08);
+            height: 300px; display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 1rem; color: #888;
+        }
+        .map-placeholder i { font-size: 3rem; color: rgba(0,102,0,0.2); }
+        .map-placeholder p { font-size: 0.9rem; text-align: center; max-width: 300px; line-height: 1.6; }
+        .map-directions-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #006600; color: white; padding: 10px 22px;
+            border-radius: 8px; text-decoration: none; font-weight: 600;
+            font-size: 0.9rem; transition: all 0.2s;
+        }
+        .map-directions-btn:hover { background: #004d00; transform: translateY(-2px); }
+
+        /* Footer */
+        footer {
+            background: #333; color: #ccc; text-align: center;
+            padding: 2rem 5%; font-size: 0.9rem;
+        }
+        footer a { color: #FF9900; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+
+    <div class="page-wrapper">
+
+        <!-- Hero -->
+        <div class="contact-hero">
+            <h1><i class="fas fa-headset"></i> Contact Us</h1>
+            <p>Have a question or need help? We're always ready to assist you across Ghana.</p>
+        </div>
+
+        <!-- Main grid -->
+        <div class="contact-body">
+
+            <!-- LEFT: Info cards -->
+            <div class="info-col">
+
+                <!-- Phone -->
+                <div class="info-card">
+                    <div class="info-icon green"><i class="fas fa-phone-alt"></i></div>
+                    <div>
+                        <div class="info-label">Phone</div>
+                        <a href="tel:+233240000000" class="info-value">+233 24 000 0000</a>
+                        <a href="tel:+233550000000" class="info-value">+233 55 000 0000</a>
+                    </div>
+                </div>
+
+                <!-- WhatsApp -->
+                <div class="info-card">
+                    <div class="info-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
+                    <div>
+                        <div class="info-label">WhatsApp</div>
+                        <a href="https://wa.me/233240000000" target="_blank" class="info-value">+233 24 000 0000</a>
+                        <a href="https://wa.me/233550000000" target="_blank" class="info-value">+233 55 000 0000</a>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="info-card">
+                    <div class="info-icon gold"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <div class="info-label">Email</div>
+                        <a href="/cdn-cgi/l/email-protection#abc3cec7c7c4ebccc3cac5cacad9dfc2d8cac585c8c4c6" class="info-value"><span class="__cf_email__" data-cfemail="d4bcb1b8b8bb94b3bcb5bab5b5a6a0bda7b5bafab7bbb9">[email&#160;protected]</span></a>
+                        <a href="/cdn-cgi/l/email-protection#9be8eeebebf4e9efdbfcf3faf5fafae9eff2e8faf5b5f8f4f6" class="info-value"><span class="__cf_email__" data-cfemail="f98a8c8989968b8db99e91989798988b8d908a9897d79a9694">[email&#160;protected]</span></a>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="info-card">
+                    <div class="info-icon red"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <div class="info-label">Office Address</div>
+                        <span class="info-value plain">
+                            GhanaArtisan HQ<br>
+                            Independence Avenue, Accra<br>
+                            Greater Accra Region, Ghana
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Working Hours -->
+                <div class="info-card">
+                    <div class="info-icon blue"><i class="fas fa-clock"></i></div>
+                    <div style="width:100%;">
+                        <div class="info-label">Working Hours</div>
+                        <table class="hours-table">
+                            <tr><td>Monday – Friday</td><td>8:00 AM – 6:00 PM</td></tr>
+                            <tr><td>Saturday</td><td>9:00 AM – 3:00 PM</td></tr>
+                            <tr class="closed"><td>Sunday</td><td>Closed</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div class="socials-card">
+                    <h4><i class="fas fa-share-alt"></i> Follow Us</h4>
+                    <div class="socials-row">
+                        <a href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
+                        <a href="#" class="social-btn twitter"><i class="fab fa-twitter"></i> Twitter</a>
+                        <a href="#" class="social-btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
+                        <a href="https://wa.me/233240000000" target="_blank" class="social-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                        <a href="#" class="social-btn tiktok"><i class="fab fa-tiktok"></i> TikTok</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Contact Form -->
+            <div class="form-col">
+                <div class="contact-form-card">
+                    <div id="form-wrap">
+                        <h3>Send Us a Message</h3>
+                        <p>Fill the form and we'll get back to you within 24 hours.</p>
+
+                        <div class="cform">
+                            <div class="cform-grid">
+                                <div>
+                                    <label class="cform-label">Your Name</label>
+                                    <input type="text" id="cf-name" placeholder="Full name">
+                                </div>
+                                <div>
+                                    <label class="cform-label">Phone Number</label>
+                                    <input type="tel" id="cf-phone" placeholder="024XXXXXXX">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="cform-label">Email Address</label>
+                                <input type="email" id="cf-email" placeholder="your@email.com">
+                            </div>
+
+                            <div>
+                                <label class="cform-label">Subject</label>
+                                <div class="subject-chips">
+                                    <div class="chip selected" onclick="selectChip(this)">General Enquiry</div>
+                                    <div class="chip" onclick="selectChip(this)">Artisan Registration</div>
+                                    <div class="chip" onclick="selectChip(this)">Payment Issue</div>
+                                    <div class="chip" onclick="selectChip(this)">Report a Problem</div>
+                                    <div class="chip" onclick="selectChip(this)">Partnership</div>
+                                    <div class="chip" onclick="selectChip(this)">Other</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="cform-label">Your Message</label>
+                                <textarea id="cf-message" rows="5" placeholder="Tell us how we can help you..."></textarea>
+                            </div>
+
+                            <button class="send-btn" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Success state -->
+                    <div class="form-success" id="form-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>Message Sent!</h4>
+                        <p>Thank you for reaching out. Our team will get back to you within 24 hours.</p>
+                        <br>
+                        <button onclick="resetForm()" style="background:none;border:2px solid #006600;color:#006600;padding:10px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;">
+                            Send Another Message
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section">
+            <h3><i class="fas fa-map"></i> Find Our Office</h3>
+            <div class="map-placeholder">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>GhanaArtisan HQ &mdash; Independence Avenue, Accra<br>Greater Accra Region, Ghana</p>
+                <a href="https://maps.google.com/?q=Independence+Avenue+Accra+Ghana" target="_blank" class="map-directions-btn">
+                    <i class="fas fa-directions"></i> Get Directions
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 GhanaArtisan &mdash; Connecting Ghana's Skilled Workforce |
+               <a href="find-artisans.html">Find Artisans</a> &middot;
+               <a href="how-it-works.html">How It Works</a> &middot;
+               <a href="login.html">Get Started</a> &middot;
+               <a href="contact.html">Contact</a>
+            </p>
+        </footer>
+
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('contact');
+
+        function selectChip(el) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function sendMessage() {
+            const name    = document.getElementById('cf-name').value.trim();
+            const email   = document.getElementById('cf-email').value.trim();
+            const phone   = document.getElementById('cf-phone').value.trim();
+            const message = document.getElementById('cf-message').value.trim();
+
+            if (!name)    { showNotification('Please enter your name', 'error'); return; }
+            if (!email && !phone) { showNotification('Please enter your email or phone number', 'error'); return; }
+            if (!message) { showNotification('Please enter your message', 'error'); return; }
+
+            // In production this would POST to a backend / email service
+            document.getElementById('form-wrap').style.display    = 'none';
+            document.getElementById('form-success').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('cf-name').value    = '';
+            document.getElementById('cf-email').value   = '';
+            document.getElementById('cf-phone').value   = '';
+ 

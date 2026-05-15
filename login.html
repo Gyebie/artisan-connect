@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - GhanaArtisan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        .login-page {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 15% 85%, rgba(0,102,0,0.1) 0%, transparent 45%),
+                radial-gradient(circle at 85% 15%, rgba(255,153,0,0.1) 0%, transparent 45%),
+                #f7f7f5;
+            padding: 6rem 5% 4rem;
+        }
+
+        /* ---- Step 1: Choose type ---- */
+        #step-choose { max-width: 860px; margin: 0 auto; text-align: center; }
+
+        .login-brand {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 2rem;
+        }
+        .login-brand-icon {
+            width: 60px; height: 60px; background: var(--gradient-primary);
+            border-radius: 16px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.6rem; color: white;
+            box-shadow: 0 8px 24px rgba(0,102,0,0.3);
+        }
+        .login-brand-name {
+            font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700;
+            background: var(--gradient-primary); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .login-heading {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            color: #1a1a1a; margin-bottom: 0.7rem; line-height: 1.25;
+        }
+        .login-heading span { color: #006600; }
+        .login-sub { color: #777; font-size: 1rem; margin-bottom: 3rem; line-height: 1.6; }
+
+        .choice-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 2rem; margin-bottom: 2rem;
+        }
+        @media(max-width: 620px) { .choice-grid { grid-template-columns: 1fr; gap: 1.2rem; } }
+
+        .choice-card {
+            background: white; border-radius: 20px; padding: 2.5rem 2rem;
+            cursor: pointer; transition: all 0.3s ease; position: relative;
+            text-align: left; border: 2px solid transparent;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+        }
+        .choice-card:hover { transform: translateY(-5px); }
+        .choice-card.artisan  { border-color: rgba(0,102,0,0.15); }
+        .choice-card.artisan:hover  { border-color: #006600; box-shadow: 0 16px 40px rgba(0,102,0,0.18); }
+        .choice-card.customer { border-color: rgba(255,153,0,0.2); }
+        .choice-card.customer:hover { border-color: #FF9900; box-shadow: 0 16px 40px rgba(255,153,0,0.18); }
+        .choice-card.selected.artisan  { border-color: #006600; box-shadow: 0 0 0 3px rgba(0,102,0,0.15); }
+        .choice-card.selected.customer { border-color: #FF9900; box-shadow: 0 0 0 3px rgba(255,153,0,0.2); }
+
+        .card-badge {
+            position: absolute; top: 16px; right: 16px;
+            font-size: 0.72rem; font-weight: 700; padding: 4px 10px;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .choice-card.artisan  .card-badge { background: rgba(0,102,0,0.1);   color: #006600; }
+        .choice-card.customer .card-badge { background: rgba(255,153,0,0.12); color: #cc7700; }
+
+        .card-icon {
+            width: 70px; height: 70px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.2rem; font-size: 1.8rem; transition: transform 0.3s;
+        }
+        .choice-card:hover .card-icon { transform: scale(1.08) rotate(-5deg); }
+        .choice-card.artisan  .card-icon { background: rgba(0,102,0,0.1);   color: #006600; }
+        .choice-card.customer .card-icon { background: rgba(255,153,0,0.12); color: #cc7700; }
+
+        .choice-card h2 { font-family: 'Poppins', sans-serif; font-size: 1.3rem; margin-bottom: 0.5rem; }
+        .choice-card.artisan  h2 { color: #006600; }
+        .choice-card.customer h2 { color: #cc7700; }
+        .choice-card p { color: #666; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; }
+
+        .perks { list-style: none; margin-bottom: 1.8rem; }
+        .perks li { display: flex; align-items: center; gap: 9px; color: #444; font-size: 0.86rem; padding: 4px 0; }
+        .choice-card.artisan  .perks li i { color: #006600; font-size: 0.75rem; }
+        .choice-card.customer .perks li i { color: #FF9900; font-size: 0.75rem; }
+
+        .card-cta {
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: all 0.2s;
+        }
+        .choice-card.artisan  .card-cta { background: #006600; color: white; box-shadow: 0 5px 16px rgba(0,102,0,0.3); }
+        .choice-card.artisan:hover .card-cta { background: #004d00; }
+        .choice-card.customer .card-cta { background: #FF9900; color: white; box-shadow: 0 5px 16px rgba(255,153,0,0.3); }
+        .choice-card.customer:hover .card-cta { background: #cc7700; }
+
+        .admin-link { color: #bbb; font-size: 0.88rem; }
+        .admin-link a { color: #006600; font-weight: 600; text-decoration: none; }
+        .admin-link a:hover { color: #FF9900; }
+
+        /* ---- Step 2: Form area ---- */
+        #step-form { display: none; max-width: 600px; margin: 0 auto; }
+
+        .form-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+        }
+        .back-btn {
+            background: white; border: 2px solid rgba(0,102,0,0.2); color: #006600;
+            padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 0.88rem;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+        }
+        .back-btn:hover { background: rgba(0,102,0,0.06); }
+        .form-header-title {
+            font-family: 'Poppins', sans-serif; font-size: 1.3rem; color: #006600;
+        }
+        .form-header-title.orange { color: #cc7700; }
+
+        /* Tab switcher */
+        .tab-switcher {
+            display: flex; background: #eee; border-radius: 12px; padding: 4px;
+            margin-bottom: 2rem; gap: 4px;
+        }
+        .ts-tab {
+            flex: 1; padding: 12px; border: none; border-radius: 9px; background: transparent;
+            color: #888; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+            font-size: 0.92rem; transition: all 0.25s;
+        }
+        .ts-tab.active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .ts-tab.active.green  { color: #006600; }
+        .ts-tab.active.orange { color: #cc7700; }
+
+        /* Form card */
+        .form-card {
+            background: white; border-radius: 20px; padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); border: 1px solid rgba(0,102,0,0.08);
+        }
+        .form-card.orange { border-color: rgba(255,153,0,0.15); }
+
+        .form-sub-title { font-family: 'Poppins', sans-serif; font-size: 1.2rem; margin-bottom: 0.3rem; color: #006600; }
+        .form-sub-title.orange { color: #cc7700; }
+        .form-desc { color: #888; font-size: 0.86rem; margin-bottom: 1.5rem; }
+
+        .form-stack { display: flex; flex-direction: column; gap: 0.9rem; }
+        .flabel { color: #555; font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 4px; }
+
+        .fsb {
+            background: rgba(0,102,0,0.04); padding: 1rem;
+            border-radius: 12px; border: 1px solid rgba(0,102,0,0.12);
+        }
+        .fsb.gold { background: rgba(255,153,0,0.04); border-color: rgba(255,153,0,0.18); }
+        .fsb.red  { background: rgba(206,17,38,0.04);  border-color: rgba(206,17,38,0.12); }
+        .fsb h4 { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; margin-bottom: 0.8rem; color: #006600; }
+        .fsb.gold h4 { color: #cc7700; }
+        .fsb.red  h4 { color: #CE1126; }
+
+        .fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+        @media(max-width: 500px) { .fg2 { grid-template-columns: 1fr; } }
+
+        .upload-box {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 1rem; border: 2px dashed #ccc; border-radius: 10px;
+            cursor: pointer; text-align: center; background: white; transition: all 0.2s;
+        }
+        .upload-box:hover { border-color: #006600; background: rgba(0,102,0,0.03); }
+        .upload-box i { font-size: 1.4rem; color: #006600; }
+        .upload-box span { color: #006600; font-weight: 600; font-size: 0.82rem; }
+        .upload-box small { color: #888; font-size: 0.75rem; }
+        .id-prev { width: 100%; max-height: 85px; object-fit: cover; border-radius: 6px; margin-top: 5px; display: none; }
+
+        .pw-wrap { position: relative; }
+        .pw-wrap input { padding-right: 44px; }
+        .pw-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #888; cursor: pointer; font-size: 0.95rem; padding: 4px;
+        }
+        .pw-toggle:hover { color: #006600; }
+
+        .terms-row { display: flex; align-items: flex-start; gap: 8px; }
+        .terms-row input { width: auto; margin-top: 3px; flex-shrink: 0; }
+        .terms-row label { color: #666; font-size: 0.84rem; line-height: 1.5; }
+        .terms-row a { color: #006600; }
+
+        .submit-btn {
+            width: 100%; padding: 14px; color: white; border: none;
+            border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: all 0.25s;
+        }
+        .submit-btn.green  { background: #006600; box-shadow: 0 6px 20px rgba(0,102,0,0.3); }
+        .submit-btn.green:hover  { background: #004d00; transform: translateY(-2px); }
+        .submit-btn.orange { background: #FF9900; box-shadow: 0 6px 20px rgba(255,153,0,0.3); }
+        .submit-btn.orange:hover { background: #cc7700; transform: translateY(-2px); }
+
+        .switch-hint { text-align: center; color: #888; font-size: 0.86rem; }
+        .switch-hint a { font-weight: 600; cursor: pointer; text-decoration: none; }
+        .switch-hint a.green  { color: #006600; }
+        .switch-hint a.orange { color: #cc7700; }
+
+        /* Already logged in */
+        .already-in {
+            max-width: 480px; margin: 0 auto; background: white; border-radius: 20px;
+            padding: 3rem; text-align: center;
+            box-shadow: 0 8px 30px rgba(0,102,0,0.1);
+            border: 2px solid rgba(37,211,102,0.25);
+        }
+        .already-in i.big { font-size: 3.5rem; color: #25D366; display: block; margin-bottom: 1rem; }
+        .already-in h3 { color: #006600; font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem; }
+        .already-in p  { color: #666; margin-bottom: 2rem; font-size: 0.95rem; }
+        .ai-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        .flag-stripe { height: 5px; background: var(--gradient-ghana); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+    <div class="flag-stripe"></div>
+
+    <div class="login-page">
+
+        <!-- STEP 1: Choose type -->
+        <div id="step-choose">
+            <div class="login-brand">
+                <div class="login-brand-icon"><i class="fas fa-hands-helping"></i></div>
+                <div class="login-brand-name">GhanaArtisan</div>
+            </div>
+            <h1 class="login-heading">Who are you <span>logging in</span> as?</h1>
+            <p class="login-sub">Choose your account type. Each portal is tailored just for you.</p>
+
+            <div class="choice-grid">
+                <!-- Artisan -->
+                <a href="login-artisan.html" class="choice-card artisan" style="text-decoration:none;display:block;">
+                    <span class="card-badge"><i class="fas fa-tools"></i> Artisan</span>
+                    <div class="card-icon"><i class="fas fa-hard-hat"></i></div>
+                    <h2>I'm an Artisan</h2>
+                    <p>I offer skilled services and want to find clients, manage jobs, and receive payments.</p>
+                    <ul class="perks">
+                        <li><i class="fas fa-check-circle"></i> Create your verified artisan profile</li>
+                        <li><i class="fas fa-check-circle"></i> Receive and manage job requests</li>
+                        <li><i class="fas fa-check-circle"></i> Get paid securely via Paystack</li>
+                        <li><i class="fas fa-check-circle"></i> Upload credentials & certificates</li>
+                    </ul>
+                    <button class="card-cta"><i class="fas fa-sign-in-alt"></i> Artisan Login / Register</button>
+                </a>
+
+                <!-- Customer -->
+                <a href="login-customer.html" class="choice-card customer" style="text-decoration:none;display:block;">
+                    <span class="card-badge"><i class="fas fa-user-tie"></i> Customer</span>
+                    <div class="card-icon"><i class="fas fa-user-tie"></i></div>
+                    <h2>I Want to Hire</h2>
+                    <p>I need to find and hire a skilled artisan for a job anywhere across Ghana.</p>
+                    <ul class="perks">
+                        <li><i class="fas fa-check-circle"></i> Browse verified artisans near you</li>
+                        <li><i class="fas fa-check-circle"></i> Filter by region, skill & category</li>
+                        <li><i class="fas fa-check-circle"></i> Send job requests directly</li>
+                        <li><i class="fas fa-check-circle"></i> Pay securely after job is done</li>
+                    </ul>
+                    <button class="card-cta"><i class="fas fa-sign-in-alt"></i> Customer Login / Register</button>
+                </a>
+            </div>
+
+            <p class="admin-link">Are you an Admin? <a href="admin.html">Go to Admin Panel</a></p>
+        </div>
+
+        <!-- STEP 2: Form -->
+        <div id="step-form">
+            <div class="form-header">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <div class="form-header-title" id="form-header-title">Artisan Portal</div>
+            </div>
+
+            <!-- Tab switcher -->
+            <div class="tab-switcher">
+                <button class="ts-tab active" id="tab-login" onclick="switchTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="ts-tab" id="tab-register" onclick="switchTab('register')">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </div>
+
+            <!-- LOGIN panel -->
+            <div id="panel-login">
+                <div class="form-card" id="login-card">
+                    <div class="form-sub-title" id="login-title">Artisan Login</div>
+                    <p class="form-desc" id="login-desc">Welcome back! Login to manage your jobs and earnings.</p>
+                    <div class="form-stack">
+                        <div>
+                            <label class="flabel">Email or Phone Number</label>
+                            <input type="text" id="l-email" placeholder="Enter your email or phone">
+                        </div>
+                        <div>
+                            <label class="flabel">Password</label>
+                            <div class="pw-wrap">
+                                <input type="password" id="l-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter') doLogin()">
+                                <button class="pw-toggle" type="button" onclick="togglePw('l-password',this)"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <button class="submit-btn green" id="login-btn" onclick="doLogin()">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <p class="switch-hint">No account? <a class="green" onclick="switchTab('register')">Register here</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REGISTER panel (Artisan) -->
+            <div id="panel-register-artisan" style="display:none;">
+                <div class="form-card">
+                    <div class="form-sub-title">Artisan Registration</div>
+                    <p class="form-desc">Create your verified profile. You'll appear on the platform after admin approval.</p>
+                    <div class="form-stack">
+                        <div class="fsb">
+                            <h4><i class="fas fa-user"></i> Personal Information</h4>
+                            <div class="form-stack">
+                                <div><label class="flabel">Full Name (as on ID)</label><input type="text" id="ra-name" placeholder="Full Name"></div>
+                                <div class="fg2">
+                                    <div><label class="flabel">Email Address</label><input type="email" id="ra-email" placeholder="Email"></div>
+                                    <div><label class="flabel">Phone Number</label><input type="tel" id="ra-phone" placeholder="024XXXXXXX"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fsb gold">
+                            <h4><i class="fas fa-id-card"></i> Ghana ID Card</h4>
+                            <div class="form-stack">
+                                <div>
+                                    <label class="flabel">ID Card Type</label>
+                                    <select id="ra-id-type" onchange="loginIdTypeChange()">
+                                        <option value="">Select ID Type</option>
+                                        <option value="ecowascard">ECOWAS Card</option>
+                                        <option value="voters_id">Voter's ID Card</option>
+                                        <option value="drivers_license">Driver's License</option>
+                                        <option value="passport">Ghana Passport</option>
+                                        <option value="nhis">NHIS Card</option>
+                                        <option value="ssnit">SSNIT Card</option>
+                                        <option value="birth_certificate">Birth Certificate</option>
+                                    </select>
+                                </div>
+                                <div class="fg2">
+                                    <div>
+                                        <label class="flabel">ID Number</label>
+                                        <input type="text" id="ra-id-number" placeholder="ID Number" oninput="loginFormatId(this)" maxlength="18">
+                                        <small id="ra-id-hint" style="color:#006600;font-size:0.75rem;margin-top:3px;display:none;font-weight:600;"></small>
+                                    </div>
+                                    <div><label class="flabel">Date of Birth</label><input type="date" id="ra-dob"></div>
+                                </div>
+                                <div>
+                                    <label class="flabel">Upload ID Card (Both Sides)</label>
+                                    <div class="fg2">
+                                        <div>
+                                            <label for="ra-id-front" class="upload-box">
+                                                <i class="fas fa-camera"></i><span>Front Side</span><small>Click to upload</small>
+                                            </label>
+                                            <input type="file" id="ra-id-front" accept="image/*" style="display:none;" onchange="previewImg(this,'ra-prev-front')">
+                                            <img id="ra-prev-front" class="id-prev" alt="Front">
+                                        </div>
+                                        <div>
+                                            <label for="ra-id-back" class="upload-box" style="border-color:rgba(255,153,0,0.4);">
+                                                <i class="fas fa-camera" style="color:#FF9900;"></i>
+                                                <span style="color:#cc7700;">Back Side</span><small>Click to upload</small>
+                                            </label>
+                                            <input type="file" id="ra-id-back" accept="image/*" style="display:none;" onchange="previewImg(this,'ra-prev-back')">
+                                            <img id="ra-prev-back" class="id-prev" alt="Back">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fsb red">
+                            <h4><i class="fas fa-map-marker-alt"></i> Location</h4>
+                            <div class="form-stack">
+                                <div class="fg2">
+                                    <div><label class="flabel">Region</label><select id="ra-region" onchange="raRegionChange()"></select></div>
+                                    <div><label class="flabel">District</label><select id="ra-district"></select></div>
+                                </div>
+                                <div><label class="flabel">Residential Address</label><textarea id="ra-address" rows="2" placeholder="House No., Street, Community"></textarea></div>
+                            </div>
+                        </div>
+                        <div class="fsb">
+                            <h4><i class="fas fa-briefcase"></i> Professional Details</h4>
+                            <div class="form-stack">
+                                <div class="fg2">
+                                    <div><label class="flabel">Service Category</label><select id="ra-category"></select></div>
+                                    <div><label class="flabel">Years of Experience</label><input type="number" id="ra-experience" min="0" max="60" placeholder="e.g. 5"></div>
+                                </div>
+                                <div><label class="flabel">Your Skills (comma-separated)</label><textarea id="ra-skills" rows="2" placeholder="e.g. Pipe Installation, Leak Repair"></textarea></div>
+                                <div><label class="flabel">Hourly / Service Rate</label><input type="text" id="ra-price" placeholder="e.g. ₵150/hour"></div>
+                                <div><label class="flabel">Brief Bio</label><textarea id="ra-bio" rows="2" placeholder="Tell clients about your experience..."></textarea></div>
+                            </div>
+                        </div>
+                        <div class="fsb gold">
+                            <h4><i class="fas fa-lock"></i> Security</h4>
+                            <div class="fg2">
+                                <div><label class="flabel">Password (min 8 chars)</label>
+                                    <div class="pw-wrap"><input type="password" id="ra-password" placeholder="Create password"><button class="pw-toggle" type="button" onclick="togglePw('ra-password',this)"><i class="fas fa-eye"></i></button></div>
+                                </div>
+                                <div><label class="flabel">Confirm Password</label>
+                                    <div class="pw-wrap"><input type="password" id="ra-confirm" placeholder="Repeat password"><button class="pw-toggle" type="button" onclick="togglePw('ra-confirm',this)"><i class="fas fa-eye"></i></button></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="terms-row">
+                            <input type="checkbox" id="ra-terms">
+                            <label for="ra-terms">I confirm all information is accurate and I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+                        </div>
+                        <button class="submit-btn green" onclick="doRegisterArtisan()"><i class="fas fa-user-plus"></i> Create Artisan Account</button>
+                        <p class="switch-hint">Already registered? <a class="green" onclick="switchTab('login')">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REGISTER panel (Customer) -->
+            <div id="panel-register-customer" style="display:none;">
+                <div class="form-card orange">
+                    <div class="form-sub-title orange">Customer Registration</div>
+                    <p class="form-desc">Free account. Takes less than 2 minutes.</p>
+                    <div class="form-stack">
+                        <div class="fsb" style="border-color:rgba(255,153,0,0.18);background:rgba(255,153,0,0.04);">
+                            <h4 style="color:#cc7700;"><i class="fas fa-user"></i> Your Information</h4>
+                            <div class="form-stack">
+                                <div><label class="flabel">Full Name</label><input type="text" id="rc-name" placeholder="Your full name"></div>
+                                <div class="fg2">
+                                    <div><label class="flabel">Email Address</label><input type="email" id="rc-email" placeholder="Email"></div>
+                                    <div><label class="flabel">Phone Number</label><input type="tel" id="rc-phone" placeholder="024XXXXXXX"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fsb" style="border-color:rgba(0,102,0,0.12);background:rgba(0,102,0,0.04);">
+                            <h4><i class="fas fa-map-marker-alt"></i> Your Location <span style="font-weight:400;color:#888;font-size:0.78rem;"> — helps find artisans near you</span></h4>
+                            <div class="fg2">
+                                <div><label class="flabel">Region</label><select id="rc-region" onchange="rcRegionChange()"></select></div>
+                                <div><label class="flabel">District</label><select id="rc-district"></select></div>
+                            </div>
+                        </div>
+                        <div class="fsb" style="border-color:rgba(255,153,0,0.18);background:rgba(255,153,0,0.04);">
+                            <h4 style="color:#cc7700;"><i class="fas fa-lock"></i> Security</h4>
+                            <div class="fg2">
+                                <div><label class="flabel">Password (min 8 chars)</label>
+                                    <div class="pw-wrap"><input type="password" id="rc-password" placeholder="Create password"><button class="pw-toggle" type="button" onclick="togglePw('rc-password',this)"><i class="fas fa-eye"></i></button></div>
+                                </div>
+                                <div><label class="flabel">Confirm Password</label>
+                                    <div class="pw-wrap"><input type="password" id="rc-confirm" placeholder="Repeat password"><button class="pw-toggle" type="button" onclick="togglePw('rc-confirm',this)"><i class="fas fa-eye"></i></button></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="terms-row">
+                            <input type="checkbox" id="rc-terms">
+                            <label for="rc-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+                        </div>
+                        <button class="submit-btn orange" onclick="doRegisterCustomer()"><i class="fas fa-user-plus"></i> Create Customer Account</button>
+                        <p class="switch-hint">Already registered? <a class="orange" onclick="switchTab('login')">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('login');
+
+        // Populate dropdowns once
+        loadRegionsIntoSelect(document.getElementById('ra-region'));
+        loadCategoriesIntoSelect(document.getElementById('ra-category'));
+        loadRegionsIntoSelect(document.getElementById('rc-region'));
+
+        let currentType = 'artisan'; // 'artisan' | 'customer'
+
+        // Check URL params — ?type=artisan&tab=register
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramType = urlParams.get('type') || urlParams.get('role') || '';
+        const paramTab  = urlParams.get('tab')  || 'login';
+
+        // Check already logged in
+        const existing = loadUser();
+        if (existing) {
+            document.getElementById('step-choose').innerHTML = `
+                <div class="already-in">
+                    <i class="fas fa-check-circle big"></i>
+                    <h3>Welcome back, ${existing.name}!</h3>
+                    <p>You are already logged in as a <strong>${existing.role === 'artisan' ? 'Artisan' : 'Customer'}</strong>.</p>
+                    <div class="ai-btns">
+                        ${existing.role === 'client'
+                            ? `<a href="customer-portal.html" class="ghana-btn"><i class="fas fa-th-large"></i> My Portal</a>`
+                            : `<a href="index.html" class="ghana-btn"><i class="fas fa-home"></i> Go Home</a>`}
+                        <button onclick="doLogout()" class="ghana-btn red"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </div>
+                </div>`;
+        } else if (paramType === 'artisan' || paramType === 'register') {
+            showForm('artisan', paramTab);
+        } else if (paramType === 'customer' || paramType === 'client') {
+            showForm('customer', paramTab);
+        }
+
+        function showForm(type, tab) {
+            currentType = type;
+            document.getElementById('step-choose').style.display = 'none';
+            document.getElementById('step-form').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Set header colour & title
+            const title = document.getElementById('form-header-title');
+            title.textContent = type === 'artisan' ? 'Artisan Portal' : 'Customer Portal';
+            title.className = 'form-header-title' + (type === 'customer' ? ' orange' : '');
+
+            // Style tabs
+            document.getElementById('tab-login').className    = 'ts-tab';
+            document.getElementById('tab-register').className = 'ts-tab';
+
+            switchTab(tab || 'login');
+        }
+
+        function goBack() {
+            document.getElementById('step-form').style.display = 'none';
+            document.getElementById('step-choose').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchTab(tab) {
+            const isArtisan = currentType === 'artisan';
+            const colorCls  = isArtisan ? 'green' : 'orange';
+
+            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+            // Apply colour class to active tab
+            document.getElementById('tab-login').className    = 'ts-tab'    + (tab === 'login'    ? ` active ${colorCls}` : '');
+            document.getElementById('tab-register').className = 'ts-tab'    + (tab === 'register' ? ` active ${colorCls}` : '');
+
+            document.getElementById('panel-login').style.display               = tab === 'login'    ? 'block' : 'none';
+            document.getElementById('panel-register-artisan').style.display    = (tab === 'register' && isArtisan)  ? 'block' : 'none';
+            document.getElementById('panel-register-customer').style.display   = (tab === 'register' && !isArtisan) ? 'block' : 'none';
+
+            // Update login panel copy
+            if (tab === 'login') {
+                document.getElementById('login-title').textContent = isArtisan ? 'Artisan Login' : 'Customer Login';
+                document.getElementById('login-title').className   = 'form-sub-title' + (!isArtisan ? ' orange' : '');
+                document.getElementById('login-desc').textContent  = isArtisan
+                    ? 'Welcome back! Login to manage your jobs and earnings.'
+                    : 'Welcome back! Login to find and hire artisans across Ghana.';
+                document.getElementById('login-card').className    = 'form-card' + (!isArtisan ? ' orange' : '');
+                document.getElementById('login-btn').className     = 'submit-btn ' + colorCls;
+                document.getElementById('login-btn').innerHTML     = `<i class="fas fa-sign-in-alt"></i> Login as ${isArtisan ? 'Artisan' : 'Customer'}`;
+            }
+        }
+
+        // ---- Region helpers ----
+        function raRegionChange() { loadDistrictsIntoSelect(document.getElementById('ra-district'), document.getElementById('ra-region').value); }
+        function rcRegionChange() { loadDistrictsIntoSelect(document.getElementById('rc-district'), document.getElementById('rc-region').value); }
+
+        function togglePw(id, btn) {
+            const inp = document.getElementById(id);
+            const show = inp.type === 'password';
+            inp.type = show ? 'text' : 'password';
+            btn.innerHTML = `<i class="fas fa-eye${show ? '-slash' : ''}"></i>`;
+        }
+
+        function previewImg(input, previewId) {
+            const prev = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // ---- ECOWAS Card auto-formatter for login.html ----
+        function loginIdTypeChange() {
+            const type  = document.getElementById('ra-id-type').value;
+            const input = document.getElementById('ra-id-number');
+            const hint  = document.getElementById('ra-id-hint');
+            input.value = '';
+            if (type === 'ecowascard') {
+                input.placeholder = 'GHA-XXXXXXXXX-D';
+                input.maxLength   = 17;
+                hint.textContent  = 'Format: GHA-721233479-8 (auto-formatted as you type)';
+                hint.style.display = 'block';
+            } else if (type === 'voters_id') {
+                input.placeholder = 'e.g. 0123456789';
+                hint.textContent  = '10-digit Voter ID number';
+                hint.style.display = 'block';
+                input.maxLength = 18;
+            } else if (type === 'passport') {
+                input.placeholder = 'e.g. G1234567';
+                hint.textContent  = 'Format: G followed by 7 digits';
+                hint.style.display = 'block';
+                input.maxLength = 18;
+            } else {
+                input.placeholder = 'ID Number';
+                hint.style.display = 'none';
+                input.maxLength = 18;
+            }
+        }
+
+        function loginFormatId(input) {
+            if (document.getElementById('ra-id-type').value !== 'ecowascard') return;
+            const digits = input.value.replace(/[^0-9]/g, '');
+            let formatted = 'GHA-';
+            if (digits.length <= 9) {
+                formatted += digits;
+            } else {
+                formatted += digits.substring(0, 9) + '-' + digits.substring(9, 10);
+            }
+            input.value = formatted;
+        }
+
+        function validateEcowasCard(val) { return /^GHA-\d{9}-\d$/.test(val); }
+
+        // ---- LOGIN ----
+        function doLogin() {
+            const email    = document.getElementById('l-email').value.trim();
+            const password = document.getElementById('l-password').value;
+            if (!email || !password) { showNotification('Please enter your email/phone and password', 'error'); return; }
+
+            if (currentType === 'artisan') {
+                // Check memory then localStorage
+                let a = sampleArtisans.find(x => (x.email === email || x.phone === email) && x.password === password);
+                if (!a) { const s = loadArtisanProfile(); if (s && (s.email===email||s.phone===email) && s.password===password) a = s; }
+                if (a) {
+                    saveArtisanProfile(a);
+                    saveUser({ email: a.email, name: a.name, phone: a.phone, role: 'artisan' });
+                    showNotification(`Welcome back, ${a.name}!`, 'success');
+                    setTimeout(() => { window.location.href = 'artisan-portal.html'; }, 900);
+                    return;
+                }
+                const c = sampleClients.find(x => (x.email === email || x.phone === email) && x.password === password);
+                if (c) { showNotification('This is a customer account. Switch to Customer Login.', 'error'); currentType = 'customer'; switchTab('login'); return; }
+            } else {
+                // Check memory then localStorage
+                let c = sampleClients.find(x => (x.email === email || x.phone === email) && x.password === password);
+                if (!c) { const s = loadClientProfile(); if (s && (s.email===email||s.phone===email) && s.password===password) c = s; }
+                if (c) {
+                    saveClientProfile(c);
+                    saveUser({ email: c.email, name: c.name, phone: c.phone, role: 'client' });
+                    showNotification(`Welcome back, ${c.name}!`, 'success');
+                    setTimeout(() => { window.location.href = 'customer-portal.html'; }, 900);
+                    return;
+                }
+                const a = sampleArtisans.find(x => (x.email === email || x.phone === email) && x.password === password);
+                if (a) { showNotification('This is an artisan account. Switch to Artisan Login.', 'error'); currentType = 'artisan'; switchTab('login'); return; }
+            }
+            showNotification('Invalid email/phone or password', 'error');
+        }
+
+        // ---- REGISTER ARTISAN ----
+        function doRegisterArtisan() {
+            const g = id => document.getElementById(id).value;
+            const name = g('ra-name').trim(), email = g('ra-email').trim(), phone = g('ra-phone').trim();
+            const idType = g('ra-id-type'), idNumber = g('ra-id-number').trim();
+            const region = g('ra-region'), district = g('ra-district');
+            const category = g('ra-category');
+            const password = g('ra-password'), confirm = g('ra-confirm');
+
+            if (!name)                { showNotification('Please enter your full name', 'error'); return; }
+            if (!email)               { showNotification('Please enter your email', 'error'); return; }
+            if (!phone)               { showNotification('Please enter your phone number', 'error'); return; }
+            if (!idType)              { showNotification('Please select your ID Card Type', 'error'); return; }
+            if (!idNumber)            { showNotification('Please enter your ID Number', 'error'); return; }
+            if (idType === 'ecowascard' && !validateEcowasCard(idNumber)) {
+                showNotification('ECOWAS Card must be in format: GHA-721233479-8', 'error'); return;
+            }
+            if (!region || !district) { showNotification('Please select your Region and District', 'error'); return; }
+            if (!category)            { showNotification('Please select your Service Category', 'error'); return; }
+            if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (password !== confirm)  { showNotification('Passwords do not match!', 'error'); return; }
+            if (!document.getElementById('ra-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
+            if (sampleArtisans.find(a => a.email === email)) { showNotification('An account with this email already exists', 'error'); return; }
+
+            const newArtisan = {
+                id: Date.now(), name, email, phone, password, category,
+                skills: g('ra-skills').split(',').map(s => s.trim()).filter(Boolean),
+                region, district, address: g('ra-address'),
+                experience: parseInt(g('ra-experience')) || 0,
+                price: g('ra-price') || '₵100/hour',
+                bio: g('ra-bio') || `Artisan from ${district}, ${region}.`,
+                rating: 0, completedJobs: 0, verified: false,
+                idType, idNumber, credentials: [], jobRequests: [], payments: [], workUpdates: [],
+                profilePhoto: '', registeredAt: new Date().toISOString()
+            };
+            sampleArtisans.push(newArtisan);
+            saveArtisanProfile(newArtisan);
+            saveUser({ email, name, phone, role: 'artisan' });
+            showNotification(`Welcome, ${name}! Taking you to your dashboard...`, 'success');
+            setTimeout(() => { window.location.href = 'artisan-portal.html'; }, 1200);
+        }
+
+        // ---- REGISTER CUSTOMER ----
+        function doRegisterCustomer() {
+            const g = id => document.getElementById(id).value;
+            const name = g('rc-name').trim(), email = g('rc-email').trim(), phone = g('rc-phone').trim();
+            const password = g('rc-password'), confirm = g('rc-confirm');
+
+            if (!name)    { showNotification('Please enter your full name', 'error'); return; }
+            if (!email)   { showNotification('Please enter your email', 'error'); return; }
+            if (!phone)   { showNotification('Please enter your phone number', 'error'); return; }
+            if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (password !== confirm) { showNotification('Passwords do not match!', 'error'); return; }
+            if (!document.getElementById('rc-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
+
+            const existSaved = loadClientProfile();
+            if (sampleClients.find(c => c.email === email) || (existSaved && existSaved.email === email)) {
+                showNotification('An account with this email already exists', 'error'); return;
+            }
+
+            const newClient = {
+                id: Date.now(), name, email, phone, password, role: 'client',
+                region: g('rc-region'), district: g('rc-district'), jobsRequested: 0, paymentsMade: []
+            };
+            sampleClients.push(newClient);
+            saveClientProfile(newClient);
+            saveUser({ email, name, phone, role: 'client' });
+            showNotification('Account created! Welcome to GhanaArtisan.', 'success');
+            setTimeout(() => { window.location.href = 'customer-portal.html'; }, 1000);
+        }
+
+        function doLogout() {
+            clearUser();
+            showNotification('Logged out', 'info');
+            setTimeout(() => { window.location.reload(); }, 500);
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') goBack(); });
+    </script>
+</body>
+</html>

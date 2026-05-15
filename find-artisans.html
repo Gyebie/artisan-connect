@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Artisans - GhanaArtisan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        /* ---- Page Hero ---- */
+        .page-hero {
+            background: var(--gradient-primary);
+            padding: 7rem 5% 4.5rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        .page-hero::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 50px; background: white;
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .page-hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            margin-bottom: 0.8rem;
+        }
+        .page-hero p { opacity: .88; font-size: 1.05rem; max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+        .search-section {
+            padding: 3rem 5% 2rem;
+            background: white;
+            position: relative;
+        }
+        .search-box {
+            background: var(--light); padding: 2rem; border-radius: 15px;
+            box-shadow: var(--magic-shadow); max-width: 1000px; margin: 1.5rem auto 0;
+            border: 2px solid rgba(0,102,0,0.1);
+        }
+        .search-form {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem; margin-bottom: 1.5rem;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-weight: 600; color: #006600; font-size: 0.9rem; display:flex;align-items:center;gap:5px; }
+
+        .results-section { padding: 2rem 5% 4rem; max-width: 1000px; margin: 0 auto; }
+
+        /* Artisan detail modal body */
+        .portal-header {
+            background: var(--gradient-primary); padding: 2rem; border-radius: 12px 12px 0 0;
+        }
+        .credential-card {
+            background: var(--light); padding: 1.5rem; border-radius: 10px;
+            margin-bottom: 1rem; border: 1px solid rgba(0,102,0,0.1);
+        }
+        .artisan-location { display:flex; align-items:center; gap:6px; color:#666; font-size:0.9rem; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+
+    <div class="page-wrapper">
+        <!-- Page Hero -->
+        <div class="page-hero">
+            <h1><i class="fas fa-search"></i> Find Artisans</h1>
+            <p>Discover skilled, verified artisans across all 16 regions of Ghana — ready to help you today.</p>
+        </div>
+
+        <section class="search-section">
+            <h2 class="section-title" style="font-size:1.6rem;">Search by Region, Category or Skills</h2>
+            <p class="section-sub">Showing verified artisans near you</p>
+
+            <div class="search-box">
+                <div class="search-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-map"></i> Region</label>
+                        <select id="search-region" onchange="onRegionChange()">
+                            <option value="">All Regions</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> District</label>
+                        <select id="search-district"><option value="">All Districts</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tools"></i> Category</label>
+                        <select id="search-category"><option value="">All Categories</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-wrench"></i> Skills / Name</label>
+                        <input type="text" id="search-skills" placeholder="e.g. plumbing, welding...">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <button onclick="doSearch()" class="ghana-btn" style="width:100%;background:#006600;padding:14px;">
+                            <i class="fas fa-search"></i> Search Artisans
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="results-section" id="results-section">
+            <!-- Results injected here -->
+        </div>
+    </div>
+
+    <!-- Artisan Detail Modal -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content large">
+            <button class="close-modal" onclick="closeDetail()">&times;</button>
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('find-artisans');
+
+        // Populate selects
+        loadRegionsIntoSelect(document.getElementById('search-region'));
+        loadCategoriesIntoSelect(document.getElementById('search-category'));
+
+        // Pre-fill region from URL param (coming from home page region badge)
+        const urlParams = new URLSearchParams(window.location.search);
+        const preRegion = urlParams.get('region');
+        if (preRegion) {
+            document.getElementById('search-region').value = preRegion;
+            onRegionChange();
+        }
+
+        function onRegionChange() {
+            const val = document.getElementById('search-region').value;
+            const districtSel = document.getElementById('search-district');
+            districtSel.innerHTML = '<option value="">All Districts</option>';
+            if (val) loadDistrictsIntoSelect(districtSel, val);
+        }
+
+        function doSearch() {
+            const region   = document.getElementById('search-region').value;
+            const district = document.getElementById('search-district').value;
+            const category = document.getElementById('search-category').value;
+            const skills   = document.getElementById('search-skills').value.toLowerCase().trim();
+
+            let results = sampleArtisans.filter(a => a.verified);
+            if (region)   results = results.filter(a => a.region === region);
+            if (district) results = results.filter(a => a.district === district);
+            if (category) results = results.filter(a => a.category === category);
+            if (skills)   results = results.filter(a =>
+                a.skills.some(s => s.toLowerCase().includes(skills)) ||
+                a.bio.toLowerCase().includes(skills) ||
+                a.name.toLowerCase().includes(skills)
+            );
+            renderResults(results);
+        }
+
+        function renderResults(artisans) {
+            const container = document.getElementById('results-section');
+            if (artisans.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center;padding:4rem;color:#666;">
+                        <i class="fas fa-search" style="font-size:3rem;color:#ddd;margin-bottom:1rem;display:block;"></i>
+                        <h3 style="color:#006600;margin-bottom:0.5rem;">No artisans found</h3>
+                        <p>Try adjusting your search criteria</p>
+                    </div>`;
+                return;
+            }
+            container.innerHTML = `<p style="color:#666;margin-bottom:1.5rem;">${artisans.length} artisan${artisans.length!==1?'s':''} found</p>`;
+            artisans.forEach(a => {
+                const cat = categories.find(c => c.id === a.category);
+                const card = document.createElement('div');
+                card.className = 'artisan-card fade-in';
+                card.innerHTML = `
+                    <div class="artisan-card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;gap:1rem;flex-wrap:wrap;">
+                            <div>
+                                <h3 style="color:#006600;margin-bottom:0.4rem;">${a.name}</h3>
+                                <div class="artisan-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${a.district}, ${a.region}</span>
+                                </div>
+                            </div>
+                            <span class="status-verified"><i class="fas fa-check"></i> Verified</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+                            <span style="background:rgba(0,102,0,0.1);color:#006600;padding:5px 12px;border-radius:15px;display:flex;align-items:center;gap:5px;font-size:0.9rem;">
+                                <i class="fas ${cat?.icon||'fa-tools'}"></i> ${cat?.name||a.category}
+                            </span>
+                            <span style="color:#666;font-size:0.9rem;">
+                                <i class="fas fa-star" style="color:#FF9900;"></i> ${a.rating} (${a.completedJobs} jobs)
+                            </span>
+                            <span style="color:#666;font-size:0.9rem;">
+                                <i class="fas fa-clock"></i> ${a.experience} yrs exp
+                            </span>
+                        </div>
+                        <p style="color:#666;margin-bottom:1rem;line-height:1.6;">${a.bio}</p>
+                        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.2rem;">
+                            ${a.skills.slice(0,3).map(s=>`<span style="background:rgba(255,153,0,0.1);color:#996600;padding:4px 10px;border-radius:15px;font-size:0.85rem;">${s}</span>`).join('')}
+                            ${a.skills.length>3?`<span style="background:rgba(0,102,0,0.1);color:#006600;padding:4px 10px;border-radius:15px;font-size:0.85rem;">+${a.skills.length-3} more</span>`:''}
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                            <span style="font-weight:700;color:#006600;font-size:1.15rem;">${a.price}</span>
+                            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                                <button onclick="viewDetail(${a.id})" class="ghana-btn" style="padding:8px 16px;background:#006600;">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <button onclick="requestService(${a.id})" class="ghana-btn secondary" style="padding:8px 16px;">
+                                    <i class="fas fa-handshake"></i> Request Service
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function viewDetail(artisanId) {
+            const a = sampleArtisans.find(x => x.id === artisanId);
+            if (!a) return;
+            const cat = categories.find(c => c.id === a.category);
+            document.getElementById('detail-content').innerHTML = `
+                <div class="portal-header">
+                    <h2 style="color:white;margin-bottom:0.5rem;">${a.name}</h2>
+                    <div style="display:flex;align-items:center;gap:1rem;color:white;flex-wrap:wrap;font-size:0.9rem;">
+                        <span><i class="fas fa-map-marker-alt"></i> ${a.district}, ${a.region}</span>
+                        <span><i class="fas ${cat?.icon||'fa-tools'}"></i> ${cat?.name||a.category}</span>
+                        <span class="status-verified"><i class="fas fa-check"></i> Verified</span>
+                    </div>
+                </div>
+                <div style="padding:1.5rem;">
+                    <div class="credential-card">
+                        <h4 style="color:#006600;margin-bottom:1rem;"><i class="fas fa-user"></i> Personal Info</h4>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;">
+                            <div><div style="color:#888;font-size:0.85rem;">Email</div><div style="color:#006600;font-weight:500;">${a.email}</div></div>
+                            <div><div style="color:#888;font-size:0.85rem;">Phone</div><div style="color:#006600;font-weight:500;">${a.phone}</div></div>
+                            <div><div style="color:#888;font-size:0.85rem;">Address</div><div style="color:#006600;font-weight:500;">${a.address}</div></div>
+                            <div><div style="color:#888;font-size:0.85rem;">Experience</div><div style="color:#006600;font-weight:500;">${a.experience} years</div></div>
+                        </div>
+                    </div>
+                    <div class="credential-card">
+                        <h4 style="color:#FF9900;margin-bottom:1rem;"><i class="fas fa-id-card"></i> ID Verification</h4>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;">
+                            <div><div style="color:#888;font-size:0.85rem;">ID Type</div><div style="color:#006600;font-weight:500;">${a.idType.replace(/\_/g,' ').toUpperCase()}</div></div>
+                            <div><div style="color:#888;font-size:0.85rem;">ID Number</div><div style="color:#006600;font-weight:500;">${a.idNumber}</div></div>
+                        </div>
+                    </div>
+                    <div class="credential-card">
+                        <h4 style="color:#006600;margin-bottom:1rem;"><i class="fas fa-wrench"></i> Skills &amp; Bio</h4>
+                        <p style="color:#444;line-height:1.7;margin-bottom:1rem;">${a.bio}</p>
+                        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                            ${a.skills.map(s=>`<span style="background:rgba(0,102,0,0.1);color:#006600;padding:5px 12px;border-radius:15px;font-size:0.85rem;">${s}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="credential-card" style="text-align:center;">
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+                            <div><div style="font-size:1.8rem;font-weight:700;color:#006600;">${a.rating}</div><div style="color:#888;font-size:0.85rem;">Rating</div></div>
+                            <div><div style="font-size:1.8rem;font-weight:700;color:#006600;">${a.completedJobs}</div><div style="color:#888;font-size:0.85rem;">Jobs Done</div></div>
+                            <div><div style="font-size:1.4rem;font-weight:700;color:#006600;">${a.price}</div><div style="color:#888;font-size:0.85rem;">Rate</div></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;">
+                        <button onclick="requestService(${a.id})" class="ghana-btn" style="background:#FF9900;">
+                            <i class="fas fa-handshake"></i> Request Service
+                        </button>
+                        <button onclick="contactArtisan(${a.id})" class="ghana-btn">
+                            <i class="fas fa-phone"></i> Contact Now
+                        </button>
+                    </div>
+                </div>`;
+            document.getElementById('detail-modal').classList.add('active');
+        }
+
+        function closeDetail() { document.getElementById('detail-modal').classList.remove('active'); }
+
+        function requestService(artisanId) {
+            const user = loadUser();
+            if (!user) {
+                showNotification('Please login or register first', 'error');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+                return;
+            }
+            if (user.role !== 'client') {
+                showNotification('Only clients can request services', 'error');
+                return;
+            }
+            const a = sampleArtisans.find(x => x.id === artisanId);
+            if (!a) return;
+            const desc = prompt(`Describe the service you need from ${a.name}:`);
+            if (desc && desc.length > 5) {
+                a.jobRequests.push({
+                    id: a.jobRequests.length + 1,
+                    clientName: user.name, clientPhone: user.phone || '0240000000',
+                    clientEmail: user.email, description: desc,
+                    date: new Date().toISOString().split('T')[0], status: 'pending'
+                });
+                showNotification(`Service request sent to ${a.name}!`, 'success');
+            }
+        }
+
+        function contactArtisan(artisanId) {
+            const a = sampleArtisans.find(x => x.id === artisanId);
+            if (a) alert(`Contact:\n\nName: ${a.name}\nPhone: ${a.phone}\nEmail: ${a.email}`);
+        }
+
+        // Close modal on outside click
+        document.getElementById('detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeDetail();
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+        // Auto-search if region param provided
+        if (preRegion) doSearch();
+        else renderResults(sampleArtisans.filter(a => a.verified));
+    </script>
+</body>
+</html>

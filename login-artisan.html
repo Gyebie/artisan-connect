@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Portal - GhanaArtisan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        /* ===== TWO-COLUMN LAYOUT ===== */
+        .page-bg {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+            padding-top: 65px;
+        }
+        @media(max-width: 860px) { .page-bg { grid-template-columns: 1fr; } }
+
+        /* ===== LEFT PANEL ===== */
+        .left-panel {
+            background: linear-gradient(160deg, #002800 0%, #006600 55%, #009900 100%);
+            padding: 3rem;
+            display: flex; flex-direction: column; justify-content: center;
+            position: sticky; top: 65px;
+            height: calc(100vh - 65px);
+            overflow: hidden;
+        }
+        .left-panel::before {
+            content:''; position:absolute; top:-60px; right:-60px;
+            width:260px; height:260px; border-radius:50%;
+            background:rgba(255,255,255,0.05); pointer-events:none;
+        }
+        .left-panel::after {
+            content:''; position:absolute; bottom:-50px; left:-50px;
+            width:200px; height:200px; border-radius:50%;
+            background:rgba(255,153,0,0.07); pointer-events:none;
+        }
+        @media(max-width:860px){ .left-panel { display:none; } }
+
+        .left-back {
+            display:inline-flex; align-items:center; gap:8px;
+            color:rgba(255,255,255,0.7); text-decoration:none; font-size:0.9rem;
+            margin-bottom:2.5rem; transition:color 0.2s; position:relative; z-index:1;
+        }
+        .left-back:hover { color:white; }
+
+        .left-icon {
+            width:80px; height:80px; background:rgba(255,255,255,0.15);
+            border-radius:20px; display:flex; align-items:center; justify-content:center;
+            font-size:2.2rem; color:white; margin-bottom:1.5rem;
+            box-shadow:0 8px 24px rgba(0,0,0,0.2); position:relative; z-index:1;
+        }
+        .left-panel h2 {
+            font-family:'Poppins',sans-serif; color:white;
+            font-size:2rem; margin-bottom:0.8rem; line-height:1.25; position:relative; z-index:1;
+        }
+        .left-panel h2 span { color:#FFD700; }
+        .left-panel > p { color:rgba(255,255,255,0.8); font-size:0.92rem; line-height:1.7; margin-bottom:2rem; position:relative; z-index:1; }
+
+        .left-perks { list-style:none; position:relative; z-index:1; }
+        .left-perks li {
+            display:flex; align-items:center; gap:12px;
+            color:rgba(255,255,255,0.9); font-size:0.88rem; padding:8px 0;
+            border-bottom:1px solid rgba(255,255,255,0.1);
+        }
+        .left-perks li:last-child { border-bottom:none; }
+        .perk-icon {
+            width:30px; height:30px; background:rgba(255,255,255,0.15);
+            border-radius:7px; display:flex; align-items:center; justify-content:center;
+            font-size:0.82rem; color:#FFD700; flex-shrink:0;
+        }
+        .left-stats {
+            display:flex; gap:2rem; margin-top:2rem; flex-wrap:wrap; position:relative; z-index:1;
+        }
+        .left-stat .val { color:#FFD700; font-size:1.7rem; font-weight:700; font-family:'Poppins',sans-serif; }
+        .left-stat .lbl { color:rgba(255,255,255,0.6); font-size:0.76rem; margin-top:1px; }
+
+        /* ===== RIGHT PANEL ===== */
+        .right-panel {
+            background:#fafafa; padding:3rem 2.5rem 4rem;
+            display:flex; flex-direction:column; justify-content:flex-start;
+            overflow-y:auto; min-height:calc(100vh - 65px);
+        }
+        .form-box { max-width:480px; margin:0 auto; width:100%; }
+
+        .mobile-back {
+            display:none; align-items:center; gap:8px;
+            color:#006600; text-decoration:none; font-size:0.9rem; font-weight:600;
+            margin-bottom:1.5rem;
+        }
+        @media(max-width:860px){ .mobile-back { display:inline-flex; } }
+
+        /* Tab switcher */
+        .tab-switcher {
+            display:flex; background:#eee; border-radius:12px; padding:4px;
+            margin-bottom:2rem; gap:4px;
+        }
+        .ts-tab {
+            flex:1; padding:12px; border:none; border-radius:9px; background:transparent;
+            color:#888; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+            font-size:0.9rem; transition:all 0.25s;
+        }
+        .ts-tab.active { background:white; color:#006600; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+
+        .form-title { font-family:'Poppins',sans-serif; color:#006600; font-size:1.4rem; margin-bottom:0.3rem; }
+        .form-sub   { color:#888; font-size:0.86rem; margin-bottom:1.5rem; line-height:1.5; }
+
+        /* Section blocks */
+        .form-stack { display:flex; flex-direction:column; gap:0.9rem; }
+        .flabel { color:#555; font-weight:600; font-size:0.82rem; display:block; margin-bottom:4px; }
+
+        .fsb { background:rgba(0,102,0,0.04); padding:1rem; border-radius:12px; border:1px solid rgba(0,102,0,0.12); }
+        .fsb.gold { background:rgba(255,153,0,0.04); border-color:rgba(255,153,0,0.18); }
+        .fsb.red  { background:rgba(206,17,38,0.04);  border-color:rgba(206,17,38,0.12); }
+        .fsb h4 { display:flex; align-items:center; gap:8px; font-size:0.88rem; margin-bottom:0.85rem; color:#006600; }
+        .fsb.gold h4 { color:#cc7700; }
+        .fsb.red  h4 { color:#CE1126; }
+
+        .fg2 { display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; }
+        @media(max-width:500px){ .fg2 { grid-template-columns:1fr; } }
+
+        /* Upload */
+        .upload-box {
+            display:flex; flex-direction:column; align-items:center; gap:4px;
+            padding:1rem; border:2px dashed #ccc; border-radius:10px;
+            cursor:pointer; text-align:center; background:white; transition:all 0.2s;
+        }
+        .upload-box:hover { border-color:#006600; background:rgba(0,102,0,0.03); }
+        .upload-box i { font-size:1.4rem; color:#006600; }
+        .upload-box span { color:#006600; font-weight:600; font-size:0.82rem; }
+        .upload-box small { color:#888; font-size:0.75rem; }
+        .id-prev { width:100%; max-height:80px; object-fit:cover; border-radius:6px; margin-top:5px; display:none; }
+
+        /* Password toggle */
+        .pw-wrap { position:relative; }
+        .pw-wrap input { padding-right:44px; }
+        .pw-toggle {
+            position:absolute; right:12px; top:50%; transform:translateY(-50%);
+            background:none; border:none; color:#888; cursor:pointer; font-size:0.95rem; padding:4px;
+        }
+        .pw-toggle:hover { color:#006600; }
+
+        .terms-row { display:flex; align-items:flex-start; gap:8px; }
+        .terms-row input { width:auto; margin-top:3px; flex-shrink:0; }
+        .terms-row label { color:#666; font-size:0.84rem; line-height:1.5; }
+        .terms-row a { color:#006600; }
+
+        .submit-btn {
+            width:100%; padding:14px; background:#006600; color:white; border:none;
+            border-radius:10px; font-weight:700; font-size:1rem; cursor:pointer;
+            font-family:'Inter',sans-serif; display:flex; align-items:center;
+            justify-content:center; gap:8px; transition:all 0.25s;
+            box-shadow:0 6px 20px rgba(0,102,0,0.3);
+        }
+        .submit-btn:hover { background:#004d00; transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,102,0,0.35); }
+
+        .switch-hint { text-align:center; color:#888; font-size:0.85rem; }
+        .switch-hint a { color:#006600; font-weight:600; cursor:pointer; text-decoration:none; }
+
+        /* Already logged in */
+        .already-banner {
+            background:rgba(37,211,102,0.08); border:2px solid rgba(37,211,102,0.3);
+            border-radius:14px; padding:1.8rem; text-align:center; margin-bottom:1.5rem;
+        }
+        .already-banner i { font-size:2.5rem; color:#25D366; display:block; margin-bottom:0.8rem; }
+        .already-banner h4 { color:#006600; font-family:'Poppins',sans-serif; margin-bottom:0.5rem; font-size:1.1rem; }
+        .already-banner p  { color:#666; font-size:0.88rem; margin-bottom:1.2rem; }
+        .banner-btns { display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; }
+
+        /* Success screen */
+        .success-screen {
+            text-align:center; padding:2rem 1rem;
+        }
+        .success-icon {
+            width:90px; height:90px; background:rgba(37,211,102,0.12);
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            margin:0 auto 1.5rem; font-size:2.5rem; color:#25D366;
+        }
+        .success-screen h2 { font-family:'Poppins',sans-serif; color:#006600; margin-bottom:0.7rem; }
+        .success-screen p  { color:#666; font-size:0.92rem; line-height:1.7; margin-bottom:0.5rem; }
+        .pending-badge {
+            display:inline-flex; align-items:center; gap:7px;
+            background:rgba(255,153,0,0.12); color:#cc7700; padding:8px 16px;
+            border-radius:20px; font-size:0.85rem; font-weight:600;
+            border:1px solid rgba(255,153,0,0.25); margin:1rem 0;
+        }
+        .success-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:1.5rem; }
+
+        /* Flag stripe */
+        .flag-stripe { height:5px; background:var(--gradient-ghana); position:fixed; bottom:0; left:0; right:0; z-index:100; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+    <div class="flag-stripe"></div>
+
+    <div class="page-bg">
+
+        <!-- ===== LEFT PANEL ===== -->
+        <div class="left-panel">
+            <a href="login.html" class="left-back"><i class="fas fa-arrow-left"></i> Change account type</a>
+            <div class="left-icon"><i class="fas fa-hard-hat"></i></div>
+            <h2>Artisan <span>Portal</span></h2>
+            <p>Join Ghana's most trusted artisan marketplace. Get verified, showcase your skills, and start earning from clients across all 16 regions.</p>
+            <ul class="left-perks">
+                <li><span class="perk-icon"><i class="fas fa-id-card"></i></span> ID-verified profile — clients trust you</li>
+                <li><span class="perk-icon"><i class="fas fa-bell"></i></span> Receive job requests directly</li>
+                <li><span class="perk-icon"><i class="fas fa-money-bill-wave"></i></span> Get paid securely via Paystack</li>
+                <li><span class="perk-icon"><i class="fas fa-star"></i></span> Build ratings and grow your business</li>
+                <li><span class="perk-icon"><i class="fas fa-map-marker-alt"></i></span> Serve clients across all 16 regions</li>
+            </ul>
+            <div class="left-stats">
+                <div class="left-stat"><div class="val">16</div><div class="lbl">Regions</div></div>
+                <div class="left-stat"><div class="val">260+</div><div class="lbl">Districts</div></div>
+                <div class="left-stat"><div class="val">15</div><div class="lbl">Categories</div></div>
+            </div>
+        </div>
+
+        <!-- ===== RIGHT PANEL ===== -->
+        <div class="right-panel">
+            <div class="form-box">
+
+                <a href="login.html" class="mobile-back"><i class="fas fa-arrow-left"></i> Back to account selection</a>
+
+                <!-- Already logged in -->
+                <div id="already-banner" style="display:none;"></div>
+
+                <!-- Success screen after registration -->
+                <div id="success-screen" style="display:none;"></div>
+
+                <!-- Main form content -->
+                <div id="main-form">
+                    <!-- Tab switcher -->
+                    <div class="tab-switcher">
+                        <button class="ts-tab active" id="tab-login" onclick="switchTab('login')">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <button class="ts-tab" id="tab-register" onclick="switchTab('register')">
+                            <i class="fas fa-user-plus"></i> Register
+                        </button>
+                    </div>
+
+                    <!-- LOGIN -->
+                    <div id="panel-login">
+                        <h2 class="form-title">Artisan Login</h2>
+                        <p class="form-sub">Welcome back! Login to manage your jobs and earnings.</p>
+                        <div class="form-stack">
+                            <div>
+                                <label class="flabel">Email or Phone Number</label>
+                                <input type="text" id="l-email" placeholder="Enter your email or phone">
+                            </div>
+                            <div>
+                                <label class="flabel">Password</label>
+                                <div class="pw-wrap">
+                                    <input type="password" id="l-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter') doLogin()">
+                                    <button class="pw-toggle" type="button" onclick="togglePw('l-password',this)"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <button class="submit-btn" onclick="doLogin()">
+                                <i class="fas fa-sign-in-alt"></i> Login as Artisan
+                            </button>
+                            <p class="switch-hint" style="margin-top:0.4rem;">
+                                <a onclick="openForgotPassword()" style="color:#888;font-size:0.83rem;"><i class="fas fa-lock" style="font-size:0.75rem;"></i> Forgot your password?</a>
+                            </p>
+                            <p class="switch-hint">New artisan? <a onclick="switchTab('register')">Register here</a></p>
+                            <p class="switch-hint" style="margin-top:4px;">Not an artisan? <a href="login.html" style="color:#FF9900;">Customer login</a></p>
+                        </div>
+                    </div>
+
+                    <!-- REGISTER -->
+                    <div id="panel-register" style="display:none;">
+                        <h2 class="form-title">Artisan Registration</h2>
+                        <p class="form-sub">Create your verified profile. You'll appear on the platform after admin ID verification.</p>
+                        <div class="form-stack">
+
+                            <div class="fsb">
+                                <h4><i class="fas fa-user"></i> Personal Information</h4>
+                                <div class="form-stack">
+                                    <!-- Profile Picture -->
+                                    <div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+                                        <div id="pic-preview" style="width:90px;height:90px;border-radius:50%;background:rgba(0,102,0,0.1);border:3px solid rgba(0,102,0,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;" onclick="document.getElementById('r-pic').click()">
+                                            <i class="fas fa-user" style="font-size:2.5rem;color:#006600;opacity:0.5;" id="pic-icon"></i>
+                                            <img id="pic-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;" alt="Profile">
+                                        </div>
+                                        <label for="r-pic" style="color:#006600;font-size:0.82rem;font-weight:600;cursor:pointer;"><i class="fas fa-camera"></i> Add Profile Photo</label>
+                                        <input type="file" id="r-pic" accept="image/*" style="display:none;" onchange="previewProfilePic(this)">
+                                    </div>
+                                    <div>
+                                        <label class="flabel">Full Name (as on ID)</label>
+                                        <input type="text" id="r-name" placeholder="Full Name">
+                                    </div>
+                                    <div class="fg2">
+                                        <div><label class="flabel">Email Address</label><input type="email" id="r-email" placeholder="Email"></div>
+                                        <div><label class="flabel">Phone Number</label><input type="tel" id="r-phone" placeholder="024XXXXXXX"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fsb gold">
+                                <h4><i class="fas fa-id-card"></i> ID Card Details</h4>
+                                <div class="form-stack">
+                                    <div>
+                                        <label class="flabel">ID Card Type</label>
+                                        <select id="r-id-type" onchange="onIdTypeChange()">
+                                            <option value="">Select ID Type</option>
+                                            <option value="ecowascard" selected>ECOWAS Card</option>
+                                            <option value="voters_id">Voter's ID Card</option>
+                                            <option value="drivers_license">Driver's License</option>
+                                            <option value="passport">Ghana Passport</option>
+                                            <option value="nhis">NHIS Card</option>
+                                            <option value="ssnit">SSNIT Card</option>
+                                            <option value="birth_certificate">Birth Certificate</option>
+                                        </select>
+                                    </div>
+                                    <div class="fg2">
+                                        <div>
+                                            <label class="flabel">ID Number</label>
+                                            <input type="text" id="r-id-number" placeholder="GHA-XXXXXXXXX-D" oninput="formatIdNumber(this)" maxlength="17">
+                                            <small id="r-id-format-hint" style="color:#006600;font-size:0.75rem;margin-top:3px;display:block;font-weight:600;">Format: GHA-721233479-8 (auto-formatted as you type)</small>
+                                        </div>
+                                        <div><label class="flabel">Date of Birth</label><input type="date" id="r-dob"></div>
+                                    </div>
+                                    <div>
+                                        <label class="flabel">Upload ID Card (Both Sides)</label>
+                                        <div class="fg2">
+                                            <div>
+                                                <label for="r-id-front" class="upload-box">
+                                                    <i class="fas fa-camera"></i><span>Front Side</span><small>Click to upload</small>
+                                                </label>
+                                                <input type="file" id="r-id-front" accept="image/*" style="display:none;" onchange="previewImg(this,'prev-front')">
+                                                <img id="prev-front" class="id-prev" alt="Front">
+                                            </div>
+                                            <div>
+                                                <label for="r-id-back" class="upload-box" style="border-color:rgba(255,153,0,0.4);">
+                                                    <i class="fas fa-camera" style="color:#FF9900;"></i>
+                                                    <span style="color:#cc7700;">Back Side</span><small>Click to upload</small>
+                                                </label>
+                                                <input type="file" id="r-id-back" accept="image/*" style="display:none;" onchange="previewImg(this,'prev-back')">
+                                                <img id="prev-back" class="id-prev" alt="Back">
+                                            </div>
+                                        </div>
+                                        <small style="color:#999;font-size:0.75rem;margin-top:4px;display:block;"><i class="fas fa-info-circle"></i> Upload clear photos of both sides</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fsb red">
+                                <h4><i class="fas fa-map-marker-alt"></i> Location</h4>
+                                <div class="form-stack">
+                                    <div class="fg2">
+                                        <div><label class="flabel">Region</label><select id="r-region" onchange="onRegionChange()"></select></div>
+                                        <div><label class="flabel">District</label><select id="r-district"></select></div>
+                                    </div>
+                                    <div><label class="flabel">Residential Address</label><textarea id="r-address" rows="2" placeholder="House No., Street, Community"></textarea></div>
+                                </div>
+                            </div>
+
+                            <div class="fsb">
+                                <h4><i class="fas fa-briefcase"></i> Professional Details</h4>
+                                <div class="form-stack">
+                                    <div class="fg2">
+                                        <div><label class="flabel">Service Category</label><select id="r-category"></select></div>
+                                        <div><label class="flabel">Years of Experience</label><input type="number" id="r-experience" min="0" max="60" placeholder="e.g. 5"></div>
+                                    </div>
+                                    <div><label class="flabel">Your Skills (comma-separated)</label><textarea id="r-skills" rows="2" placeholder="e.g. Pipe Installation, Leak Repair"></textarea></div>
+                                    <div><label class="flabel">Hourly / Service Rate</label><input type="text" id="r-price" placeholder="e.g. ₵150/hour"></div>
+                                    <div><label class="flabel">Brief Bio</label><textarea id="r-bio" rows="2" placeholder="Tell clients about your experience..."></textarea></div>
+                                </div>
+                            </div>
+
+                            <div class="fsb gold">
+                                <h4><i class="fas fa-lock"></i> Security</h4>
+                                <div class="fg2">
+                                    <div>
+                                        <label class="flabel">Password (min 8 chars)</label>
+                                        <div class="pw-wrap">
+                                            <input type="password" id="r-password" placeholder="Create password">
+                                            <button class="pw-toggle" type="button" onclick="togglePw('r-password',this)"><i class="fas fa-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="flabel">Confirm Password</label>
+                                        <div class="pw-wrap">
+                                            <input type="password" id="r-confirm" placeholder="Repeat password">
+                                            <button class="pw-toggle" type="button" onclick="togglePw('r-confirm',this)"><i class="fas fa-eye"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="terms-row">
+                                <input type="checkbox" id="r-terms">
+                                <label for="r-terms">I confirm all information is accurate and I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+                            </div>
+
+                            <button class="submit-btn" onclick="doRegister()">
+                                <i class="fas fa-user-plus"></i> Create Artisan Account
+                            </button>
+                            <p class="switch-hint">Already registered? <a onclick="switchTab('login')">Login here</a></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FORGOT PASSWORD MODAL ===== -->
+    <div id="fp-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;display:none;align-items:center;justify-content:center;padding:1rem;">
+        <div style="background:white;border-radius:20px;padding:2.5rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;">
+            <button onclick="closeForgotPassword()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#888;line-height:1;">&times;</button>
+
+            <!-- Step 1: Enter email/phone -->
+            <div id="fp-step1">
+                <div style="text-align:center;margin-bottom:1.5rem;">
+                    <div style="width:70px;height:70px;background:rgba(0,102,0,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:#006600;">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin-bottom:0.3rem;">Forgot Password?</h3>
+                    <p style="color:#888;font-size:0.88rem;line-height:1.5;">Enter your registered email or phone number. We'll send a reset code.</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label class="flabel">Email or Phone Number</label>
+                        <input type="text" id="fp-identifier" placeholder="Enter your email or phone">
+                    </div>
+                    <button onclick="sendFpCode()" style="width:100%;padding:13px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <i class="fas fa-paper-plane"></i> Send Reset Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Enter code + new password -->
+            <div id="fp-step2" style="display:none;">
+                <div style="text-align:center;margin-bottom:1.5rem;">
+                    <div style="width:70px;height:70px;background:rgba(0,102,0,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:#006600;">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin-bottom:0.3rem;">Enter Reset Code</h3>
+                    <p id="fp-sent-msg" style="color:#888;font-size:0.88rem;line-height:1.5;">A 6-digit code has been sent. In this demo the code is shown below.</p>
+                    <div id="fp-demo-code" style="background:rgba(0,102,0,0.08);border:1px dashed rgba(0,102,0,0.3);border-radius:10px;padding:0.7rem 1rem;margin-top:0.8rem;font-size:1rem;font-weight:700;color:#006600;letter-spacing:3px;font-family:'Poppins',sans-serif;"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label class="flabel">6-Digit Code</label>
+                        <input type="text" id="fp-code" placeholder="e.g. 482910" maxlength="6" style="letter-spacing:4px;font-size:1.1rem;font-weight:700;text-align:center;">
+                    </div>
+                    <div>
+                        <label class="flabel">New Password (min 8 chars)</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="fp-newpw" placeholder="Enter new password">
+                            <button class="pw-toggle" type="button" onclick="togglePw('fp-newpw',this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flabel">Confirm New Password</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="fp-confirmpw" placeholder="Repeat new password">
+                            <button class="pw-toggle" type="button" onclick="togglePw('fp-confirmpw',this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <button onclick="doResetPassword()" style="width:100%;padding:13px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <i class="fas fa-lock"></i> Reset Password
+                    </button>
+                    <button onclick="document.getElementById('fp-step1').style.display='block';document.getElementById('fp-step2').style.display='none';" style="background:none;border:none;color:#888;font-size:0.85rem;cursor:pointer;font-family:'Inter',sans-serif;">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="fp-step3" style="display:none;text-align:center;padding:1rem 0;">
+                <div style="width:80px;height:80px;background:rgba(37,211,102,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:2.5rem;color:#25D366;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin-bottom:0.5rem;">Password Reset!</h3>
+                <p style="color:#888;font-size:0.9rem;line-height:1.6;margin-bottom:1.5rem;">Your password has been updated successfully. You can now login with your new password.</p>
+                <button onclick="closeForgotPassword()" style="padding:11px 28px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
+                    <i class="fas fa-sign-in-alt"></i> Back to Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('login');
+
+        loadRegionsIntoSelect(document.getElementById('r-region'));
+        loadCategoriesIntoSelect(document.getElementById('r-category'));
+
+        // Pre-fill tab from URL ?tab=register
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'register') switchTab('register');
+
+        // Show ECOWAS format hint immediately since ECOWAS Card is pre-selected
+        onIdTypeChange();
+
+        // Check if already logged in
+        const existing = loadUser();
+        if (existing && existing.role === 'artisan') {
+            document.getElementById('main-form').style.display = 'none';
+            document.getElementById('already-banner').style.display = 'block';
+            document.getElementById('already-banner').innerHTML = `
+                <div class="already-banner">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>Welcome back, ${existing.name}!</h4>
+                    <p>You are already logged in as an Artisan.</p>
+                    <div class="banner-btns">
+                        <a href="artisan-portal.html" class="ghana-btn"><i class="fas fa-hard-hat"></i> My Dashboard</a>
+                        <button onclick="doLogout()" class="ghana-btn red"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </div>
+                </div>`;
+        }
+
+        // ---- Forgot Password ----
+        let fpGeneratedCode = '';
+        let fpMatchedArtisan = null;
+
+        function openForgotPassword() {
+            document.getElementById('fp-step1').style.display = 'block';
+            document.getElementById('fp-step2').style.display = 'none';
+            document.getElementById('fp-step3').style.display = 'none';
+            document.getElementById('fp-identifier').value = '';
+            document.getElementById('fp-overlay').style.display = 'flex';
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('fp-overlay').style.display = 'none';
+        }
+
+        function sendFpCode() {
+            const identifier = document.getElementById('fp-identifier').value.trim();
+            if (!identifier) { showNotification('Please enter your email or phone', 'error'); return; }
+
+            // Search in sample artisans + localStorage
+            let artisan = sampleArtisans.find(a => a.email === identifier || a.phone === identifier);
+            if (!artisan) {
+                const saved = loadArtisanProfile();
+                if (saved && (saved.email === identifier || saved.phone === identifier)) artisan = saved;
+            }
+
+            if (!artisan) {
+                showNotification('No artisan account found with that email or phone', 'error');
+                return;
+            }
+
+            fpMatchedArtisan = artisan;
+            fpGeneratedCode  = String(Math.floor(100000 + Math.random() * 900000));
+
+            document.getElementById('fp-demo-code').textContent = fpGeneratedCode;
+            document.getElementById('fp-sent-msg').textContent  =
+                `Code sent to ${artisan.email || artisan.phone}. Demo mode: code shown below.`;
+
+            document.getElementById('fp-step1').style.display = 'none';
+            document.getElementById('fp-step2').style.display = 'block';
+            document.getElementById('fp-code').value = '';
+            document.getElementById('fp-newpw').value = '';
+            document.getElementById('fp-confirmpw').value = '';
+        }
+
+        function doResetPassword() {
+            const code    = document.getElementById('fp-code').value.trim();
+            const newpw   = document.getElementById('fp-newpw').value;
+            const confirm = document.getElementById('fp-confirmpw').value;
+
+            if (code !== fpGeneratedCode)       { showNotification('Incorrect reset code', 'error'); return; }
+            if (!newpw || newpw.length < 8)     { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (newpw !== confirm)              { showNotification('Passwords do not match', 'error'); return; }
+
+            // Update in sampleArtisans
+            const idx = sampleArtisans.findIndex(a => a.id === fpMatchedArtisan.id);
+            if (idx !== -1) sampleArtisans[idx].password = newpw;
+
+            // Update in localStorage if it's the saved artisan
+            const saved = loadArtisanProfile();
+            if (saved && saved.id === fpMatchedArtisan.id) {
+                saved.password = newpw;
+                saveArtisanProfile(saved);
+            }
+
+            document.getElementById('fp-step2').style.display = 'none';
+            document.getElementById('fp-step3').style.display = 'block';
+        }
+
+        function switchTab(tab) {
+            document.getElementById('panel-login').style.display    = tab === 'login'    ? 'block' : 'none';
+            document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function onRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('r-district'), document.getElementById('r-region').value);
+        }
+
+        function togglePw(id, btn) {
+            const inp = document.getElementById(id);
+            const show = inp.type === 'password';
+            inp.type = show ? 'text' : 'password';
+            btn.innerHTML = `<i class="fas fa-eye${show ? '-slash' : ''}"></i>`;
+        }
+
+        function onIdTypeChange() {
+            const type  = document.getElementById('r-id-type').value;
+            const input = document.getElementById('r-id-number');
+            const hint  = document.getElementById('r-id-format-hint');
+            input.value = '';
+
+            if (type === 'ecowascard') {
+                input.placeholder = 'GHA-XXXXXXXXX-D';
+                hint.textContent  = 'Format: GHA-721233479-8 (auto-formatted as you type)';
+                hint.style.display = 'block';
+                input.maxLength = 17;
+            } else if (type === 'voters_id') {
+                input.placeholder = 'e.g. 0123456789';
+                hint.textContent  = 'Format: 10-digit Voter ID number';
+                hint.style.display = 'block';
+                input.maxLength = 18;
+            } else if (type === 'passport') {
+                input.placeholder = 'e.g. G1234567';
+                hint.textContent  = 'Format: G followed by 7 digits';
+                hint.style.display = 'block';
+                input.maxLength = 18;
+            } else {
+                input.placeholder = 'ID Number';
+                hint.style.display = 'none';
+                input.maxLength = 18;
+            }
+        }
+
+        function formatIdNumber(input) {
+            const type = document.getElementById('r-id-type').value;
+            if (type !== 'ecowascard') return;
+
+            // Strip everything except digits
+            let digits = input.value.replace(/[^0-9]/g, '');
+
+            // ECOWAS card format: GHA-XXXXXXXXX-D (9 digits + 1 check digit)
+            let formatted = 'GHA-';
+            if (digits.length <= 9) {
+                formatted += digits;
+            } else {
+                formatted += digits.substring(0, 9) + '-' + digits.substring(9, 10);
+            }
+            input.value = formatted;
+        }
+
+        function validateEcowasCard(value) {
+            // Must match GHA-XXXXXXXXX-D (9 digits + dash + 1 digit)
+            return /^GHA-\d{9}-\d$/.test(value);
+        }
+
+        function previewProfilePic(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('pic-img').src = e.target.result;
+                    document.getElementById('pic-img').style.display = 'block';
+                    document.getElementById('pic-icon').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewImg(input, previewId) {
+            const prev = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // ---- LOGIN ----
+        function doLogin() {
+            const email    = document.getElementById('l-email').value.trim();
+            const password = document.getElementById('l-password').value;
+            if (!email || !password) { showNotification('Please enter your email/phone and password', 'error'); return; }
+
+            // Check 1: demo/sample artisans in memory
+            let artisan = sampleArtisans.find(a => (a.email === email || a.phone === email) && a.password === password);
+
+            // Check 2: newly registered artisan saved in localStorage
+            if (!artisan) {
+                const saved = loadArtisanProfile();
+                if (saved && (saved.email === email || saved.phone === email) && saved.password === password) {
+                    artisan = saved;
+                }
+            }
+
+            if (artisan) {
+                saveArtisanProfile(artisan); // ensure profile is in localStorage for portal
+                saveUser({ email: artisan.email, name: artisan.name, phone: artisan.phone, role: 'artisan' });
+                showNotification(`Welcome back, ${artisan.name}! ✅`, 'success');
+                setTimeout(() => { window.location.href = 'artisan-portal.html'; }, 1000);
+                return;
+            }
+
+            // Check if they used customer credentials by mistake
+            const client = sampleClients.find(c => (c.email === email || c.phone === email) && c.password === password);
+            if (client) {
+                showNotification('This is a customer account. Redirecting to Customer Login...', 'error');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                return;
+            }
+            showNotification('Invalid email/phone or password', 'error');
+        }
+
+        // ---- REGISTER ----
+        function doRegister() {
+            const g = id => document.getElementById(id).value;
+            const name = g('r-name').trim(), email = g('r-email').trim(), phone = g('r-phone').trim();
+            const idType = g('r-id-type'), idNumber = g('r-id-number').trim();
+            const region = g('r-region'), district = g('r-district'), address = g('r-address').trim();
+            const category = g('r-category');
+            const password = g('r-password'), confirm = g('r-confirm');
+
+            if (!name)                { showNotification('Please enter your full name', 'error'); return; }
+            if (!email)               { showNotification('Please enter your email', 'error'); return; }
+            if (!phone)               { showNotification('Please enter your phone number', 'error'); return; }
+            if (!idType)              { showNotification('Please select your ID Card Type', 'error'); return; }
+            if (!idNumber)            { showNotification('Please enter your ID Number', 'error'); return; }
+            // Validate ECOWAS card format
+            if (idType === 'ecowascard' && !validateEcowasCard(idNumber)) {
+                showNotification('ECOWAS Card must be in format: GHA-721233479-8', 'error'); return;
+            }
+            if (!region || !district) { showNotification('Please select your Region and District', 'error'); return; }
+            if (!category)            { showNotification('Please select your Service Category', 'error'); return; }
+            if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (password !== confirm)  { showNotification('Passwords do not match!', 'error'); return; }
+            if (!document.getElementById('r-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
+            if (sampleArtisans.find(a => a.email === email)) { showNotification('An account with this email already exists', 'error'); return; }
+
+            // Capture profile pic as base64
+            let profilePicData = null;
+            const picImg = document.getElementById('pic-img');
+            if (picImg.style.display !== 'none' && picImg.src) {
+                profilePicData = picImg.src;
+            }
+
+            const newArtisan = {
+                id: Date.now(), name, email, phone, password, category,
+                skills: g('r-skills').split(',').map(s => s.trim()).filter(Boolean),
+                region, district, address,
+                experience: parseInt(g('r-experience')) || 0,
+                price: g('r-price') || '₵100/hour',
+                bio: g('r-bio') || `Artisan from ${district}, ${region}.`,
+                rating: 0, completedJobs: 0, verified: false,
+                idType, idNumber, profilePic: profilePicData,
+                credentials: [], jobRequests: [], payments: [], workUpdates: [],
+                registeredAt: new Date().toISOString()
+            };
+            sampleArtisans.push(newArtisan);
+
+            // Persist full profile to localStorage — artisan-portal.html reads this
+            // because sampleArtisans resets on every page load from data.js
+            saveArtisanProfile(newArtisan);
+            saveUser({ email, name, phone, role: 'artisan' });
+            showNotification('Registration submitted! Taking you to your dashboard...', 'success');
+            setTimeout(() => { window.location.href = 'artisan-portal.html'; }, 1200);
+        }
+
+        function doLogout() {
+            clearUser();
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - GhanaArtisan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        .gs-bg {
+            min-height: 100vh;
+            background:
+                linear-gradient(135deg, rgba(0,102,0,0.07) 0%, rgba(255,153,0,0.07) 100%),
+                radial-gradient(circle at 20% 80%, rgba(0,102,0,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,153,0,0.1) 0%, transparent 50%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 7rem 5% 4rem;
+        }
+        .gs-hero { text-align: center; max-width: 720px; width: 100%; }
+        .gs-hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            color: #006600; margin-bottom: 1rem; line-height: 1.2;
+        }
+        .gs-hero h1 span { color: #FF9900; }
+        .gs-hero > p {
+            color: #555; font-size: 1.1rem; line-height: 1.7;
+            max-width: 520px; margin: 0 auto 2.5rem;
+        }
+        .action-cards {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem; margin-bottom: 2.5rem;
+        }
+        .action-card {
+            background: white; border-radius: 16px; padding: 2rem 1.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); text-align: center;
+            border: 2px solid transparent; cursor: pointer; transition: all 0.3s ease;
+        }
+        .action-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,102,0,0.15); }
+        .action-card.artisan { border-color: rgba(0,102,0,0.2); }
+        .action-card.client  { border-color: rgba(255,153,0,0.3); }
+        .action-card.login   { border-color: rgba(206,17,38,0.2); }
+        .card-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+        .action-card.artisan .card-icon { color: #006600; }
+        .action-card.client  .card-icon { color: #FF9900; }
+        .action-card.login   .card-icon { color: #CE1126; }
+        .action-card h3 { font-family: 'Poppins', sans-serif; margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .action-card.artisan h3 { color: #006600; }
+        .action-card.client  h3 { color: #cc7700; }
+        .action-card.login   h3 { color: #CE1126; }
+        .action-card p { color: #777; font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.2rem; }
+        .card-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 9px 20px; border-radius: 8px; font-weight: 600;
+            font-size: 0.88rem; pointer-events: none; color: white;
+        }
+        .action-card.artisan .card-btn { background: #006600; }
+        .action-card.client  .card-btn { background: #FF9900; }
+        .action-card.login   .card-btn { background: #CE1126; }
+        .gs-divider { color: #999; font-size: 0.9rem; margin-bottom: 1rem; }
+        .id-badges { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
+        .id-badge {
+            background: rgba(0,102,0,0.1); color: #006600;
+            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+        }
+
+        /* Logged-in state */
+        .logged-in-banner {
+            background: white; border-radius: 16px; padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,102,0,0.12); text-align: center;
+            border: 2px solid rgba(37,211,102,0.3);
+        }
+        .logged-in-banner .li-icon { font-size: 3rem; color: #25D366; margin-bottom: 1rem; display: block; }
+        .logged-in-banner h3 { color: #006600; font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem; }
+        .logged-in-banner p  { color: #666; margin-bottom: 2rem; }
+        .li-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* ===== MODAL ===== */
+        .auth-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 2000;
+            align-items: center; justify-content: center;
+            padding: 1rem; overflow-y: auto;
+        }
+        .auth-overlay.active { display: flex; }
+
+        .auth-modal {
+            background: white; border-radius: 20px; width: 100%; max-width: 570px;
+            position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: slideIn 0.28s ease; max-height: 92vh; overflow-y: auto;
+            margin: auto;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-18px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-header {
+            background: var(--gradient-primary); padding: 1.6rem 2rem;
+            border-radius: 20px 20px 0 0; position: relative;
+        }
+        .modal-header h2 { color: white; font-family: 'Poppins', sans-serif; margin-bottom: 0.2rem; font-size: 1.4rem; }
+        .modal-header p  { color: rgba(255,255,255,0.85); font-size: 0.88rem; }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 30px; height: 30px; border-radius: 50%; font-size: 1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+
+        .modal-body { padding: 1.8rem; }
+
+        .modal-tabs {
+            display: flex; border-radius: 8px; overflow: hidden;
+            border: 2px solid rgba(0,102,0,0.2); margin-bottom: 1.5rem;
+        }
+        .mtab {
+            flex: 1; padding: 11px; border: none; background: white;
+            color: #666; font-weight: 600; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: all 0.2s;
+        }
+        .mtab.active { background: #006600; color: white; }
+        .mtab:first-child { border-right: 1px solid rgba(0,102,0,0.2); }
+
+        .form-stack { display: flex; flex-direction: column; gap: 0.85rem; }
+        .fsb {
+            background: rgba(0,102,0,0.04); padding: 1rem;
+            border-radius: 10px; border: 1px solid rgba(0,102,0,0.15);
+        }
+        .fsb.gold { background: rgba(255,153,0,0.04); border-color: rgba(255,153,0,0.2); }
+        .fsb.red  { background: rgba(206,17,38,0.04);  border-color: rgba(206,17,38,0.15); }
+        .fsb h4 { color: #006600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 7px; font-size: 0.9rem; }
+        .fsb.gold h4 { color: #cc7700; }
+        .fsb.red  h4 { color: #CE1126; }
+        .fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        @media(max-width:480px){ .fg2 { grid-template-columns: 1fr; } }
+        .flabel { color: #006600; font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 3px; }
+        .upload-box {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 1rem; border: 2px dashed #ccc; border-radius: 8px;
+            cursor: pointer; text-align: center; background: white; transition: all 0.25s;
+        }
+        .upload-box:hover { border-color: #006600; background: rgba(0,102,0,0.03); }
+        .upload-box i { font-size: 1.4rem; color: #006600; }
+        .upload-box span { color: #006600; font-weight: 600; font-size: 0.82rem; }
+        .upload-box small { color: #888; font-size: 0.75rem; }
+        .id-prev { width: 100%; max-height: 90px; object-fit: cover; border-radius: 6px; margin-top: 5px; display: none; }
+        .terms-row { display: flex; align-items: flex-start; gap: 8px; }
+        .terms-row input { width: auto; margin-top: 2px; flex-shrink: 0; }
+        .terms-row label { color: #555; font-size: 0.85rem; line-height: 1.5; }
+        .terms-row a { color: #006600; }
+        .full-btn {
+            width: 100%; padding: 12px; background: #006600; color: white; border: none;
+            border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: background 0.2s;
+        }
+        .full-btn:hover { background: #004d00; }
+        .switch-link { text-align: center; color: #666; font-size: 0.85rem; }
+        .switch-link a { color: #006600; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+
+    <div class="page-wrapper gs-bg">
+        <div class="gs-hero" id="gs-content"></div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="auth-overlay" id="auth-overlay" onclick="overlayClick(event)">
+        <div class="auth-modal">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2 id="modal-title">Welcome</h2>
+                <p id="modal-sub">Join Ghana's most trusted artisan platform</p>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tabs">
+                    <button class="mtab active" id="mtab-login" onclick="switchTab('login')">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="mtab" id="mtab-register" onclick="switchTab('register')">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </div>
+
+                <!-- LOGIN -->
+                <div id="panel-login" class="form-stack">
+                    <div>
+                        <label class="flabel">Email or Phone</label>
+                        <input type="text" id="login-email" placeholder="Enter email or phone number">
+                    </div>
+                    <div>
+                        <label class="flabel">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password">
+                    </div>
+                    <button class="full-btn" onclick="doLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <p class="switch-link">No account? <a onclick="switchTab('register')">Register here</a></p>
+                </div>
+
+                <!-- REGISTER -->
+                <div id="panel-register" style="display:none;" class="form-stack">
+
+                    <div class="fsb">
+                        <h4><i class="fas fa-user"></i> Personal Information</h4>
+                        <div class="form-stack">
+                            <div><label class="flabel">Full Name (as on ID)</label><input type="text" id="reg-name" placeholder="Full Name"></div>
+                            <div class="fg2">
+                                <div><label class="flabel">Email</label><input type="email" id="reg-email" placeholder="Email Address"></div>
+                                <div><label class="flabel">Phone</label><input type="tel" id="reg-phone" placeholder="024XXXXXXX"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fsb gold">
+                        <h4><i class="fas fa-id-card"></i> Ghana ID Card</h4>
+                        <div class="form-stack">
+                            <div>
+                                <label class="flabel">ID Card Type</label>
+                                <select id="reg-id-type">
+                                    <option value="">Select ID Type</option>
+                                    <option value="ecowascard">ECOWAS Card</option>
+                                    <option value="voters_id">Voter's ID Card</option>
+                                    <option value="drivers_license">Driver's License</option>
+                                    <option value="passport">Ghana Passport</option>
+                                    <option value="nhis">NHIS Card</option>
+                                    <option value="ssnit">SSNIT Card</option>
+                                    <option value="birth_certificate">Birth Certificate</option>
+                                </select>
+                            </div>
+                            <div class="fg2">
+                                <div><label class="flabel">ID Number</label><input type="text" id="reg-id-number" placeholder="ID Number"></div>
+                                <div><label class="flabel">Date of Birth</label><input type="date" id="reg-dob"></div>
+                            </div>
+                            <div>
+                                <label class="flabel">Upload ID Card</label>
+                                <div class="fg2">
+                                    <div>
+                                        <label for="reg-id-front" class="upload-box">
+                                            <i class="fas fa-camera"></i><span>Front Side</span><small>Click to upload</small>
+                                        </label>
+                                        <input type="file" id="reg-id-front" accept="image/*" style="display:none;" onchange="previewImg(this,'prev-front')">
+                                        <img id="prev-front" class="id-prev" alt="Front">
+                                    </div>
+                                    <div>
+                                        <label for="reg-id-back" class="upload-box" style="border-color:rgba(255,153,0,0.4);">
+                                            <i class="fas fa-camera" style="color:#FF9900;"></i>
+                                            <span style="color:#cc7700;">Back Side</span><small>Click to upload</small>
+                                        </label>
+                                        <input type="file" id="reg-id-back" accept="image/*" style="display:none;" onchange="previewImg(this,'prev-back')">
+                                        <img id="prev-back" class="id-prev" alt="Back">
+                                    </div>
+                                </div>
+                                <small style="color:#888;font-size:0.75rem;display:block;margin-top:4px;"><i class="fas fa-info-circle"></i> Clear photos of both sides</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fsb red">
+                        <h4><i class="fas fa-map-marker-alt"></i> Location</h4>
+                        <div class="form-stack">
+                            <div class="fg2">
+                                <div><label class="flabel">Region</label><select id="reg-region" onchange="onRegionChange()"></select></div>
+                                <div><label class="flabel">District</label><select id="reg-district"></select></div>
+                            </div>
+                            <div><label class="flabel">Residential Address</label><textarea id="reg-address" rows="2" placeholder="House No., Street, Community"></textarea></div>
+                        </div>
+                    </div>
+
+                    <div class="fsb">
+                        <h4><i class="fas fa-briefcase"></i> Professional Details</h4>
+                        <div class="form-stack">
+                            <div>
+                                <label class="flabel">I want to...</label>
+                                <select id="reg-role" onchange="toggleArtisanFields()">
+                                    <option value="">Select Role</option>
+                                    <option value="artisan">Work as Artisan</option>
+                                    <option value="client">Hire Artisans</option>
+                                </select>
+                            </div>
+                            <div id="artisan-fields" style="display:none;" class="form-stack">
+                                <div><label class="flabel">Service Category</label><select id="reg-category"></select></div>
+                                <div><label class="flabel">Your Skills (comma-separated)</label><textarea id="reg-skills" rows="2" placeholder="e.g. Plumbing, Leak Repair"></textarea></div>
+                                <div><label class="flabel">Years of Experience</label><input type="number" id="reg-experience" min="0" max="60" placeholder="e.g. 5"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fsb gold">
+                        <h4><i class="fas fa-lock"></i> Security</h4>
+                        <div class="fg2">
+                            <div><label class="flabel">Password (min 8 chars)</label><input type="password" id="reg-password" placeholder="Create password"></div>
+                            <div><label class="flabel">Confirm Password</label><input type="password" id="reg-confirm" placeholder="Repeat password"></div>
+                        </div>
+                    </div>
+
+                    <div class="terms-row">
+                        <input type="checkbox" id="reg-terms">
+                        <label for="reg-terms">I confirm all information is accurate and agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+                    </div>
+
+                    <button class="full-btn" onclick="doRegister()"><i class="fas fa-user-plus"></i> Create Account</button>
+                    <p class="switch-link">Already a member? <a onclick="switchTab('login')">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('login');
+
+        // Populate selects once on load
+        loadRegionsIntoSelect(document.getElementById('reg-region'));
+        loadCategoriesIntoSelect(document.getElementById('reg-category'));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const preRole   = urlParams.get('role') || '';
+        const preTab    = urlParams.get('tab')  || '';
+
+        // ---- Page content ----
+        function renderPage() {
+            const user = loadUser();
+            const el   = document.getElementById('gs-content');
+
+            if (user) {
+                el.innerHTML = `
+                    <div class="logged-in-banner">
+                        <i class="fas fa-check-circle li-icon"></i>
+                        <h3>Welcome back, ${user.name}!</h3>
+                        <p>You're logged in as a <strong>${user.role}</strong>.</p>
+                        <div class="li-btns">
+                            ${user.role === 'artisan'
+                                ? `<button onclick="showNotification('Artisan portal — coming soon!','info')" class="ghana-btn"><i class="fas fa-tools"></i> My Portal</button>`
+                                : `<a href="find-artisans.html" class="ghana-btn"><i class="fas fa-search"></i> Find Artisans</a>`}
+                            <button onclick="doLogout()" class="ghana-btn red"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            el.innerHTML = `
+                <h1>Join <span>GhanaArtisan</span> Today</h1>
+                <p>Ghana's most trusted platform connecting skilled artisans with clients across all 16 regions.</p>
+                <div class="action-cards">
+                    <div class="action-card artisan" onclick="openModal('register','artisan')">
+                        <i class="fas fa-tools card-icon"></i>
+                        <h3>Register as Artisan</h3>
+                        <p>Showcase your skills, get ID-verified, and start earning from clients across Ghana.</p>
+                        <span class="card-btn"><i class="fas fa-user-plus"></i> Register Now</span>
+                    </div>
+                    <div class="action-card client" onclick="openModal('register','client')">
+                        <i class="fas fa-user-tie card-icon"></i>
+                        <h3>Hire an Artisan</h3>
+                        <p>Create an account to browse and request services from verified artisans near you.</p>
+                        <span class="card-btn"><i class="fas fa-search"></i> Get Started</span>
+                    </div>
+                    <div class="action-card login" onclick="openModal('login')">
+                        <i class="fas fa-sign-in-alt card-icon"></i>
+                        <h3>Already a Member?</h3>
+                        <p>Login to your existing account to continue managing your services and requests.</p>
+                        <span class="card-btn"><i class="fas fa-sign-in-alt"></i> Login</span>
+                    </div>
+                </div>
+                <p class="gs-divider">All artisans are Ghana ID-verified for your safety</p>
+                <div class="id-badges">
+                    <span class="id-badge"><i class="fas fa-check"></i> ECOWAS Card</span>
+                    <span class="id-badge"><i class="fas fa-check"></i> Voter's ID</span>
+                    <span class="id-badge"><i class="fas fa-check"></i> Driver's License</span>
+                    <span class="id-badge"><i class="fas fa-check"></i> Passport</span>
+                    <span class="id-badge"><i class="fas fa-check"></i> NHIS Card</span>
+                </div>`;
+
+            // Auto-open modal from URL params
+            if (preTab === 'login')   openModal('login');
+            else if (preRole)         openModal('register', preRole);
+        }
+
+        // ---- Modal ----
+        function openModal(tab, role) {
+            const headers = {
+                login:    ['Welcome Back',    "Login to your GhanaArtisan account"],
+                register: ['Create Account',  "Join Ghana's most trusted artisan platform"]
+            };
+            document.getElementById('modal-title').textContent = headers[tab][0];
+            document.getElementById('modal-sub').textContent   = headers[tab][1];
+            switchTab(tab);
+            if (role) {
+                document.getElementById('reg-role').value = role;
+                toggleArtisanFields();
+            }
+            document.getElementById('auth-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('auth-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function overlayClick(e) {
+            if (e.target === document.getElementById('auth-overlay')) closeModal();
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        // ---- Tabs ----
+        function switchTab(tab) {
+            document.getElementById('panel-login').style.display    = tab === 'login'    ? 'flex' : 'none';
+            document.getElementById('panel-register').style.display = tab === 'register' ? 'flex' : 'none';
+            document.getElementById('mtab-login').classList.toggle('active',    tab === 'login');
+            document.getElementById('mtab-register').classList.toggle('active', tab === 'register');
+        }
+
+        function onRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('reg-district'), document.getElementById('reg-region').value);
+        }
+
+        function toggleArtisanFields() {
+            const role = document.getElementById('reg-role').value;
+            document.getElementById('artisan-fields').style.display = role === 'artisan' ? 'flex' : 'none';
+        }
+
+        function previewImg(input, previewId) {
+            const prev = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // ---- Login ----
+        function doLogin() {
+            const email    = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            if (!email || !password) { showNotification('Please enter email and password', 'error'); return; }
+
+            const artisan = sampleArtisans.find(a => (a.email === email || a.phone === email) && a.password === password);
+            if (artisan) {
+                saveUser({ email: artisan.email, name: artisan.name, phone: artisan.phone, role: 'artisan' });
+                showNotification(`Welcome back, ${artisan.name}!`, 'success');
+                closeModal(); setTimeout(() => renderPage(), 400);
+                return;
+            }
+            const client = sampleClients.find(c => (c.email === email || c.phone === email) && c.password === password);
+            if (client) {
+                saveUser({ email: client.email, name: client.name, phone: client.phone, role: 'client' });
+                showNotification(`Welcome back, ${client.name}!`, 'success');
+                closeModal(); setTimeout(() => { window.location.href = 'find-artisans.html'; }, 800);
+                return;
+            }
+            showNotification('Invalid email/phone or password', 'error');
+        }
+
+        // ---- Register ----
+        function doRegister() {
+            const v = id => document.getElementById(id).value;
+            const name     = v('reg-name').trim();
+            const email    = v('reg-email').trim();
+            const phone    = v('reg-phone').trim();
+            const idType   = v('reg-id-type');
+            const idNumber = v('reg-id-number').trim();
+            const region   = v('reg-region');
+            const district = v('reg-district');
+            const address  = v('reg-address').trim();
+            const role     = v('reg-role');
+            const password = v('reg-password');
+            const confirm  = v('reg-confirm');
+
+            if (!name)                { showNotification('Please enter your full name', 'error'); return; }
+            if (!email)               { showNotification('Please enter your email', 'error'); return; }
+            if (!phone)               { showNotification('Please enter your phone number', 'error'); return; }
+            if (!idType)              { showNotification('Please select an ID Card Type', 'error'); return; }
+            if (!idNumber)            { showNotification('Please enter your ID Number', 'error'); return; }
+            if (!region || !district) { showNotification('Please select your Region and District', 'error'); return; }
+            if (!role)                { showNotification('Please select a role', 'error'); return; }
+            if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (password !== confirm)  { showNotification('Passwords do not match!', 'error'); return; }
+            if (!document.getElementById('reg-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
+
+            if (role === 'artisan') {
+                const category = v('reg-category');
+                if (!category) { showNotification('Please select a Service Category', 'error'); return; }
+                sampleArtisans.push({
+                    id: sampleArtisans.length + 1, name, email, phone, password, category,
+                    skills: v('reg-skills').split(',').map(s => s.trim()).filter(Boolean),
+                    region, district, address,
+                    experience: parseInt(v('reg-experience')) || 0,
+                    rating: 0, price: '₵100/hour', verified: false, completedJobs: 0,
+                    bio: `New artisan from ${district}, ${region}.`,
+                    idType, idNumber, credentials: [], jobRequests: [], payments: []
+                });
+                saveUser({ email, name, phone, role: 'artisan' });
+                showNotification('Registration submitted! Pending ID verification by admin.', 'success');
+                closeModal(); setTimeout(() => renderPage(), 500);
+            } else {
+                sampleClients.push({
+                    id: sampleClients.length + 1, name, email, phone, password,
+                    role: 'client', jobsRequested: 0, paymentsMade: []
+                });
+                saveUser({ email, name, phone, role: 'client' });
+                showNotification('Account created! You can now hire artisans.', 'success');
+                closeModal(); setTimeout(() => { window.location.href = 'find-artisans.html'; }, 800);
+            }
+        }
+
+        function doLogout() {
+            clearUser();
+            showNotification('Logged out successfully', 'info');
+            setTimeout(() => renderPage(), 400);
+        }
+
+        renderPage();
+    </script>
+</body>
+</html>
