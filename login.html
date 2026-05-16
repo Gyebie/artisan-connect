@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="data.js"></script>
+    <script type="module" src="firebase-init.js"></script>
+    <script type="module" src="data.js"></script>
     <script src="nav.js"></script>
     <style id="shared-css"></style>
     <style>
@@ -475,6 +476,9 @@
         document.getElementById('shared-css').innerHTML = sharedCSS;
         document.getElementById('navbar-mount').innerHTML = renderNavbar('login');
 
+        // Load all users from Firebase so login can find registered accounts
+        initAppData();
+
         // Populate dropdowns once
         loadRegionsIntoSelect(document.getElementById('ra-region'));
         loadCategoriesIntoSelect(document.getElementById('ra-category'));
@@ -622,17 +626,16 @@
         function validateEcowasCard(val) { return /^GHA-\d{9}-\d$/.test(val); }
 
         // ---- LOGIN ----
-        function doLogin() {
+        async function doLogin() {
             const email    = document.getElementById('l-email').value.trim();
             const password = document.getElementById('l-password').value;
             if (!email || !password) { showNotification('Please enter your email/phone and password', 'error'); return; }
 
             if (currentType === 'artisan') {
-                // Check memory then localStorage
                 let a = sampleArtisans.find(x => (x.email === email || x.phone === email) && x.password === password);
                 if (!a) { const s = loadArtisanProfile(); if (s && (s.email===email||s.phone===email) && s.password===password) a = s; }
                 if (a) {
-                    saveArtisanProfile(a);
+                    await saveArtisanProfile(a);
                     saveUser({ email: a.email, name: a.name, phone: a.phone, role: 'artisan' });
                     showNotification(`Welcome back, ${a.name}!`, 'success');
                     setTimeout(() => { window.location.href = 'artisan-portal.html'; }, 900);
@@ -641,11 +644,10 @@
                 const c = sampleClients.find(x => (x.email === email || x.phone === email) && x.password === password);
                 if (c) { showNotification('This is a customer account. Switch to Customer Login.', 'error'); currentType = 'customer'; switchTab('login'); return; }
             } else {
-                // Check memory then localStorage
                 let c = sampleClients.find(x => (x.email === email || x.phone === email) && x.password === password);
                 if (!c) { const s = loadClientProfile(); if (s && (s.email===email||s.phone===email) && s.password===password) c = s; }
                 if (c) {
-                    saveClientProfile(c);
+                    await saveClientProfile(c);
                     saveUser({ email: c.email, name: c.name, phone: c.phone, role: 'client' });
                     showNotification(`Welcome back, ${c.name}!`, 'success');
                     setTimeout(() => { window.location.href = 'customer-portal.html'; }, 900);
@@ -658,7 +660,7 @@
         }
 
         // ---- REGISTER ARTISAN ----
-        function doRegisterArtisan() {
+        async function doRegisterArtisan() {
             const g = id => document.getElementById(id).value;
             const name = g('ra-name').trim(), email = g('ra-email').trim(), phone = g('ra-phone').trim();
             const idType = g('ra-id-type'), idNumber = g('ra-id-number').trim();
@@ -693,14 +695,14 @@
                 profilePhoto: '', registeredAt: new Date().toISOString()
             };
             sampleArtisans.push(newArtisan);
-            saveArtisanProfile(newArtisan);
+            await saveArtisanProfile(newArtisan);
             saveUser({ email, name, phone, role: 'artisan' });
             showNotification(`Welcome, ${name}! Taking you to your dashboard...`, 'success');
             setTimeout(() => { window.location.href = 'artisan-portal.html'; }, 1200);
         }
 
         // ---- REGISTER CUSTOMER ----
-        function doRegisterCustomer() {
+        async function doRegisterCustomer() {
             const g = id => document.getElementById(id).value;
             const name = g('rc-name').trim(), email = g('rc-email').trim(), phone = g('rc-phone').trim();
             const password = g('rc-password'), confirm = g('rc-confirm');
@@ -722,7 +724,7 @@
                 region: g('rc-region'), district: g('rc-district'), jobsRequested: 0, paymentsMade: []
             };
             sampleClients.push(newClient);
-            saveClientProfile(newClient);
+            await saveClientProfile(newClient);
             saveUser({ email, name, phone, role: 'client' });
             showNotification('Account created! Welcome to GhanaArtisan.', 'success');
             setTimeout(() => { window.location.href = 'customer-portal.html'; }, 1000);
