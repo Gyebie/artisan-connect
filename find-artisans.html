@@ -124,9 +124,8 @@
 
         // Load artisans from Firebase before searching
         initAppData().then(() => {
-            // Re-run search if filter params already set from URL
-            const urlParams2 = new URLSearchParams(window.location.search);
-            if (urlParams2.get('region') || urlParams2.get('category')) searchArtisans();
+            // Always re-render after Firebase data loads
+            doSearch();
         });
 
         // Populate selects
@@ -319,10 +318,6 @@
             if (e.target === this) closeDetail();
         });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
-
-        // Auto-search if region param provided
-        if (preRegion) doSearch();
-        else renderResults(sampleArtisans.filter(a => a.verified));
     </script>
 </body>
 </html>
