@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="data.js"></script>
+    <script type="module" src="firebase-init.js"></script>
+    <script type="module" src="data.js"></script>
     <script src="nav.js"></script>
     <style id="shared-css"></style>
     <style>
@@ -120,6 +121,13 @@
     <script>
         document.getElementById('shared-css').innerHTML = sharedCSS;
         document.getElementById('navbar-mount').innerHTML = renderNavbar('find-artisans');
+
+        // Load artisans from Firebase before searching
+        initAppData().then(() => {
+            // Re-run search if filter params already set from URL
+            const urlParams2 = new URLSearchParams(window.location.search);
+            if (urlParams2.get('region') || urlParams2.get('category')) searchArtisans();
+        });
 
         // Populate selects
         loadRegionsIntoSelect(document.getElementById('search-region'));
