@@ -641,10 +641,13 @@
         // Set sidebar name
         document.getElementById('sb-name').textContent = user?.name || 'Customer';
 
-        // My requests — filter by email, fallback to all sample requests for demo accounts
+        showSection('overview');
+
+        })(); // end async IIFE — all functions below are global
+
+        // My requests — filter by email
         function myRequests() {
             const own = serviceRequests.filter(r => r.clientEmail === user?.email);
-            // For demo sample accounts, show their pre-loaded requests
             if (own.length === 0) {
                 return serviceRequests.filter(r => r.clientName === user?.name);
             }
@@ -1101,15 +1104,6 @@
         function toggleSidebar() {
             document.getElementById('portal-sidebar').classList.toggle('open');
         }
-
-        })(); // end async IIFE
-
-        // ---- Init — run after DOM is fully ready ----
-        document.addEventListener('DOMContentLoaded', () => {
-            if (loadUser()?.role === 'client') {
-                showSection('overview');
-            }
-        });
     </script>
 </body>
 </html>
