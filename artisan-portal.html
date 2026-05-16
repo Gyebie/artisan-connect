@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="data.js"></script>
+    <script type="module" src="firebase-init.js"></script>
+    <script type="module" src="data.js"></script>
     <script src="nav.js"></script>
     <style id="shared-css"></style>
     <style>
@@ -421,6 +422,7 @@
         document.getElementById('shared-css').innerHTML = sharedCSS;
         document.getElementById('navbar-mount').innerHTML = renderNavbar('artisan-portal');
 
+        (async () => {
         // Auth guard
         const user = loadUser();
         if (!user || user.role !== 'artisan') {
@@ -428,12 +430,12 @@
             setTimeout(() => { window.location.href = 'login-artisan.html'; }, 1200);
         }
 
-        // Merge all registered artisans from localStorage pool into sampleArtisans
-        mergeArtisanPoolIntoSample();
+        // Merge all registered artisans from Firebase into sampleArtisans
+        await initAppData();
 
         // Look up artisan record:
         // 1. Check sampleArtisans (includes newly merged from pool)
-        // 2. Fall back to localStorage profile directly
+        // 2. Fall back to session profile directly
         // 3. Create a minimal stub from session so the page never shows "Loading..."
         let artisan = sampleArtisans.find(a => a.email === user?.email)
                    || loadArtisanProfile()
@@ -446,7 +448,7 @@
                         profilePic: null, idType: '', idNumber: ''
                     };
 
-        // If loaded from localStorage, make sure it's also accessible in sampleArtisans
+        // If not yet in Firestore, push to memory so the page works immediately
         if (artisan && !sampleArtisans.find(a => a.email === artisan.email)) {
             sampleArtisans.push(artisan);
         }
@@ -584,7 +586,7 @@
             reader.readAsDataURL(input.files[0]);
         }
 
-        function postWorkUpdate() {
+        async function postWorkUpdate() {
             if (!artisan) return;
             const title      = document.getElementById('wu-title').value.trim();
             const beforeNote = document.getElementById('wu-before-note').value.trim();
@@ -597,6 +599,7 @@
 
             if (!artisan.workUpdates) artisan.workUpdates = [];
             artisan.workUpdates.unshift({ id: Date.now(), artisanId: artisan.id, artisanName: artisan.name, jobDesc: title, beforeNote, afterNote, beforePhoto: beforeData, afterPhoto: afterData, status, date: new Date().toISOString().split('T')[0] });
+            await saveArtisanProfile(artisan);
 
             // Reset form
             document.getElementById('wu-title').value = '';
@@ -637,7 +640,7 @@
                             </div>
                         </div>
                         <div style="margin-top:0.8rem;text-align:right;">
-                            <button class="act-btn red" onclick="if(confirm('Delete this update?')){artisan.workUpdates.splice(${i},1);renderWorkUpdates();}"><i class="fas fa-trash"></i> Delete</button>
+                            <button class="act-btn red" onclick="deleteWorkUpdate(${i})"><i class="fas fa-trash"></i> Delete</button>
                         </div>
                     </div>
                 </div>`).join('');
@@ -686,7 +689,7 @@
 
         function profileRegionChange() { loadDistrictsIntoSelect(document.getElementById('p-district'), document.getElementById('p-region').value); }
 
-        function saveProfile() {
+        async function saveProfile() {
             if (!artisan) return;
             artisan.name=document.getElementById('p-name').value.trim();
             artisan.email=document.getElementById('p-email').value.trim();
@@ -696,40 +699,42 @@
             artisan.region=document.getElementById('p-region').value;
             artisan.district=document.getElementById('p-district').value;
             const u=loadUser(); u.name=artisan.name; saveUser(u);
-            saveArtisanProfile(artisan); // syncs to both profile + pool
+            await saveArtisanProfile(artisan);
             document.getElementById('sb-name').textContent=artisan.name;
             showNotification('Personal details saved!','success');
         }
 
-        function saveProfessional() {
+        async function saveProfessional() {
             if (!artisan) return;
             artisan.category=document.getElementById('p-category').value;
             artisan.experience=parseInt(document.getElementById('p-experience').value)||0;
             artisan.price=document.getElementById('p-price').value;
             artisan.skills=document.getElementById('p-skills').value.split(',').map(s=>s.trim()).filter(Boolean);
             artisan.bio=document.getElementById('p-bio').value.trim();
-            saveArtisanProfile(artisan);
+            await saveArtisanProfile(artisan);
             showNotification('Professional details saved!','success');
         }
 
-        function changePassword() {
+        async function changePassword() {
             const op=document.getElementById('p-old-pw').value, np=document.getElementById('p-new-pw').value, cp=document.getElementById('p-conf-pw').value;
             if (!op){showNotification('Enter current password','error');return;}
             if (np.length<8){showNotification('New password needs 8+ characters','error');return;}
             if (np!==cp){showNotification('Passwords do not match','error');return;}
             if (artisan?.password && artisan.password!==op){showNotification('Current password incorrect','error');return;}
             if (artisan) artisan.password=np;
+            await saveArtisanProfile(artisan);
             ['p-old-pw','p-new-pw','p-conf-pw'].forEach(id=>document.getElementById(id).value='');
             showNotification('Password updated!','success');
         }
 
         // CREDENTIALS
-        function uploadCredential() {
+        async function uploadCredential() {
             const name=document.getElementById('cred-name').value.trim(), type=document.getElementById('cred-type').value, file=document.getElementById('cred-file').files[0];
             if (!name){showNotification('Enter credential name','error');return;}
             if (!file){showNotification('Select a file','error');return;}
             if (!artisan.credentials) artisan.credentials=[];
             artisan.credentials.push({name,type,file:file.name,date:new Date().toISOString().split('T')[0]});
+            await saveArtisanProfile(artisan);
             document.getElementById('cred-name').value=''; document.getElementById('cred-file').value=''; document.getElementById('cred-file-name').textContent='';
             showNotification(`"${name}" uploaded!`,'success'); renderCredentials();
         }
@@ -740,7 +745,21 @@
             const iconMap={certificate:'fa-award',licence:'fa-id-card',diploma:'fa-graduation-cap',training:'fa-chalkboard-teacher',other:'fa-file'};
             document.getElementById('creds-list').innerHTML = creds.length===0
                 ? `<div class="empty-state"><i class="fas fa-folder-open"></i><p>No credentials yet.</p></div>`
-                : creds.map((c,i)=>`<div class="cred-card"><div class="cred-info"><div class="cred-icon"><i class="fas ${iconMap[c.type]||'fa-file'}"></i></div><div><div class="cred-name">${c.name}</div><div class="cred-type">${c.type} · ${c.file} · ${c.date}</div></div></div><button class="act-btn red" onclick="if(confirm('Remove?')){artisan.credentials.splice(${i},1);renderCredentials();}"><i class="fas fa-trash"></i></button></div>`).join('');
+                : creds.map((c,i)=>`<div class="cred-card"><div class="cred-info"><div class="cred-icon"><i class="fas ${iconMap[c.type]||'fa-file'}"></i></div><div><div class="cred-name">${c.name}</div><div class="cred-type">${c.type} · ${c.file} · ${c.date}</div></div></div><button class="act-btn red" onclick="deleteCredential(${i})"><i class="fas fa-trash"></i></button></div>`).join('');
+        }
+
+        async function deleteWorkUpdate(i) {
+            if (!confirm('Delete this update?')) return;
+            artisan.workUpdates.splice(i, 1);
+            await saveArtisanProfile(artisan);
+            renderWorkUpdates();
+        }
+
+        async function deleteCredential(i) {
+            if (!confirm('Remove this credential?')) return;
+            artisan.credentials.splice(i, 1);
+            await saveArtisanProfile(artisan);
+            renderCredentials();
         }
 
         // PAYMENTS
@@ -842,8 +861,10 @@
         window.addEventListener('pagehide',()=>{ clearUser(); });
         document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeInfo(); });
 
+        })(); // end async IIFE
+
         document.addEventListener('DOMContentLoaded',()=>{
-            if (user && user.role==='artisan') showSection('overview');
+            if (loadUser()?.role==='artisan') showSection('overview');
         });
     </script>
 </body>
