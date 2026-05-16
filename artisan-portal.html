@@ -422,9 +422,12 @@
         document.getElementById('shared-css').innerHTML = sharedCSS;
         document.getElementById('navbar-mount').innerHTML = renderNavbar('artisan-portal');
 
+        // Global variables — accessible by all functions
+        let user    = loadUser();
+        let artisan = null;
+
         (async () => {
         // Auth guard
-        const user = loadUser();
         if (!user || user.role !== 'artisan') {
             showNotification('Please login as an artisan', 'error');
             setTimeout(() => { window.location.href = 'login-artisan.html'; }, 1200);
@@ -434,19 +437,19 @@
         await initAppData();
 
         // Look up artisan record:
-        // 1. Check sampleArtisans (includes newly merged from pool)
+        // 1. Check sampleArtisans (loaded from Firebase)
         // 2. Fall back to session profile directly
         // 3. Create a minimal stub from session so the page never shows "Loading..."
-        let artisan = sampleArtisans.find(a => a.email === user?.email)
-                   || loadArtisanProfile()
-                   || {
-                        id: 0, name: user?.name || 'Artisan', email: user?.email || '',
-                        phone: user?.phone || '', verified: false, category: '',
-                        skills: [], region: '', district: '', address: '',
-                        experience: 0, price: '', bio: '', rating: 0, completedJobs: 0,
-                        credentials: [], jobRequests: [], payments: [], workUpdates: [],
-                        profilePic: null, idType: '', idNumber: ''
-                    };
+        artisan = sampleArtisans.find(a => a.email === user?.email)
+               || loadArtisanProfile()
+               || {
+                    id: 0, name: user?.name || 'Artisan', email: user?.email || '',
+                    phone: user?.phone || '', verified: false, category: '',
+                    skills: [], region: '', district: '', address: '',
+                    experience: 0, price: '', bio: '', rating: 0, completedJobs: 0,
+                    credentials: [], jobRequests: [], payments: [], workUpdates: [],
+                    profilePic: null, idType: '', idNumber: ''
+                };
 
         // If not yet in Firestore, push to memory so the page works immediately
         if (artisan && !sampleArtisans.find(a => a.email === artisan.email)) {
