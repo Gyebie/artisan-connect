@@ -1,7 +1,32 @@
 // =============================================
-//  GhanaArtisan - Shared Data & Utilities
+//  GhanaArtisan - Firebase Firestore Backend
+//  Replace your old data.js with this file.
+//  Follow FIREBASE_SETUP_GUIDE.md to configure.
 // =============================================
 
+// ── 1. Firebase SDK (loaded via CDN in every HTML file) ──────────────────────
+//  Add these 3 script tags to the <head> of EVERY .html page,
+//  BEFORE your <script src="data.js"></script> line:
+//
+//  <script type="module" src="firebase-init.js"></script>
+//
+//  Then change every HTML file's data.js script tag to:
+//  <script type="module" src="data.js"></script>
+//
+//  The firebase-init.js file is generated separately (see FIREBASE_SETUP_GUIDE.md).
+
+// ── 2. Firebase app instance (set by firebase-init.js) ───────────────────────
+// This variable is set by firebase-init.js before data.js runs.
+// We reference it here so all functions below can use db.
+let db;         // Firestore instance
+let auth;       // Firebase Auth instance (optional, for future use)
+
+// Called by firebase-init.js once Firebase is ready
+window.__firebaseReady = function(firestoreDb) {
+    db = firestoreDb;
+};
+
+// ── 3. Static lookup data (unchanged — no need to store in DB) ───────────────
 const ghanaData = {
     country: "Ghana",
     regions: [
@@ -42,159 +67,230 @@ const categories = [
     { id: "tech",         name: "Technology",          icon: "fa-laptop" }
 ];
 
-let sampleArtisans = [
-    {
-        id: 1, name: "Kwame Mensah", email: "kwame.mensah@example.com", phone: "0241234567", password: "password123",
-        category: "plumbing", skills: ["Pipe Installation","Leak Repair","Water Heater Installation"],
-        region: "Greater Accra Region", district: "Accra Metropolitan", address: "House No. 23, Ring Road, Accra",
-        experience: 5, rating: 4.8, price: "₵150/hour", verified: true, completedJobs: 124,
-        bio: "Professional plumber with 5+ years experience. Specialized in modern plumbing solutions for homes and businesses.",
-        idType: "ecowascard", idNumber: "GHA-123456789-0", profilePic: null,
-        credentials: [{ type: "certificate", name: "Plumbing License", file: "plumbing_license.pdf" },{ type: "certificate", name: "Safety Training", file: "safety_cert.pdf" }],
-        jobRequests: [{ id: 1, clientName: "Ama Serwaa", clientPhone: "0541234567", clientEmail: "ama@example.com", description: "Fix leaking kitchen pipe", date: "2024-01-15", status: "pending" },{ id: 2, clientName: "Kofi Asante", clientPhone: "0247654321", clientEmail: "kofi@example.com", description: "Install new bathroom fixtures", date: "2024-01-10", status: "accepted" }],
-        payments: [{ id: 1, amount: "₵450", date: "2024-01-10", status: "completed", client: "Kofi Asante" },{ id: 2, amount: "₵300", date: "2024-01-15", status: "pending", client: "Ama Serwaa" }],
-        workUpdates: [{ id: 1, jobDesc: "Fix leaking kitchen pipe", beforeImg: null, afterImg: null, note: "Pipe replaced and sealed. No more leaks.", date: "2024-01-16", status: "completed" }]
-    },
-    {
-        id: 2, name: "Amina Okafor", email: "amina.okafor@example.com", phone: "0552345678", password: "password123",
-        category: "tailoring", skills: ["Dress Making","Traditional Wear","Alterations"],
-        region: "Ashanti Region", district: "Kumasi Metropolitan", address: "Plot 45, Adum, Kumasi",
-        experience: 8, rating: 4.9, price: "₵75/item", verified: true, completedJobs: 89,
-        bio: "Master tailor specializing in African traditional attire and modern fashion designs.",
-        idType: "voters_id", idNumber: "VOT-987654321", profilePic: null,
-        credentials: [{ type: "certificate", name: "Fashion Design Diploma", file: "fashion_diploma.pdf" }],
-        jobRequests: [{ id: 1, clientName: "Yaa Boahen", clientPhone: "0248889999", clientEmail: "yaa@example.com", description: "Make traditional Kente outfit", date: "2024-01-12", status: "pending" }],
-        payments: [{ id: 1, amount: "₵375", date: "2024-01-05", status: "completed", client: "Akua Mensah" }],
-        workUpdates: []
-    },
-    {
-        id: 3, name: "John Kamau", email: "john.kamau@example.com", phone: "0203456789", password: "password123",
-        category: "electrical", skills: ["House Wiring","Solar Installation","Electrical Maintenance"],
-        region: "Eastern Region", district: "New Juaben South Municipal", address: "Block C, Koforidua",
-        experience: 7, rating: 4.7, price: "₵200/hour", verified: true, completedJobs: 156,
-        bio: "Certified electrician with expertise in residential and commercial electrical systems.",
-        idType: "ecowascard", idNumber: "GHA-234567890-1", profilePic: null,
-        credentials: [],
-        jobRequests: [],
-        payments: [{ id: 1, amount: "₵800", date: "2024-01-08", status: "completed", client: "Kwadwo Boateng" },{ id: 2, amount: "₵600", date: "2024-01-12", status: "completed", client: "Abena Kumi" }],
-        workUpdates: []
-    }
-];
-
-let sampleClients = [
-    { id: 1, name: "Kofi Asante", email: "kofi@example.com", phone: "0247654321", password: "password123", role: "client", jobsRequested: 2, paymentsMade: [{ id: 1, amount: "₵450", date: "2024-01-10", artisan: "Kwame Mensah", status: "completed" }] },
-    { id: 2, name: "Ama Serwaa",  email: "ama@example.com",  phone: "0541234567", password: "password123", role: "client", jobsRequested: 1, paymentsMade: [{ id: 1, amount: "₵300", date: "2024-01-15", artisan: "Kwame Mensah", status: "pending" }] }
-];
-
-// ---- Service Requests (go to both admin & artisan) ----
-// status: 'pending_admin' | 'approved' | 'reassigned' | 'rejected' | 'completed'
-let serviceRequests = [
-    {
-        id: 1,
-        clientName: "Kofi Asante", clientEmail: "kofi@example.com", clientPhone: "0247654321",
-        artisanId: 1, artisanName: "Kwame Mensah",
-        category: "plumbing", description: "Fix leaking kitchen pipe urgently",
-        region: "Greater Accra Region", district: "Accra Metropolitan",
-        address: "House No. 23, Ring Road, Accra",
-        date: "2024-01-15", status: "approved",
-        adminNote: "", paymentStatus: "pending", amount: ""
-    },
-    {
-        id: 2,
-        clientName: "Ama Serwaa", clientEmail: "ama@example.com", clientPhone: "0541234567",
-        artisanId: 2, artisanName: "Amina Okafor",
-        category: "tailoring", description: "Need a traditional Kente outfit made for graduation",
-        region: "Ashanti Region", district: "Kumasi Metropolitan",
-        address: "Plot 45, Adum, Kumasi",
-        date: "2024-01-16", status: "pending_admin",
-        adminNote: "", paymentStatus: "not_paid", amount: ""
-    }
-];
-
 const adminCredentials = { username: "ARTISANCONNECT", password: "3767 ARTISANCONNECT" };
 
-// ---- Session helpers (localStorage) ----
-function saveUser(user) { localStorage.setItem('ghanaArtisanUser', JSON.stringify(user)); }
-function loadUser()     { const u = localStorage.getItem('ghanaArtisanUser'); return u ? JSON.parse(u) : null; }
-function clearUser()    { localStorage.removeItem('ghanaArtisanUser'); }
+// ── 4. In-memory caches (populated from Firestore on page load) ───────────────
+let sampleArtisans  = [];
+let sampleClients   = [];
+let serviceRequests = [];
 
-// ---- Registered artisans pool (array — survives page reloads) ----
-function saveArtisanProfile(profile) {
-    // Save single profile (for current artisan session)
-    localStorage.setItem('ghanaArtisanProfile', JSON.stringify(profile));
-    // Also add to the pool of all registered artisans for admin to see
-    let pool = [];
-    try { pool = JSON.parse(localStorage.getItem('ghanaArtisanPool') || '[]'); } catch(e) { pool = []; }
-    const idx = pool.findIndex(a => a.email === profile.email);
-    if (idx >= 0) { pool[idx] = profile; } else { pool.push(profile); }
-    localStorage.setItem('ghanaArtisanPool', JSON.stringify(pool));
-}
-function loadArtisanProfile() {
-    const p = localStorage.getItem('ghanaArtisanProfile');
-    return p ? JSON.parse(p) : null;
-}
-function clearArtisanProfile() {
-    localStorage.removeItem('ghanaArtisanProfile');
-    // Do NOT clear the pool — other artisans may still be in it
-}
-function loadArtisanPool() {
-    try { return JSON.parse(localStorage.getItem('ghanaArtisanPool') || '[]'); } catch(e) { return []; }
-}
-function mergeArtisanPoolIntoSample() {
-    // Merge localStorage-registered artisans into sampleArtisans so admin can see them
-    const pool = loadArtisanPool();
-    pool.forEach(a => {
-        if (!sampleArtisans.find(x => x.email === a.email)) {
-            sampleArtisans.push(a);
-        } else {
-            // Update existing record (e.g. verified status)
-            const idx = sampleArtisans.findIndex(x => x.email === a.email);
-            if (idx >= 0) sampleArtisans[idx] = { ...sampleArtisans[idx], ...a };
-        }
+// ── 5. Firestore helpers ──────────────────────────────────────────────────────
+
+/** Wait for db to be ready (firebase-init.js sets it async) */
+function waitForDb(timeout = 8000) {
+    return new Promise((resolve, reject) => {
+        if (db) { resolve(db); return; }
+        const start = Date.now();
+        const id = setInterval(() => {
+            if (db) { clearInterval(id); resolve(db); }
+            else if (Date.now() - start > timeout) { clearInterval(id); reject(new Error("Firebase not initialised")); }
+        }, 50);
     });
 }
 
-// ---- Registered clients pool ----
-function saveClientProfile(profile) {
-    localStorage.setItem('ghanaClientProfile', JSON.stringify(profile));
-    let pool = [];
-    try { pool = JSON.parse(localStorage.getItem('ghanaClientPool') || '[]'); } catch(e) { pool = []; }
-    const idx = pool.findIndex(c => c.email === profile.email);
-    if (idx >= 0) { pool[idx] = profile; } else { pool.push(profile); }
-    localStorage.setItem('ghanaClientPool', JSON.stringify(pool));
-}
-function loadClientProfile() {
-    const p = localStorage.getItem('ghanaClientProfile');
-    return p ? JSON.parse(p) : null;
-}
-function clearClientProfile() { localStorage.removeItem('ghanaClientProfile'); }
-function mergeClientPoolIntoSample() {
-    try {
-        const pool = JSON.parse(localStorage.getItem('ghanaClientPool') || '[]');
-        pool.forEach(c => {
-            if (!sampleClients.find(x => x.email === c.email)) sampleClients.push(c);
-        });
-    } catch(e) {}
+/** Generic: fetch all docs from a collection and return as array */
+async function fetchCollection(collectionName) {
+    const d = await waitForDb();
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(d, collectionName));
+    return snap.docs.map(doc => ({ _docId: doc.id, ...doc.data() }));
 }
 
-// ---- Shared UI helpers ----
-function showNotification(message, type = 'info') {
-    const n = document.createElement('div');
+/** Generic: save/update a single doc by its Firestore doc ID */
+async function saveDoc(collectionName, docId, data) {
+    const d = await waitForDb();
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cleanData = JSON.parse(JSON.stringify(data)); // strip undefined
+    await setDoc(doc(d, collectionName, docId), cleanData, { merge: true });
+}
+
+/** Generic: add a new doc with auto-generated ID */
+async function addDoc_(collectionName, data) {
+    const d = await waitForDb();
+    const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cleanData = JSON.parse(JSON.stringify(data));
+    const ref = await addDoc(collection(d, collectionName), cleanData);
+    return ref.id;
+}
+
+/** Generic: delete a doc */
+async function deleteDoc_(collectionName, docId) {
+    const d = await waitForDb();
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(doc(d, collectionName, docId));
+}
+
+// ── 6. Initialise: load all data from Firestore into memory ──────────────────
+
+/**
+ * Call this once at the top of every page's <script> block:
+ *   await initAppData();
+ * This loads artisans, clients, and service requests from Firestore
+ * into the in-memory arrays the rest of your code already uses.
+ */
+async function initAppData() {
+    try {
+        const [artisans, clients, requests] = await Promise.all([
+            fetchCollection("artisans"),
+            fetchCollection("clients"),
+            fetchCollection("serviceRequests")
+        ]);
+        sampleArtisans  = artisans;
+        sampleClients   = clients;
+        serviceRequests = requests;
+        console.log(`[Firebase] Loaded ${artisans.length} artisans, ${clients.length} clients, ${requests.length} requests`);
+    } catch (err) {
+        console.error("[Firebase] initAppData failed:", err);
+        showNotification("Could not load data. Check your internet connection.", "error");
+    }
+}
+
+// ── 7. Artisan CRUD ───────────────────────────────────────────────────────────
+
+/**
+ * Save (create or update) an artisan profile to Firestore.
+ * Uses email as the stable doc ID.
+ */
+async function saveArtisanProfile(profile) {
+    if (!profile?.email) { console.error("saveArtisanProfile: no email"); return; }
+    const docId = profile.email.replace(/[.#$/[\]]/g, "_"); // Firestore-safe ID
+    try {
+        await saveDoc("artisans", docId, { ...profile, _docId: docId, updatedAt: new Date().toISOString() });
+        // Also update in-memory cache
+        const idx = sampleArtisans.findIndex(a => a.email === profile.email);
+        const merged = { _docId: docId, ...profile };
+        if (idx >= 0) sampleArtisans[idx] = merged; else sampleArtisans.push(merged);
+        // Keep session storage for current-user quick access
+        sessionStorage.setItem("ghanaArtisanProfile", JSON.stringify(profile));
+    } catch (err) {
+        console.error("[Firebase] saveArtisanProfile failed:", err);
+        showNotification("Error saving profile. Please try again.", "error");
+    }
+}
+
+function loadArtisanProfile() {
+    // Returns the currently logged-in artisan from session storage
+    const p = sessionStorage.getItem("ghanaArtisanProfile");
+    return p ? JSON.parse(p) : null;
+}
+
+function clearArtisanProfile() {
+    sessionStorage.removeItem("ghanaArtisanProfile");
+}
+
+function loadArtisanPool() {
+    // Return the in-memory cache (already loaded from Firestore by initAppData)
+    return sampleArtisans;
+}
+
+/** @deprecated — use initAppData() instead. Kept for backward compatibility. */
+async function mergeArtisanPoolIntoSample() {
+    // No-op: initAppData already fills sampleArtisans from Firestore
+    return;
+}
+
+// ── 8. Client CRUD ────────────────────────────────────────────────────────────
+
+async function saveClientProfile(profile) {
+    if (!profile?.email) { console.error("saveClientProfile: no email"); return; }
+    const docId = profile.email.replace(/[.#$/[\]]/g, "_");
+    try {
+        await saveDoc("clients", docId, { ...profile, _docId: docId, updatedAt: new Date().toISOString() });
+        const idx = sampleClients.findIndex(c => c.email === profile.email);
+        const merged = { _docId: docId, ...profile };
+        if (idx >= 0) sampleClients[idx] = merged; else sampleClients.push(merged);
+        sessionStorage.setItem("ghanaClientProfile", JSON.stringify(profile));
+    } catch (err) {
+        console.error("[Firebase] saveClientProfile failed:", err);
+        showNotification("Error saving profile. Please try again.", "error");
+    }
+}
+
+function loadClientProfile() {
+    const p = sessionStorage.getItem("ghanaClientProfile");
+    return p ? JSON.parse(p) : null;
+}
+
+function clearClientProfile() {
+    sessionStorage.removeItem("ghanaClientProfile");
+}
+
+/** @deprecated — use initAppData() instead. Kept for backward compatibility. */
+async function mergeClientPoolIntoSample() {
+    return;
+}
+
+// ── 9. Service Request CRUD ───────────────────────────────────────────────────
+
+/**
+ * Add a new service request to Firestore and the in-memory array.
+ * Returns the new request with its Firestore-generated ID.
+ */
+async function addServiceRequest(requestData) {
+    try {
+        const payload = {
+            ...requestData,
+            createdAt: new Date().toISOString(),
+            status: requestData.status || "pending_admin"
+        };
+        const docId = await addDoc_("serviceRequests", payload);
+        const withId = { _docId: docId, id: docId, ...payload };
+        serviceRequests.push(withId);
+        return withId;
+    } catch (err) {
+        console.error("[Firebase] addServiceRequest failed:", err);
+        showNotification("Error submitting request. Please try again.", "error");
+        return null;
+    }
+}
+
+/**
+ * Update an existing service request (e.g. change status, add admin note).
+ * Pass the request's _docId or id.
+ */
+async function updateServiceRequest(docId, changes) {
+    try {
+        await saveDoc("serviceRequests", docId, changes);
+        const idx = serviceRequests.findIndex(r => r._docId === docId || r.id === docId);
+        if (idx >= 0) serviceRequests[idx] = { ...serviceRequests[idx], ...changes };
+    } catch (err) {
+        console.error("[Firebase] updateServiceRequest failed:", err);
+        showNotification("Error updating request.", "error");
+    }
+}
+
+// ── 10. Session helpers (use sessionStorage so session ends on tab close) ─────
+
+function saveUser(user) {
+    sessionStorage.setItem("ghanaArtisanUser", JSON.stringify(user));
+}
+function loadUser() {
+    const u = sessionStorage.getItem("ghanaArtisanUser");
+    return u ? JSON.parse(u) : null;
+}
+function clearUser() {
+    sessionStorage.removeItem("ghanaArtisanUser");
+}
+
+// ── 11. Shared UI helpers (unchanged) ─────────────────────────────────────────
+
+function showNotification(message, type = "info") {
+    const n = document.createElement("div");
     n.style.cssText = `position:fixed;top:20px;right:20px;padding:1rem 1.5rem;
-        background:${type==='success'?'#25D366':type==='error'?'#CE1126':'#006600'};
+        background:${type==="success"?"#25D366":type==="error"?"#CE1126":"#006600"};
         color:white;border-radius:8px;box-shadow:0 5px 15px rgba(0,0,0,0.2);
         z-index:9999;animation:fadeIn 0.3s ease;font-family:'Inter',sans-serif;`;
     n.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">
-        <i class="fas ${type==='success'?'fa-check-circle':type==='error'?'fa-exclamation-circle':'fa-info-circle'}"></i>
+        <i class="fas ${type==="success"?"fa-check-circle":type==="error"?"fa-exclamation-circle":"fa-info-circle"}"></i>
         <span>${message}</span></div>`;
     document.body.appendChild(n);
     setTimeout(() => { if (n.parentElement) n.remove(); }, 3000);
 }
 
 function loadRegionsIntoSelect(selectEl) {
-    selectEl.innerHTML = '<option value="">Select Region</option>';
+    selectEl.innerHTML = "<option value=''>Select Region</option>";
     ghanaData.regions.forEach(r => {
-        const o = document.createElement('option');
+        const o = document.createElement("option");
         o.value = r.name;
         o.textContent = `${r.name} (Capital: ${r.capital})`;
         selectEl.appendChild(o);
@@ -202,11 +298,11 @@ function loadRegionsIntoSelect(selectEl) {
 }
 
 function loadDistrictsIntoSelect(selectEl, regionName) {
-    selectEl.innerHTML = '<option value="">Select District</option>';
+    selectEl.innerHTML = "<option value=''>Select District</option>";
     const region = ghanaData.regions.find(r => r.name === regionName);
     if (region) {
         region.districts.forEach(d => {
-            const o = document.createElement('option');
+            const o = document.createElement("option");
             o.value = d; o.textContent = d;
             selectEl.appendChild(o);
         });
@@ -214,9 +310,9 @@ function loadDistrictsIntoSelect(selectEl, regionName) {
 }
 
 function loadCategoriesIntoSelect(selectEl) {
-    selectEl.innerHTML = '<option value="">Select Category</option>';
+    selectEl.innerHTML = "<option value=''>Select Category</option>";
     categories.forEach(c => {
-        const o = document.createElement('option');
+        const o = document.createElement("option");
         o.value = c.id; o.textContent = c.name;
         selectEl.appendChild(o);
     });
