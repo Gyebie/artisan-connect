@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="data.js"></script>
+    <script type="module" src="firebase-init.js"></script>
+    <script type="module" src="data.js"></script>
     <script src="nav.js"></script>
     <style id="shared-css"></style>
     <style>
@@ -428,6 +429,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('tab') === 'register') switchTab('register');
 
+        // Load all clients from Firebase so login can find registered accounts
+        initAppData();
+
         // ---- Forgot Password ----
         let fpGeneratedCode = '';
         let fpMatchedClient = null;
@@ -512,15 +516,15 @@
         }
 
         // ---- Login ----
-        function doLogin() {
+        async function doLogin() {
             const email    = document.getElementById('l-email').value.trim();
             const password = document.getElementById('l-password').value;
             if (!email || !password) { showNotification('Please enter your email/phone and password', 'error'); return; }
 
-            // Check 1: demo/sample clients in memory
+            // Check Firestore-loaded clients
             let client = sampleClients.find(c => (c.email === email || c.phone === email) && c.password === password);
 
-            // Check 2: newly registered customer saved in localStorage
+            // Fallback: check session profile (e.g. just registered this session)
             if (!client) {
                 const saved = loadClientProfile();
                 if (saved && (saved.email === email || saved.phone === email) && saved.password === password) {
@@ -529,7 +533,7 @@
             }
 
             if (client) {
-                saveClientProfile(client); // ensure profile stays in localStorage
+                await saveClientProfile(client);
                 saveUser({ email: client.email, name: client.name, phone: client.phone, role: 'client' });
                 showNotification(`Welcome back, ${client.name}!`, 'success');
                 setTimeout(() => { window.location.href = 'customer-portal.html'; }, 900);
@@ -548,7 +552,7 @@
         }
 
         // ---- Register ----
-        function doRegister() {
+        async function doRegister() {
             const g = id => document.getElementById(id).value;
             const name     = g('r-name').trim();
             const email    = g('r-email').trim();
@@ -563,7 +567,7 @@
             if (password !== confirm) { showNotification('Passwords do not match!', 'error'); return; }
             if (!document.getElementById('r-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
 
-            // Check both in-memory and localStorage for duplicate emails
+            // Check Firestore cache and session for duplicate emails
             const existingInMemory = sampleClients.find(c => c.email === email);
             const existingInStorage = loadClientProfile();
             if (existingInMemory || (existingInStorage && existingInStorage.email === email)) {
@@ -577,8 +581,8 @@
             };
             sampleClients.push(newClient);
 
-            // Persist to localStorage so login works after page reload
-            saveClientProfile(newClient);
+            // Save to Firebase
+            await saveClientProfile(newClient);
             saveUser({ email, name, phone, role: 'client' });
             showNotification('Account created! Welcome to GhanaArtisan.', 'success');
             setTimeout(() => { window.location.href = 'customer-portal.html'; }, 1000);
