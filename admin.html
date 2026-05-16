@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="data.js"></script>
+    <script type="module" src="firebase-init.js"></script>
+    <script type="module" src="data.js"></script>
     <script src="nav.js"></script>
     <style id="shared-css"></style>
     <style>
@@ -190,13 +191,12 @@
         function goBack() { window.location.href = 'index.html'; }
 
         // ---- Admin Login ----
-        function doAdminLogin() {
+        async function doAdminLogin() {
             const u = document.getElementById('admin-username').value.trim();
             const p = document.getElementById('admin-password').value;
             if (u === adminCredentials.username && p === adminCredentials.password) {
-                // Merge any newly registered artisans from localStorage into sampleArtisans
-                mergeArtisanPoolIntoSample();
-                mergeClientPoolIntoSample();
+                showNotification('Loading data from Firebase...', 'info');
+                await initAppData();
                 document.getElementById('admin-overlay').classList.remove('active');
                 document.getElementById('dashboard-wrap').style.display = 'block';
                 showSection('dashboard');
@@ -805,7 +805,7 @@
 
                 // ---- CUSTOMERS ----
                 case 'customers':
-                    // Merge any localStorage customer into sampleClients for display
+                    // Merge any Firebase-loaded customers into sampleClients for display
                     const savedCust = loadClientProfile();
                     if (savedCust && !sampleClients.find(c => c.id === savedCust.id)) sampleClients.push(savedCust);
 
@@ -933,7 +933,7 @@
             loadDistrictsIntoSelect(document.getElementById('ea-district'), document.getElementById('ea-region').value);
         }
 
-        function saveArtisan(e, artisanId) {
+        async function saveArtisan(e, artisanId) {
             e.preventDefault();
             const idx = sampleArtisans.findIndex(a => a.id === artisanId);
             if (idx === -1) return;
@@ -948,18 +948,20 @@
                 bio: g('ea-bio'), address: g('ea-address'),
                 verified: document.getElementById('ea-verified').checked,
             };
+            await saveArtisanProfile(sampleArtisans[idx]);
             showNotification('Artisan updated successfully!', 'success');
             showSection('artisans');
         }
 
         // ---- Delete Artisan ----
-        function deleteArtisan(artisanId, artisanName) {
+        async function deleteArtisan(artisanId, artisanName) {
             if (!confirm(`Delete artisan "${artisanName}"? This cannot be undone.`)) return;
-            const idx = sampleArtisans.findIndex(a => a.id === artisanId);
+            const a = sampleArtisans.find(x => x.id === artisanId);
+            const idx = sampleArtisans.findIndex(x => x.id === artisanId);
             if (idx !== -1) sampleArtisans.splice(idx, 1);
-            // Also clear localStorage if it's the same artisan
+            if (a?._docId) await deleteDoc_('artisans', a._docId);
             const saved = loadArtisanProfile();
-            if (saved && saved.id === artisanId) localStorage.removeItem('artisanProfile');
+            if (saved && saved.id === artisanId) clearArtisanProfile();
             showNotification(`Artisan "${artisanName}" deleted successfully.`, 'success');
             showSection('artisans');
         }
@@ -1017,7 +1019,7 @@
             loadDistrictsIntoSelect(document.getElementById('ec-district'), document.getElementById('ec-region').value);
         }
 
-        function saveCustomer(e, customerId) {
+        async function saveCustomer(e, customerId) {
             e.preventDefault();
             const idx = sampleClients.findIndex(c => c.id === customerId);
             if (idx === -1) return;
@@ -1032,22 +1034,20 @@
                 district: g('ec-district'),
                 ...(newPw ? { password: newPw } : {})
             };
-            // Sync localStorage if it's the same customer
-            const saved = loadClientProfile();
-            if (saved && saved.id === customerId) {
-                saveClientProfile(sampleClients[idx]);
-            }
+            await saveClientProfile(sampleClients[idx]);
             showNotification('Customer updated successfully!', 'success');
             showSection('customers');
         }
 
         // ---- Delete Customer ----
-        function deleteCustomer(customerId, customerName) {
+        async function deleteCustomer(customerId, customerName) {
             if (!confirm(`Delete customer "${customerName}"? This cannot be undone.`)) return;
-            const idx = sampleClients.findIndex(c => c.id === customerId);
+            const c = sampleClients.find(x => x.id === customerId);
+            const idx = sampleClients.findIndex(x => x.id === customerId);
             if (idx !== -1) sampleClients.splice(idx, 1);
+            if (c?._docId) await deleteDoc_('clients', c._docId);
             const saved = loadClientProfile();
-            if (saved && saved.id === customerId) localStorage.removeItem('clientProfile');
+            if (saved && saved.id === customerId) clearClientProfile();
             showNotification(`Customer "${customerName}" deleted successfully.`, 'success');
             showSection('customers');
         }
@@ -1057,7 +1057,7 @@
             loadDistrictsIntoSelect(document.getElementById('ar-district'), document.getElementById('ar-region').value);
         }
 
-        function adminRegisterArtisan(e) {
+        async function adminRegisterArtisan(e) {
             e.preventDefault();
             const g = id => document.getElementById(id).value;
             const name     = g('ar-name').trim();
@@ -1071,7 +1071,7 @@
                 showNotification('ECOWAS Card must be in format: GHA-721233479-8', 'error'); return;
             }
 
-            sampleArtisans.push({
+            const newArtisan = {
                 id: Date.now(), name, email, phone: g('ar-phone'),
                 password: 'changeme123', category: g('ar-category'),
                 skills: g('ar-skills').split(',').map(s=>s.trim()).filter(Boolean),
@@ -1080,8 +1080,11 @@
                 bio: g('ar-bio'), idType, idNumber,
                 rating: 0, completedJobs: 0,
                 verified: document.getElementById('ar-verified').checked,
-                credentials: [], jobRequests: [], payments: [], workUpdates: []
-            });
+                credentials: [], jobRequests: [], payments: [], workUpdates: [],
+                registeredAt: new Date().toISOString()
+            };
+            sampleArtisans.push(newArtisan);
+            await saveArtisanProfile(newArtisan);
             showNotification(`Artisan ${name} registered successfully!`, 'success');
             showSection('artisans');
         }
@@ -1126,21 +1129,23 @@
             </div>`;
         }
 
-        function approveRequest(reqId) {
+        async function approveRequest(reqId) {
             const r = serviceRequests.find(x => x.id === reqId);
             if (!r) return;
             r.status = 'approved';
             r.adminNote = 'Your request has been approved. The artisan will contact you shortly.';
+            await updateServiceRequest(r._docId || r.id, { status: r.status, adminNote: r.adminNote });
             showNotification(`Request approved for ${r.clientName} → ${r.artisanName}`, 'success');
             showSection('job-requests');
         }
 
-        function rejectRequest(reqId) {
+        async function rejectRequest(reqId) {
             if (!confirm('Reject this request? The customer will be notified.')) return;
             const r = serviceRequests.find(x => x.id === reqId);
             if (!r) return;
             r.status = 'rejected';
             r.adminNote = 'Your request could not be fulfilled at this time. Please try again or contact support.';
+            await updateServiceRequest(r._docId || r.id, { status: r.status, adminNote: r.adminNote });
             showNotification(`Request from ${r.clientName} rejected`, 'info');
             showSection('job-requests');
         }
@@ -1168,7 +1173,7 @@
             }
         }
 
-        function confirmReassign() {
+        async function confirmReassign() {
             const r = serviceRequests.find(x => x.id === reassignTargetId);
             if (!r) return;
             const selId = parseInt(document.getElementById('reassign-artisan-sel').value);
@@ -1178,45 +1183,50 @@
             r.artisanName = newArtisan.name;
             r.status      = 'reassigned';
             r.adminNote   = note || `You have been reassigned to ${newArtisan.name} who will be in touch shortly.`;
-            // Push to new artisan's jobRequests
+            await updateServiceRequest(r._docId || r.id, { artisanId: r.artisanId, artisanName: r.artisanName, status: r.status, adminNote: r.adminNote });
+            // Push to new artisan's jobRequests and save
+            newArtisan.jobRequests = newArtisan.jobRequests || [];
             newArtisan.jobRequests.push({
                 id: newArtisan.jobRequests.length + 1,
                 clientName: r.clientName, clientPhone: r.clientPhone, clientEmail: r.clientEmail,
                 description: r.description, date: new Date().toISOString().split('T')[0], status: 'pending'
             });
+            await saveArtisanProfile(newArtisan);
             document.getElementById('reassign-overlay').style.display = 'none';
             showNotification(`Request reassigned to ${newArtisan.name}`, 'success');
             showSection('job-requests');
         }
 
         // ---- Revenue Actions ----
-        function markRevenuePaid(reqId) {
+        async function markRevenuePaid(reqId) {
             const r = serviceRequests.find(x => x.id === reqId);
             if (r) {
                 r.paymentStatus = 'paid';
+                await updateServiceRequest(r._docId || r.id, { paymentStatus: 'paid' });
                 showNotification(`✅ Payment from ${r.clientName} marked as received!`, 'success');
                 showSection('payments');
             }
         }
 
-        function setRevenueAmount(reqId) {
+        async function setRevenueAmount(reqId) {
             const amt = prompt('Enter the amount received from client (e.g. 450):');
             if (!amt || isNaN(parseFloat(amt))) { showNotification('Invalid amount', 'error'); return; }
             const r = serviceRequests.find(x => x.id === reqId);
             if (r) {
                 r.amount = `₵${parseFloat(amt).toFixed(2)}`;
                 r.paymentStatus = 'pending';
+                await updateServiceRequest(r._docId || r.id, { amount: r.amount, paymentStatus: 'pending' });
                 showNotification(`Amount set to ₵${parseFloat(amt).toFixed(2)}`, 'success');
                 showSection('payments');
             }
         }
 
         // ---- Expenditure Actions ----
-        function recordExpenditure() {
+        async function recordExpenditure() {
             const artisanId = parseInt(document.getElementById('exp-artisan').value);
             const amount    = parseFloat(document.getElementById('exp-amount').value);
             const client    = document.getElementById('exp-client').value.trim();
-            const monthRaw  = document.getElementById('exp-month').value; // "2024-01"
+            const monthRaw  = document.getElementById('exp-month').value;
 
             if (!artisanId) { showNotification('Please select an artisan', 'error'); return; }
             if (!amount || amount <= 0) { showNotification('Please enter a valid amount', 'error'); return; }
@@ -1225,7 +1235,6 @@
             if (!artisan) { showNotification('Artisan not found', 'error'); return; }
             if (!artisan.payments) artisan.payments = [];
 
-            // Format month label e.g. "January 2024"
             let monthLabel = 'This Month';
             if (monthRaw) {
                 const [yr, mo] = monthRaw.split('-');
@@ -1241,8 +1250,8 @@
                 status: 'pending',
                 month:  monthLabel
             });
+            await saveArtisanProfile(artisan);
 
-            // Clear form
             document.getElementById('exp-artisan').value = '';
             document.getElementById('exp-amount').value  = '';
             document.getElementById('exp-client').value  = '';
@@ -1250,16 +1259,16 @@
 
             showNotification(`₵${amount.toFixed(2)} payment recorded for ${artisan.name}`, 'success');
             showSection('payments');
-            // Switch to expenditure tab after recording
             setTimeout(() => { if (window.showPayTab) window.showPayTab('expenditure'); }, 100);
         }
 
-        function markExpenditurePaid(artisanId, payId) {
+        async function markExpenditurePaid(artisanId, payId) {
             const artisan = sampleArtisans.find(a => a.id === artisanId);
             if (!artisan) return;
             const pay = artisan.payments.find(p => p.id === payId);
             if (pay) {
                 pay.status = 'completed';
+                await saveArtisanProfile(artisan);
                 showNotification(`✅ Payment to ${artisan.name} marked as paid!`, 'success');
                 showSection('payments');
                 setTimeout(() => { if (window.showPayTab) window.showPayTab('expenditure'); }, 100);
@@ -1267,37 +1276,26 @@
         }
 
         // ---- Verify / Reject ----
-        function verifyArtisan(id) {
+        async function verifyArtisan(id) {
             const a = sampleArtisans.find(x => x.id === id);
             if (a) {
                 a.verified = true;
-                // Update in localStorage pool so artisan sees verified status
-                const pool = loadArtisanPool();
-                const pi = pool.findIndex(x => x.email === a.email);
-                if (pi >= 0) { pool[pi].verified = true; localStorage.setItem('ghanaArtisanPool', JSON.stringify(pool)); }
-                // Also update current artisan profile if it matches
-                const saved = loadArtisanProfile();
-                if (saved && saved.email === a.email) { saved.verified = true; saveArtisanProfile(saved); }
+                await saveArtisanProfile(a);
                 showNotification(`✅ ${a.name} is now verified and visible on the platform!`, 'success');
                 showSection('verifications');
             }
         }
 
-        function rejectArtisan(id) {
+        async function rejectArtisan(id) {
             if (confirm('Reject this artisan? They will be removed and must re-register.')) {
                 const a = sampleArtisans.find(x => x.id === id);
                 const idx = sampleArtisans.findIndex(x => x.id === id);
                 if (idx !== -1) {
                     const name = sampleArtisans[idx].name;
                     sampleArtisans.splice(idx, 1);
-                    // Remove from pool too
-                    if (a) {
-                        let pool = loadArtisanPool();
-                        pool = pool.filter(x => x.email !== a.email);
-                        localStorage.setItem('ghanaArtisanPool', JSON.stringify(pool));
-                        const saved = loadArtisanProfile();
-                        if (saved && saved.email === a.email) clearArtisanProfile();
-                    }
+                    if (a?._docId) await deleteDoc_('artisans', a._docId);
+                    const saved = loadArtisanProfile();
+                    if (saved && saved.email === a?.email) clearArtisanProfile();
                     showNotification(`${name} rejected and removed.`, 'info');
                     showSection('verifications');
                 }
