@@ -15,16 +15,9 @@
 //
 //  The firebase-init.js file is generated separately (see FIREBASE_SETUP_GUIDE.md).
 
-// ── 2. Firebase app instance (set by firebase-init.js) ───────────────────────
-// This variable is set by firebase-init.js before data.js runs.
-// We reference it here so all functions below can use db.
-let db;         // Firestore instance
-let auth;       // Firebase Auth instance (optional, for future use)
-
-// Called by firebase-init.js once Firebase is ready
-window.__firebaseReady = function(firestoreDb) {
-    db = firestoreDb;
-};
+// ── 2. Firebase — db accessed via window.__db (set by firebase-init.js) ──────
+// firebase-init.js runs first and sets window.__db asynchronously.
+// All Firestore calls use waitForDb() which polls window.__db until ready.
 
 // ── 3. Static lookup data (unchanged — no need to store in DB) ───────────────
 const ghanaData = {
@@ -76,13 +69,13 @@ let serviceRequests = [];
 
 // ── 5. Firestore helpers ──────────────────────────────────────────────────────
 
-/** Wait for db to be ready (firebase-init.js sets it async) */
+/** Wait for db to be ready (firebase-init.js sets window.__db async) */
 function waitForDb(timeout = 8000) {
     return new Promise((resolve, reject) => {
-        if (db) { resolve(db); return; }
+        if (window.__db) { resolve(window.__db); return; }
         const start = Date.now();
         const id = setInterval(() => {
-            if (db) { clearInterval(id); resolve(db); }
+            if (window.__db) { clearInterval(id); resolve(window.__db); }
             else if (Date.now() - start > timeout) { clearInterval(id); reject(new Error("Firebase not initialised")); }
         }, 50);
     });
