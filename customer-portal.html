@@ -904,6 +904,8 @@
                 { enableHighAccuracy: true, timeout: 10000 }
             );
         }
+
+        function openReqModal(artisanKey) {
             selectedArtisanId = artisanKey;
             const a = sampleArtisans.find(x => x.email === artisanKey || String(x.id) === String(artisanKey));
             if (!a) { showNotification('Artisan not found. Please try again.', 'error'); return; }
