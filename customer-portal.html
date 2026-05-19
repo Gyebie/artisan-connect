@@ -646,8 +646,11 @@
             sampleClients.push(client);
         }
 
-        // Set sidebar name
-        document.getElementById('sb-name').textContent = user?.name || 'Customer';
+        // Set sidebar name using client (most accurate) then user fallback
+        const displayName = client?.name || user?.name || 'Customer';
+        document.getElementById('sb-name').textContent = displayName;
+        // Also refresh navbar with correct name
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('portal');
 
         showSection('overview');
 
@@ -663,7 +666,17 @@
         }
 
         // ---- Section navigation ----
-        function showSection(id) {
+        async function showSection(id) {
+            // Reload fresh data from Firebase on each navigation
+            if (id === 'overview' || id === 'requests') {
+                await initAppData();
+                // Refresh client from latest Firebase data
+                const freshClient = sampleClients.find(c => c.email === user?.email);
+                if (freshClient) {
+                    Object.assign(client, freshClient);
+                    document.getElementById('sb-name').textContent = client.name || user?.name || 'Customer';
+                }
+            }
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
 
