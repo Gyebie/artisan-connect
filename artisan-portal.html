@@ -503,7 +503,13 @@
             b.style.display = count > 0 ? 'inline-block' : 'none';
         }
 
-        function showSection(id) {
+        async function showSection(id) {
+            // Reload fresh data from Firebase on job requests tab
+            if (id === 'job-requests' || id === 'overview') {
+                await initAppData();
+                const fresh = sampleArtisans.find(a => a.email === artisan?.email);
+                if (fresh) Object.assign(artisan, fresh);
+            }
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
             document.querySelectorAll('.snav-btn[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === id));
@@ -586,12 +592,21 @@
         function viewClient(reqId) {
             const r = serviceRequests.find(x => x.id === reqId);
             if (!r) return;
+            // Build Google Maps link from address
+            const mapsLink = r.address
+                ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`
+                : null;
             document.getElementById('info-modal-sub').textContent = r.description.substring(0,50);
             document.getElementById('info-modal-body').innerHTML = `
                 <div class="info-row"><i class="fas fa-user"></i><span>${r.clientName}</span></div>
-                <div class="info-row"><i class="fas fa-phone"></i><a href="tel:${r.clientPhone}">${r.clientPhone}</a></div>
-                <div class="info-row"><i class="fas fa-envelope"></i><a href="mailto:${r.clientEmail}">${r.clientEmail}</a></div>
-                <div class="info-row"><i class="fas fa-map-marker-alt"></i><span>${r.address}</span></div>
+                <div class="info-row"><i class="fas fa-phone"></i><a href="tel:${r.clientPhone}">${r.clientPhone || '—'}</a></div>
+                <div class="info-row"><i class="fas fa-envelope"></i><a href="mailto:${r.clientEmail}">${r.clientEmail || '—'}</a></div>
+                <div class="info-row">
+                    <i class="fas fa-map-marker-alt" style="color:#CE1126;"></i>
+                    <span style="flex:1;">${r.address || '—'}</span>
+                    ${mapsLink ? `<a href="${mapsLink}" target="_blank" style="background:#006600;color:white;padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-directions"></i> Get Directions</a>` : ''}
+                </div>
+                ${r.urgency ? `<div class="info-row"><i class="fas fa-bolt" style="color:#FF9900;"></i><span>Urgency: <strong>${r.urgency}</strong></span></div>` : ''}
                 <div class="info-row"><i class="fas fa-calendar-alt"></i><span>Requested: ${r.date}</span></div>
                 <button class="close-modal-btn" onclick="closeInfo()">Close</button>`;
             document.getElementById('info-overlay').classList.add('active');
