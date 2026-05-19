@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portal - GhanaArtisan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -611,23 +612,26 @@
         document.getElementById('shared-css').innerHTML = sharedCSS;
         document.getElementById('navbar-mount').innerHTML = renderNavbar('portal');
 
+        // Global variables — accessible by all functions
+        let user   = loadUser();
+        let client = null;
+
         (async () => {
         await initAppData();
 
         // ---- Auth guard ----
-        const user = loadUser();
         if (!user || user.role !== 'client') {
             showNotification('Please login as a customer to access your portal', 'error');
             setTimeout(() => { window.location.href = 'login-customer.html'; }, 1200);
         }
 
         // Get client record — check Firestore cache first, then session, then build stub
-        let client = sampleClients.find(c => c.email === user?.email)
-                  || loadClientProfile()
-                  || {
-                        name: user?.name, email: user?.email, phone: user?.phone,
-                        address: '', region: '', district: '', whatsapp: '', password: ''
-                     };
+        client = sampleClients.find(c => c.email === user?.email)
+               || loadClientProfile()
+               || {
+                    name: user?.name, email: user?.email, phone: user?.phone,
+                    address: '', region: '', district: '', whatsapp: '', password: ''
+                 };
 
         // If client not in sample array yet, push them so saves work
         if (!sampleClients.find(c => c.email === user?.email)) {
@@ -835,11 +839,8 @@
                         </div>
                         <div class="ar-actions">
                             <div class="ar-rate">${a.price}</div>
-                            <button class="req-btn" onclick="openReqModal(${a.id})">
+                            <button class="req-btn" onclick="openReqModal('${a.email || a.id}')">
                                 <i class="fas fa-paper-plane"></i> Request Service
-                            </button>
-                            <button onclick="contactArtisan(${a.id})" style="background:rgba(0,102,0,0.08);color:#006600;border:none;padding:7px 14px;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;">
-                                <i class="fas fa-phone"></i> Contact
                             </button>
                         </div>
                     </div>`;
@@ -848,9 +849,10 @@
 
         // ---- REQUEST MODAL ----
         let selectedArtisanId = null;
-        function openReqModal(artisanId) {
-            selectedArtisanId = artisanId;
-            const a = sampleArtisans.find(x => x.id === artisanId);
+        function openReqModal(artisanKey) {
+            selectedArtisanId = artisanKey;
+            const a = sampleArtisans.find(x => x.email === artisanKey || String(x.id) === String(artisanKey));
+            if (!a) { showNotification('Artisan not found. Please try again.', 'error'); return; }
             document.getElementById('req-artisan-label').textContent = `Requesting from: ${a.name}`;
             document.getElementById('req-addr').value = client.address || '';
             document.getElementById('req-date').value = new Date().toISOString().split('T')[0];
@@ -879,7 +881,8 @@
             if (!desc) { showNotification('Please describe the job you need done', 'error'); return; }
             if (!addr) { showNotification('Please enter your address for this job', 'error'); return; }
 
-            const artisan = sampleArtisans.find(x => x.id === selectedArtisanId);
+            const artisan = sampleArtisans.find(x => x.email === selectedArtisanId || String(x.id) === String(selectedArtisanId));
+            if (!artisan) { showNotification('Artisan not found. Please refresh and try again.', 'error'); return; }
             const newReq = {
                 id: serviceRequests.length + 1,
                 clientName:  user.name,
