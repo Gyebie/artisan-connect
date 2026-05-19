@@ -545,6 +545,10 @@
                 <div>
                     <label class="flabel">Your Address for this Job</label>
                     <input type="text" id="req-addr" placeholder="House No., Street, Community">
+                    <button type="button" onclick="useMyLocation()" id="loc-btn" style="margin-top:8px;width:100%;padding:9px;background:#f0f9f0;border:1.5px solid #006600;border-radius:8px;color:#006600;font-weight:600;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
+                        <i class="fas fa-map-marker-alt"></i> Use My Live Location
+                    </button>
+                    <div id="loc-status" style="font-size:0.78rem;color:#666;margin-top:4px;display:none;"></div>
                 </div>
                 <div class="profile-grid">
                     <div>
@@ -849,7 +853,44 @@
 
         // ---- REQUEST MODAL ----
         let selectedArtisanId = null;
-        function openReqModal(artisanKey) {
+        function useMyLocation() {
+            const btn    = document.getElementById('loc-btn');
+            const status = document.getElementById('loc-status');
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by your browser', 'error'); return;
+            }
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting location...';
+            btn.disabled  = true;
+            status.style.display = 'block';
+            status.textContent   = 'Fetching your location...';
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const { latitude, longitude } = pos.coords;
+                    try {
+                        const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                        const data = await res.json();
+                        const addr = data.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                        document.getElementById('req-addr').value = addr;
+                        status.textContent   = '✅ Location detected successfully!';
+                        status.style.color   = '#006600';
+                        btn.innerHTML = '<i class="fas fa-check"></i> Location Added';
+                        btn.style.background = '#e6f4e6';
+                    } catch {
+                        document.getElementById('req-addr').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+                        status.textContent = '✅ GPS coordinates added.';
+                        btn.innerHTML = '<i class="fas fa-check"></i> Location Added';
+                    }
+                    btn.disabled = false;
+                },
+                (err) => {
+                    status.textContent = '❌ Could not get location. Please enter manually.';
+                    status.style.color = '#CE1126';
+                    btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Use My Live Location';
+                    btn.disabled  = false;
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
             selectedArtisanId = artisanKey;
             const a = sampleArtisans.find(x => x.email === artisanKey || String(x.id) === String(artisanKey));
             if (!a) { showNotification('Artisan not found. Please try again.', 'error'); return; }
