@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artisan Dashboard - GhanaArtisan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -240,6 +241,12 @@
                     <div class="card-title"><i class="fas fa-plus-circle"></i> Post New Work Update</div>
                     <div class="work-form">
                         <div style="margin-bottom:0.9rem;">
+                            <label class="flabel">Customer Name (Who is this work for?)</label>
+                            <select id="wu-customer" style="width:100%;padding:10px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;font-size:0.9rem;">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom:0.9rem;">
                             <label class="flabel">Job Description / Title</label>
                             <input type="text" id="wu-title" placeholder="e.g. Fixed leaking pipe at Ring Road, Accra">
                         </div>
@@ -460,6 +467,15 @@
         updateBadge();
         showSection('overview');
 
+        // Populate customer dropdown from artisan's job requests
+        const cusSel = document.getElementById('wu-customer');
+        const jobCustomers = [...new Set((artisan.jobRequests || []).map(r => r.clientName).filter(Boolean))];
+        jobCustomers.forEach(name => {
+            const o = document.createElement('option');
+            o.value = name; o.textContent = name;
+            cusSel.appendChild(o);
+        });
+
         })(); // end async IIFE — all functions below are global
 
         // Setup sidebar — always runs, never shows "Loading..."
@@ -559,7 +575,7 @@
                     </div>
                     <span class="pill ${r.status}">${STATUS_LABELS[r.status]||r.status}</span>
                 </div>
-                ${r.adminNote ? `<div style="padding:0.6rem 1.4rem;background:rgba(0,102,0,0.05);font-size:0.82rem;color:#555;border-bottom:1px solid #eee;"><i class="fas fa-user-shield" style="color:#006600;"></i> <strong>Admin:</strong> ${r.adminNote}</div>` : ''}
+                
                 ${showDetail ? `<div class="job-footer">
                     <span class="info-note"><i class="fas fa-lock"></i> Only admin can approve or reassign</span>
                     ${(r.status==='approved'||r.status==='reassigned') ? `<button class="act-btn blue" onclick="viewClient(${r.id})" style="margin-left:auto;"><i class="fas fa-address-card"></i> View Client Contact</button>` : ''}
@@ -596,20 +612,30 @@
 
         async function postWorkUpdate() {
             if (!artisan) return;
+            const customerName = document.getElementById('wu-customer').value.trim();
             const title      = document.getElementById('wu-title').value.trim();
             const beforeNote = document.getElementById('wu-before-note').value.trim();
             const afterNote  = document.getElementById('wu-after-note').value.trim();
             const beforeData = document.getElementById('wu-before-data').value;
             const afterData  = document.getElementById('wu-after-data').value;
             const status     = document.getElementById('wu-status').value;
-            if (!title)      { showNotification('Please enter a job description', 'error'); return; }
-            if (!beforeData) { showNotification('Please upload a Before photo', 'error'); return; }
+            if (!customerName) { showNotification('Please select the customer name', 'error'); return; }
+            if (!title)        { showNotification('Please enter a job description', 'error'); return; }
+            if (!beforeData)   { showNotification('Please upload a Before photo', 'error'); return; }
 
+            const update = {
+                id: Date.now(), artisanId: artisan.id, artisanName: artisan.name,
+                customerName, jobDesc: title, beforeNote, afterNote,
+                beforePhoto: beforeData, afterPhoto: afterData, status,
+                date: new Date().toISOString().split('T')[0], adminStatus: 'pending'
+            };
             if (!artisan.workUpdates) artisan.workUpdates = [];
-            artisan.workUpdates.unshift({ id: Date.now(), artisanId: artisan.id, artisanName: artisan.name, jobDesc: title, beforeNote, afterNote, beforePhoto: beforeData, afterPhoto: afterData, status, date: new Date().toISOString().split('T')[0] });
+            artisan.workUpdates.unshift(update);
             await saveArtisanProfile(artisan);
+            await addDoc_('workUpdates', update);
 
             // Reset form
+            document.getElementById('wu-customer').value = '';
             document.getElementById('wu-title').value = '';
             document.getElementById('wu-before-note').value = '';
             document.getElementById('wu-after-note').value = '';
@@ -619,7 +645,7 @@
             document.getElementById('wu-after-preview-wrap').innerHTML  = `<i class="fas fa-image" style="font-size:2rem;color:#ccc;"></i>`;
             document.getElementById('wu-before-file').value = '';
             document.getElementById('wu-after-file').value = '';
-            showNotification('Work update posted! Admin can now view it.', 'success');
+            showNotification('Work update posted! Admin can now view and update the status.', 'success');
             renderWorkUpdates();
         }
 
