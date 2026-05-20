@@ -261,7 +261,7 @@
             const verified = sampleArtisans.filter(a => a.verified);
             let allPayments = [];
             sampleArtisans.forEach(a => { if (a.payments) allPayments = allPayments.concat(a.payments.map(p => ({...p, artisanName: a.name}))); });
-            const totalRev     = allPayments.reduce((s,p) => s + (parseFloat(p.amount.replace('₵','')) || 0), 0);
+            const totalRev     = allPayments.reduce((s,p) => s + (parseFloat((p.amount||'0').replace('₵','')) || 0), 0);
             const completedPay = allPayments.filter(p => p.status === 'completed');
             const pendingPay   = allPayments.filter(p => p.status === 'pending');
 
@@ -304,7 +304,7 @@
                                 ${[...approvedReqs, ...reassignedReqs].map(r => `<tr>
                                     <td><strong>${r.clientName}</strong><br><span style="color:#888;font-size:0.78rem;">${r.clientPhone}</span></td>
                                     <td>${r.artisanName}</td>
-                                    <td style="max-width:200px;font-size:0.85rem;">${r.description.substring(0,60)}${r.description.length>60?'...':''}</td>
+                                    <td style="max-width:200px;font-size:0.85rem;">${(r.description||'').substring(0,60)}${(r.description||'').length>60?'...':''}</td>
                                     <td>${r.date}</td>
                                     <td><span class="status-${r.status==='approved'?'verified':'pending'}">${r.status}</span></td>
                                     <td><button onclick="showReassignModal(${r.id})" class="tbtn blue">Reassign</button></td>
@@ -551,8 +551,8 @@
                         from:       r.clientName,
                         fromPhone:  r.clientPhone,
                         to:         r.artisanName,
-                        description: r.description.substring(0, 50) + (r.description.length > 50 ? '...' : ''),
-                        amount:     r.amount ? parseFloat(r.amount.replace('₵','')) || 0 : 0,
+                        description: (r.description||'').substring(0, 50) + ((r.description||'').length > 50 ? '...' : ''),
+                        amount:     r.amount ? parseFloat((r.amount+'').replace('₵','')) || 0 : 0,
                         amountStr:  r.amount || '—',
                         date:       r.date,
                         status:     r.paymentStatus || 'not_paid',
@@ -1476,7 +1476,7 @@
 
             } else if (type === 'payments') {
                 addHeader('Payments Report');
-                const revenue = serviceRequests.filter(r => r.amount && parseFloat(r.amount.replace('₵','')) > 0);
+                const revenue = serviceRequests.filter(r => r.amount && parseFloat((r.amount+'').replace('₵','')) > 0);
                 doc.setFontSize(12); doc.setFont('helvetica','bold');
                 doc.text('Revenue (From Clients)', 14, 40);
                 doc.autoTable({
