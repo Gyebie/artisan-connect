@@ -315,6 +315,11 @@
                         <button class="submit-btn green" id="login-btn" onclick="doLogin()">
                             <i class="fas fa-sign-in-alt"></i> Login
                         </button>
+                        <p style="text-align:center;margin-top:0.5rem;">
+                            <a onclick="openForgotPassword()" style="color:#888;font-size:0.83rem;cursor:pointer;">
+                                <i class="fas fa-lock" style="font-size:0.75rem;"></i> Forgot your password?
+                            </a>
+                        </p>
                         <p class="switch-hint">No account? <a class="green" onclick="switchTab('register')">Register here</a></p>
                     </div>
                 </div>
@@ -737,6 +742,121 @@
         }
 
         document.addEventListener('keydown', e => { if (e.key === 'Escape') goBack(); });
+    </script>
+    <!-- Forgot Password Overlay -->
+    <div id="fp-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;padding:1rem;">
+        <div style="background:white;border-radius:20px;padding:2rem;max-width:420px;width:100%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <button onclick="closeForgotPassword()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#888;">&times;</button>
+
+            <div id="fp-step1">
+                <div style="text-align:center;margin-bottom:1.2rem;">
+                    <i class="fas fa-lock" style="font-size:2.5rem;color:#006600;"></i>
+                </div>
+                <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin-bottom:0.3rem;text-align:center;">Forgot Password?</h3>
+                <p style="color:#888;font-size:0.88rem;margin-bottom:1.2rem;text-align:center;">Enter your email or phone number to reset your password.</p>
+                <label style="font-size:0.85rem;font-weight:600;color:#333;">Email or Phone Number</label>
+                <input type="text" id="fp-identifier" placeholder="e.g. kofi@gmail.com or 0241234567"
+                    style="width:100%;padding:11px 14px;border:1.5px solid #ddd;border-radius:10px;margin:8px 0 16px;font-family:inherit;font-size:0.9rem;box-sizing:border-box;">
+                <button onclick="sendFpCode()" style="width:100%;padding:12px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
+                    <i class="fas fa-paper-plane"></i> Send Reset Code
+                </button>
+            </div>
+
+            <div id="fp-step2" style="display:none;">
+                <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin-bottom:0.5rem;text-align:center;">Enter Reset Code</h3>
+                <p id="fp-sent-msg" style="color:#888;font-size:0.85rem;margin-bottom:0.8rem;text-align:center;"></p>
+                <div style="background:#f0f9f0;border:1.5px solid #b3e0b3;border-radius:10px;padding:10px;text-align:center;margin-bottom:1rem;">
+                    <span style="font-size:0.78rem;color:#555;">Demo Code: </span>
+                    <strong id="fp-demo-code" style="color:#006600;font-size:1.1rem;letter-spacing:3px;"></strong>
+                </div>
+                <input type="text" id="fp-code" placeholder="Enter 6-digit code" maxlength="6"
+                    style="width:100%;padding:11px;border:1.5px solid #ddd;border-radius:10px;margin-bottom:10px;font-family:inherit;font-size:1rem;text-align:center;letter-spacing:4px;box-sizing:border-box;">
+                <input type="password" id="fp-newpw" placeholder="New password (min 8 chars)"
+                    style="width:100%;padding:11px;border:1.5px solid #ddd;border-radius:10px;margin-bottom:10px;font-family:inherit;box-sizing:border-box;">
+                <input type="password" id="fp-confirmpw" placeholder="Confirm new password"
+                    style="width:100%;padding:11px;border:1.5px solid #ddd;border-radius:10px;margin-bottom:14px;font-family:inherit;box-sizing:border-box;">
+                <button onclick="doResetPassword()" style="width:100%;padding:12px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
+                    <i class="fas fa-key"></i> Reset Password
+                </button>
+            </div>
+
+            <div id="fp-step3" style="display:none;text-align:center;">
+                <i class="fas fa-check-circle" style="font-size:3rem;color:#25D366;margin-bottom:1rem;display:block;"></i>
+                <h3 style="color:#006600;font-family:'Poppins',sans-serif;">Password Reset!</h3>
+                <p style="color:#888;margin-bottom:1.2rem;">Your password has been updated. You can now log in.</p>
+                <button onclick="closeForgotPassword()" style="padding:11px 28px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
+                    <i class="fas fa-sign-in-alt"></i> Back to Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Forgot Password for combined login.html
+        let fpGeneratedCode = '';
+        let fpMatchedUser   = null;
+        let fpUserType      = '';
+
+        function openForgotPassword() {
+            document.getElementById('fp-step1').style.display = 'block';
+            document.getElementById('fp-step2').style.display = 'none';
+            document.getElementById('fp-step3').style.display = 'none';
+            document.getElementById('fp-identifier').value = '';
+            document.getElementById('fp-overlay').style.display = 'flex';
+        }
+        function closeForgotPassword() {
+            document.getElementById('fp-overlay').style.display = 'none';
+        }
+
+        async function sendFpCode() {
+            const identifier = document.getElementById('fp-identifier').value.trim();
+            if (!identifier) { showNotification('Please enter your email or phone', 'error'); return; }
+
+            await initAppData();
+
+            // Search artisans first, then clients
+            let found = sampleArtisans.find(a => a.email === identifier || a.phone === identifier);
+            if (found) { fpUserType = 'artisan'; }
+            else {
+                found = sampleClients.find(c => c.email === identifier || c.phone === identifier);
+                if (found) fpUserType = 'client';
+            }
+
+            if (!found) { showNotification('No account found with that email or phone', 'error'); return; }
+
+            fpMatchedUser    = found;
+            fpGeneratedCode  = String(Math.floor(100000 + Math.random() * 900000));
+            document.getElementById('fp-demo-code').textContent = fpGeneratedCode;
+            document.getElementById('fp-sent-msg').textContent  =
+                `Code sent to ${found.email || found.phone}. Demo mode: code shown below.`;
+            document.getElementById('fp-step1').style.display = 'none';
+            document.getElementById('fp-step2').style.display = 'block';
+        }
+
+        async function doResetPassword() {
+            const code    = document.getElementById('fp-code').value.trim();
+            const newpw   = document.getElementById('fp-newpw').value;
+            const confirm = document.getElementById('fp-confirmpw').value;
+
+            if (code !== fpGeneratedCode)   { showNotification('Incorrect reset code', 'error'); return; }
+            if (!newpw || newpw.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            if (newpw !== confirm)          { showNotification('Passwords do not match', 'error'); return; }
+
+            fpMatchedUser.password = newpw;
+
+            if (fpUserType === 'artisan') {
+                const idx = sampleArtisans.findIndex(a => a.id === fpMatchedUser.id);
+                if (idx !== -1) sampleArtisans[idx].password = newpw;
+                await saveArtisanProfile(fpMatchedUser);
+            } else {
+                const idx = sampleClients.findIndex(c => c.id === fpMatchedUser.id);
+                if (idx !== -1) sampleClients[idx].password = newpw;
+                await saveClientProfile(fpMatchedUser);
+            }
+
+            document.getElementById('fp-step2').style.display = 'none';
+            document.getElementById('fp-step3').style.display = 'block';
+        }
     </script>
 </body>
 </html>
