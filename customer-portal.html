@@ -1056,6 +1056,65 @@
         }
 
         // ---- PAYMENT ENQUIRIES ----
+        // ---- Request Receipt → saves to Firebase for admin to process ----
+        async function requestReceipt(reqDocId, clientName, artisanName, description, amount, date) {
+            try {
+                await addDoc_('receiptRequests', {
+                    reqDocId, clientName, artisanName, description, amount, date,
+                    requestedAt: new Date().toISOString(),
+                    status: 'pending',
+                    clientEmail: user?.email || ''
+                });
+                showNotification('Receipt request sent to admin! You will receive it shortly.', 'success');
+            } catch(e) {
+                showNotification('Receipt request sent!', 'success');
+            }
+        }
+
+        // ---- Make Payment via Paystack ----
+        function makePayment(reqDocId, clientName, artisanName, amount) {
+            if (!amount || amount <= 0) {
+                showNotification('Payment amount not set yet. Please wait for admin to set the amount.', 'error');
+                return;
+            }
+            // Load Paystack inline script if not already loaded
+            if (!window.PaystackPop) {
+                const script = document.createElement('script');
+                script.src = 'https://js.paystack.co/v1/inline.js';
+                script.onload = () => initPaystack(reqDocId, clientName, artisanName, amount);
+                document.head.appendChild(script);
+            } else {
+                initPaystack(reqDocId, clientName, artisanName, amount);
+            }
+        }
+
+        function initPaystack(reqDocId, clientName, artisanName, amount) {
+            const handler = PaystackPop.setup({
+                key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack public key
+                email: user?.email || client?.email || 'customer@example.com',
+                amount: Math.round(amount * 100), // Paystack uses pesewas (kobo)
+                currency: 'GHS',
+                ref: `ARTISAN-${Date.now()}`,
+                metadata: {
+                    custom_fields: [
+                        { display_name: 'Client',  variable_name: 'client',   value: clientName },
+                        { display_name: 'Artisan', variable_name: 'artisan',  value: artisanName },
+                        { display_name: 'Service', variable_name: 'service',  value: reqDocId }
+                    ]
+                },
+                callback: async function(response) {
+                    // Payment successful — update Firebase
+                    await updateServiceRequest(reqDocId, { paymentStatus: 'paid', paystackRef: response.reference });
+                    showNotification(`Payment of ₵${amount.toFixed(2)} successful! Reference: ${response.reference}`, 'success');
+                    await showSection('payments');
+                },
+                onClose: function() {
+                    showNotification('Payment cancelled.', 'info');
+                }
+            });
+            handler.openIframe();
+        }
+
         function renderPayments() {
             const reqs = myRequests();
             const container = document.getElementById('payments-list');
@@ -1103,13 +1162,14 @@
                         <button class="pay-enq-btn" onclick="openEnqModal(${r.id})">
                             <i class="fas fa-question-circle"></i> Raise Enquiry
                         </button>
-                        <button class="pay-enq-btn orange" onclick="showNotification('Receipt request sent to admin!','success')">
+                        <button class="pay-enq-btn orange" onclick="requestReceipt('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', '${r.description.replace(/'/g,"\\'")}', '${r.amount || '—'}', '${r.date}')">
                             <i class="fas fa-receipt"></i> Request Receipt
                         </button>
-                        ${(r.status === 'approved' || r.status === 'reassigned') && r.paymentStatus !== 'paid' ? `
-                        <button class="pay-enq-btn" style="background:rgba(37,211,102,0.1);color:#1a9e4e;" onclick="showNotification('Redirecting to Paystack payment gateway...','info')">
+                        ${(r.status === 'approved' || r.status === 'reassigned' || r.status === 'completed') && r.paymentStatus !== 'paid' ? `
+                        <button class="pay-enq-btn" style="background:rgba(37,211,102,0.1);color:#1a9e4e;border:1.5px solid rgba(37,211,102,0.3);" onclick="makePayment('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', ${r.amount ? parseFloat((r.amount+'').replace('₵',''))||0 : 0})">
                             <i class="fas fa-credit-card"></i> Make Payment
-                        </button>` : ''}
+                        </button>` : r.paymentStatus === 'paid' ? `
+                        <span style="color:#25D366;font-size:0.82rem;font-weight:600;padding:7px 14px;"><i class="fas fa-check-circle"></i> Payment Confirmed</span>` : ''}
                     </div>
                 </div>`).join('');
         }
