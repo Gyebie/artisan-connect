@@ -474,7 +474,7 @@
             document.getElementById('fp-confirmpw').value = '';
         }
 
-        function doResetPassword() {
+        async function doResetPassword() {
             const code    = document.getElementById('fp-code').value.trim();
             const newpw   = document.getElementById('fp-newpw').value;
             const confirm = document.getElementById('fp-confirmpw').value;
@@ -483,13 +483,19 @@
             if (!newpw || newpw.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
             if (newpw !== confirm)          { showNotification('Passwords do not match', 'error'); return; }
 
+            // Update memory
             const idx = sampleClients.findIndex(c => c.id === fpMatchedClient.id);
             if (idx !== -1) sampleClients[idx].password = newpw;
 
+            // Save to Firebase
+            fpMatchedClient.password = newpw;
+            await saveClientProfile(fpMatchedClient);
+
+            // Update session
             const saved = loadClientProfile();
             if (saved && saved.id === fpMatchedClient.id) {
                 saved.password = newpw;
-                saveClientProfile(saved);
+                sessionStorage.setItem('ghanaClientProfile', JSON.stringify(saved));
             }
 
             document.getElementById('fp-step2').style.display = 'none';
