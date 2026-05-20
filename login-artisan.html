@@ -570,7 +570,7 @@
             document.getElementById('fp-confirmpw').value = '';
         }
 
-        function doResetPassword() {
+        async function doResetPassword() {
             const code    = document.getElementById('fp-code').value.trim();
             const newpw   = document.getElementById('fp-newpw').value;
             const confirm = document.getElementById('fp-confirmpw').value;
@@ -579,15 +579,19 @@
             if (!newpw || newpw.length < 8)     { showNotification('Password must be at least 8 characters', 'error'); return; }
             if (newpw !== confirm)              { showNotification('Passwords do not match', 'error'); return; }
 
-            // Update in sampleArtisans
+            // Update in sampleArtisans memory
             const idx = sampleArtisans.findIndex(a => a.id === fpMatchedArtisan.id);
             if (idx !== -1) sampleArtisans[idx].password = newpw;
 
-            // Update in Firebase if it is the saved artisan
+            // Save new password to Firebase
+            fpMatchedArtisan.password = newpw;
+            await saveArtisanProfile(fpMatchedArtisan);
+
+            // Update session if it's the currently logged-in artisan
             const saved = loadArtisanProfile();
             if (saved && saved.id === fpMatchedArtisan.id) {
                 saved.password = newpw;
-                saveArtisanProfile(saved);
+                sessionStorage.setItem('ghanaArtisanProfile', JSON.stringify(saved));
             }
 
             document.getElementById('fp-step2').style.display = 'none';
