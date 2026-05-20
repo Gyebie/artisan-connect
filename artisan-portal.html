@@ -870,33 +870,73 @@
                 + `<div class="payslip-total"><span>Total Payable — ${month}</span><span>₵${total.toFixed(2)}</span></div>`;
         }
 
-        function downloadPayslip() {
+        async function downloadPayslip() {
             if (!artisan) return;
-            const month=document.getElementById('pay-month-select').value||'This Month';
-            const pays=(artisan.payments||[]).filter(p=>(p.month||'')===month);
-            const total=pays.reduce((s,p)=>s+(parseFloat(p.amount?.replace('₵','')||0)),0);
-            const lines=[
-                `═══════════════════════════════════════════`,
-                `          GhanaArtisan — Monthly Payslip   `,
-                `═══════════════════════════════════════════`,
-                `Artisan : ${artisan.name}`,
-                `Category: ${artisan.category}`,
-                `Month   : ${month}`,
-                `Generated: ${new Date().toLocaleDateString('en-GH')}`,
-                `───────────────────────────────────────────`,
-                `Client                    Amount   Status`,
-                `───────────────────────────────────────────`,
-                ...pays.map(p=>`${p.client.padEnd(24)}  ₵${parseFloat(p.amount?.replace('₵','')||0).toFixed(2).padStart(8)}  ${p.status}`),
-                `═══════════════════════════════════════════`,
-                `TOTAL PAYABLE             ₵${total.toFixed(2)}`,
-                `═══════════════════════════════════════════`
-            ].join('\n');
-            const blob=new Blob([lines],{type:'text/plain'});
-            const url=URL.createObjectURL(blob);
-            const a=document.createElement('a'); a.href=url;
-            a.download=`GhanaArtisan_Payslip_${artisan.name.replace(/\s/g,'_')}_${month.replace(/\s/g,'_')}.txt`;
-            a.click(); URL.revokeObjectURL(url);
-            showNotification('Payslip downloaded!','success');
+            // Load jsPDF if not already loaded
+            if (!window.jspdf) {
+                await new Promise((resolve, reject) => {
+                    const s1 = document.createElement('script');
+                    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    s1.onload = () => {
+                        const s2 = document.createElement('script');
+                        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
+                        s2.onload = resolve; s2.onerror = reject;
+                        document.head.appendChild(s2);
+                    };
+                    s1.onerror = reject;
+                    document.head.appendChild(s1);
+                });
+            }
+            const { jsPDF } = window.jspdf;
+            const doc   = new jsPDF();
+            const month = document.getElementById('pay-month-select').value || 'This Month';
+            const pays  = (artisan.payments || []).filter(p => (p.month || '') === month);
+            const total = pays.reduce((s, p) => s + (parseFloat((p.amount || '0').replace('₵', '')) || 0), 0);
+            const today = new Date().toLocaleDateString('en-GH');
+
+            // Header
+            doc.setFillColor(0, 102, 0);
+            doc.rect(0, 0, 210, 32, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+            doc.text('GhanaArtisan', 14, 13);
+            doc.setFontSize(11); doc.setFont('helvetica', 'normal');
+            doc.text('Monthly Payslip', 14, 22);
+            doc.text(`Generated: ${today}`, 196, 22, { align: 'right' });
+            doc.setTextColor(0, 0, 0);
+
+            // Artisan info box
+            doc.setFillColor(240, 249, 240);
+            doc.rect(14, 38, 182, 38, 'F');
+            doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+            doc.text('Artisan Details', 18, 47);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+            doc.text(`Name:     ${artisan.name}`,     18, 55);
+            doc.text(`Category: ${artisan.category || '—'}`, 18, 62);
+            doc.text(`Region:   ${artisan.region || '—'}`,   18, 69);
+            doc.text(`Month:    ${month}`,             110, 55);
+            doc.text(`Phone:    ${artisan.phone || '—'}`,    110, 62);
+            doc.text(`Status:   ${artisan.verified ? 'Verified ✓' : 'Pending'}`, 110, 69);
+
+            // Payments table
+            doc.autoTable({
+                startY: 84,
+                head: [['Client', 'Amount', 'Month', 'Status', 'Date']],
+                body: pays.length > 0
+                    ? pays.map(p => [p.client || '—', p.amount || '—', p.month || '—', p.status || '—', p.date || '—'])
+                    : [['No payments recorded for this month', '', '', '', '']],
+                headStyles: { fillColor: [0, 102, 0] },
+                alternateRowStyles: { fillColor: [240, 249, 240] },
+                foot: [['', '', '', 'TOTAL PAYABLE', `₵${total.toFixed(2)}`]],
+                footStyles: { fillColor: [255, 245, 200], fontStyle: 'bold', textColor: [0, 0, 0] }
+            });
+
+            // Footer
+            doc.setFontSize(8); doc.setTextColor(150, 150, 150);
+            doc.text('GhanaArtisan Platform — Connecting Clients with Verified Artisans across Ghana', 105, 287, { align: 'center' });
+
+            doc.save(`GhanaArtisan_Payslip_${artisan.name.replace(/\s/g,'_')}_${month.replace(/\s/g,'_')}.pdf`);
+            showNotification('Payslip downloaded as PDF!', 'success');
         }
 
         function doLogout() {
