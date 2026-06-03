@@ -369,6 +369,8 @@
 
         /* Flag stripe */
         .flag-stripe { height: 5px; background: var(--gradient-ghana); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; }
+        @keyframes pulse { 0%,100% { transform:scale(1); box-shadow:0 0 0 0 rgba(206,17,38,0.4); } 50% { transform:scale(1.03); box-shadow:0 0 0 8px rgba(206,17,38,0); } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body>
@@ -400,6 +402,14 @@
                 <button class="snav-btn" data-section="requests" onclick="showSection('requests')">
                     <i class="fas fa-clipboard-list"></i> My Requests
                     <span class="badge" id="pending-badge" style="display:none;">0</span>
+                </button>
+                <button class="snav-btn" data-section="work-updates" onclick="showSection('work-updates')">
+                    <i class="fas fa-camera"></i> Work Updates
+                    <span class="badge" id="wu-badge" style="display:none;">0</span>
+                </button>
+                <button class="snav-btn" data-section="quotations" onclick="showSection('quotations')">
+                    <i class="fas fa-file-invoice-dollar"></i> Quotations
+                    <span class="badge" id="quot-badge" style="display:none;">0</span>
                 </button>
                 <button class="snav-btn" data-section="payments" onclick="showSection('payments')">
                     <i class="fas fa-credit-card"></i> Payment Enquiries
@@ -524,6 +534,20 @@
                 <div class="panel-title"><i class="fas fa-credit-card"></i> Payment Enquiries</div>
                 <p class="panel-sub">View payment statuses and raise enquiries for any transaction</p>
                 <div id="payments-list"></div>
+            </div>
+
+            <!-- Work Updates Section -->
+            <div class="section-panel" id="sec-work-updates">
+                <div class="panel-title"><i class="fas fa-camera"></i> Work Updates</div>
+                <p class="panel-sub">Before & after photos of work done on your jobs by artisans</p>
+                <div id="customer-wu-list"><div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p style="margin-top:1rem;">Loading updates...</p></div></div>
+            </div>
+
+            <!-- Quotations Section -->
+            <div class="section-panel" id="sec-quotations">
+                <div class="panel-title"><i class="fas fa-file-invoice-dollar"></i> Price Quotations</div>
+                <p class="panel-sub">Price quotations submitted by admin. Review and make payment to proceed.</p>
+                <div id="quotations-list"><div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p style="margin-top:1rem;">Loading quotations...</p></div></div>
             </div>
 
         </div>
@@ -668,9 +692,8 @@
         // ---- Section navigation ----
         async function showSection(id) {
             // Reload fresh data from Firebase on each navigation
-            if (id === 'overview' || id === 'requests') {
+            if (id === 'overview' || id === 'requests' || id === 'work-updates' || id === 'quotations') {
                 await initAppData();
-                // Refresh client from latest Firebase data
                 const freshClient = sampleClients.find(c => c.email === user?.email);
                 if (freshClient) {
                     Object.assign(client, freshClient);
@@ -680,16 +703,17 @@
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
 
-            // Use data-section attribute for correct active state (avoids index mismatch with <a> tags)
             document.querySelectorAll('.snav-btn[data-section]').forEach(b => {
                 b.classList.toggle('active', b.dataset.section === id);
             });
 
-            if (id === 'overview')  renderOverview();
-            if (id === 'profile')   renderProfile();
-            if (id === 'find')      renderFind();
-            if (id === 'requests')  renderRequests();
-            if (id === 'payments')  renderPayments();
+            if (id === 'overview')      renderOverview();
+            if (id === 'profile')       renderProfile();
+            if (id === 'find')          renderFind();
+            if (id === 'requests')      renderRequests();
+            if (id === 'payments')      renderPayments();
+            if (id === 'work-updates')  renderCustomerWorkUpdates();
+            if (id === 'quotations')    renderQuotations();
 
             // Update pending badge
             const pending = myRequests().filter(r => r.status === 'pending_admin').length;
@@ -855,10 +879,20 @@
                             </div>
                         </div>
                         <div class="ar-actions">
-                            <div class="ar-rate">${a.price}</div>
+                            <div class="ar-rate">${a.price || '—'}</div>
                             <button class="req-btn" onclick="openReqModal('${a.email || a.id}')">
                                 <i class="fas fa-paper-plane"></i> Request Service
                             </button>
+                            ${a.whatsapp || a.phone ? `
+                            <a href="https://wa.me/233${(a.whatsapp||a.phone||'').replace(/^0/,'').replace(/\D/g,'')}" target="_blank"
+                                style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:#25D366;color:white;border-radius:8px;font-weight:600;font-size:0.82rem;text-decoration:none;justify-content:center;">
+                                <i class="fab fa-whatsapp" style="font-size:1rem;"></i> WhatsApp
+                            </a>` : ''}
+                            ${a.category && ['plumbing','electrical','electronics','automobile'].includes(a.category) ? `
+                            <button onclick="openEmergencyModal('${a.email || a.id}')"
+                                style="padding:8px 14px;background:linear-gradient(135deg,#CE1126,#a0001c);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;font-family:inherit;display:flex;align-items:center;gap:6px;justify-content:center;animation:pulse 1.5s infinite;">
+                                🚨 Need Help Now!
+                            </button>` : ''}
                         </div>
                     </div>`;
                 }).join('');
@@ -1115,10 +1149,20 @@
             handler.openIframe();
         }
 
-        function renderPayments() {
+        async function renderPayments() {
             const reqs = myRequests();
             const container = document.getElementById('payments-list');
-            if (reqs.length === 0) {
+
+            // Load receipts sent by admin for this customer
+            let myReceipts = [];
+            try {
+                const allReceipts = await fetchCollection('receipts');
+                myReceipts = allReceipts.filter(r =>
+                    r.clientName === user?.name || r.clientEmail === user?.email
+                );
+            } catch(e) {}
+
+            if (reqs.length === 0 && myReceipts.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-credit-card"></i>
@@ -1126,6 +1170,26 @@
                     </div>`;
                 return;
             }
+
+            // Show receipts at top if any
+            const receiptsHTML = myReceipts.length > 0 ? `
+                <div style="margin-bottom:1.5rem;">
+                    <h3 style="color:#006600;font-family:'Poppins',sans-serif;margin-bottom:0.8rem;font-size:1rem;">
+                        <i class="fas fa-file-pdf" style="color:#CE1126;"></i> Receipts from Admin
+                    </h3>
+                    ${myReceipts.map(r => `
+                    <div style="background:#fff9f0;border:1.5px solid #FFD580;border-radius:12px;padding:1rem 1.4rem;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                        <div>
+                            <div style="font-weight:700;color:#cc7700;">${r.artisanName} — ${r.description?.substring(0,40)||'—'}</div>
+                            <div style="font-size:0.82rem;color:#888;margin-top:3px;">Amount: <strong style="color:#006600;">${r.amount||'—'}</strong> &nbsp;·&nbsp; Date: ${r.date||'—'} &nbsp;·&nbsp; Ref: ${r.ref||'—'}</div>
+                        </div>
+                        ${r.pdfData ? `
+                        <a href="${r.pdfData}" download="${r.filename||'receipt.pdf'}"
+                            style="padding:8px 18px;background:#CE1126;color:white;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none;display:flex;align-items:center;gap:6px;">
+                            <i class="fas fa-file-pdf"></i> Download Receipt
+                        </a>` : `<span style="color:#aaa;font-size:0.82rem;">Processing...</span>`}
+                    </div>`).join('')}
+                </div>` : '';
 
             const payPillCls = ps =>
                 ps === 'paid'    ? 'approved' :
@@ -1135,13 +1199,13 @@
                 ps === 'pending' ? '<i class="fas fa-clock"></i> Pending Payment' :
                                    '<i class="fas fa-clock"></i> Not Yet Billed';
 
-            container.innerHTML = reqs.slice().reverse().map(r => `
+            container.innerHTML = receiptsHTML + reqs.slice().reverse().map(r => `
                 <div class="pay-card">
                     <div class="pay-card-top">
                         <div>
                             <div style="font-weight:700;color:#006600;font-family:'Poppins',sans-serif;">${r.artisanName}</div>
                             <div style="color:#888;font-size:0.82rem;margin-top:3px;">
-                                ${r.description.length > 60 ? r.description.substring(0,60)+'...' : r.description}
+                                ${(r.description||'').length > 60 ? (r.description||'').substring(0,60)+'...' : (r.description||'')}
                             </div>
                             <div style="color:#aaa;font-size:0.78rem;margin-top:3px;">
                                 <i class="fas fa-calendar-alt"></i> ${r.date}
@@ -1205,6 +1269,197 @@
             showNotification('Payment enquiry submitted! Admin will respond within 24 hours.', 'success');
         }
 
+        // ---- Work Updates visible to Customer ----
+        async function renderCustomerWorkUpdates() {
+            const el = document.getElementById('customer-wu-list');
+            try {
+                // Get all work updates where customerName matches this customer
+                const allWU = await fetchCollection('workUpdates');
+                const myWU  = allWU.filter(w =>
+                    w.customerName === user?.name ||
+                    w.clientName   === user?.name ||
+                    w.clientEmail  === user?.email
+                );
+
+                // Also check artisan profiles
+                const profileWU = [];
+                sampleArtisans.forEach(a => {
+                    (a.workUpdates || []).forEach(w => {
+                        if ((w.customerName === user?.name || w.clientEmail === user?.email) &&
+                            !myWU.find(g => g.id === w.id)) {
+                            profileWU.push({ ...w, artisanName: a.name });
+                        }
+                    });
+                });
+                const combined = [...myWU, ...profileWU].sort((a,b) => (b.id||0) - (a.id||0));
+
+                // Update badge
+                const badge = document.getElementById('wu-badge');
+                if (combined.length > 0) { badge.style.display=''; badge.textContent = combined.length; }
+
+                if (combined.length === 0) {
+                    el.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;">
+                        <i class="fas fa-camera" style="font-size:3rem;margin-bottom:1rem;display:block;"></i>
+                        <p>No work updates yet. Artisans will post before & after photos as they complete your jobs.</p>
+                    </div>`;
+                    return;
+                }
+
+                el.innerHTML = combined.map(w => `
+                    <div style="background:white;border-radius:14px;overflow:hidden;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #eee;">
+                        <div style="background:linear-gradient(135deg,#006600,#009900);padding:1rem 1.5rem;">
+                            <div style="color:white;font-weight:700;font-size:1rem;">${w.jobDesc || w.description || '—'}</div>
+                            <div style="color:rgba(255,255,255,0.85);font-size:0.82rem;margin-top:4px;">
+                                <i class="fas fa-hard-hat"></i> ${w.artisanName || '—'} &nbsp;·&nbsp;
+                                <i class="fas fa-calendar-alt"></i> ${w.date || '—'} &nbsp;·&nbsp;
+                                <span style="background:${w.adminStatus==='completed'||w.status==='completed'?'rgba(37,211,102,0.3)':'rgba(255,153,0,0.3)'};padding:2px 10px;border-radius:10px;font-size:0.78rem;">
+                                    ${w.adminStatus==='completed'||w.status==='completed'?'✅ Completed':'🔄 In Progress'}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;">
+                            <div style="border-right:1px solid #eee;">
+                                <div style="background:#fff0f0;padding:8px 14px;font-size:0.78rem;font-weight:700;color:#CE1126;border-bottom:1px solid #eee;"><i class="fas fa-times-circle"></i> Before</div>
+                                ${w.beforePhoto ? `<img src="${w.beforePhoto}" style="width:100%;height:180px;object-fit:cover;display:block;">` : `<div style="height:180px;display:flex;align-items:center;justify-content:center;background:#fafafa;"><i class="fas fa-image" style="font-size:2rem;color:#ddd;"></i></div>`}
+                                ${w.beforeNote ? `<p style="padding:8px 12px;font-size:0.82rem;color:#666;margin:0;">${w.beforeNote}</p>` : ''}
+                            </div>
+                            <div>
+                                <div style="background:#f0fff4;padding:8px 14px;font-size:0.78rem;font-weight:700;color:#1a9e4e;border-bottom:1px solid #eee;"><i class="fas fa-check-circle"></i> After</div>
+                                ${w.afterPhoto ? `<img src="${w.afterPhoto}" style="width:100%;height:180px;object-fit:cover;display:block;">` : `<div style="height:180px;display:flex;align-items:center;justify-content:center;background:#fafafa;"><i class="fas fa-image" style="font-size:2rem;color:#ddd;"></i></div>`}
+                                ${w.afterNote ? `<p style="padding:8px 12px;font-size:0.82rem;color:#666;margin:0;">${w.afterNote}</p>` : ''}
+                            </div>
+                        </div>
+                        ${(w.adminStatus==='completed'||w.status==='completed') ? `
+                        <div style="padding:1rem 1.5rem;background:#f8f9fa;border-top:1px solid #eee;">
+                            <p style="font-size:0.85rem;color:#555;margin:0 0 8px 0;font-weight:600;">Rate this work:</p>
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                ${[1,2,3,4,5].map(n=>`
+                                    <button onclick="rateArtisan('${w.artisanName}','${w.id}',${n})"
+                                        style="padding:6px 14px;border:1.5px solid #FFD700;background:${(w.rating||0)>=n?'#FFD700':'white'};border-radius:8px;cursor:pointer;font-size:1rem;">
+                                        ⭐ ${n}
+                                    </button>`).join('')}
+                                ${w.rating ? `<span style="color:#888;font-size:0.82rem;">You rated: ${w.rating}/5</span>` : ''}
+                            </div>
+                            ${w.review ? `<p style="font-size:0.82rem;color:#888;margin:8px 0 0;font-style:italic;">"${w.review}"</p>` : `
+                            <div style="margin-top:8px;display:flex;gap:8px;">
+                                <input type="text" id="review-${w.id}" placeholder="Write a short review..." style="flex:1;padding:8px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:0.85rem;">
+                                <button onclick="submitReview('${w.artisanName}','${w.id}')" style="padding:8px 16px;background:#006600;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;">Submit</button>
+                            </div>`}
+                        </div>` : ''}
+                    </div>`).join('');
+            } catch(e) {
+                el.innerHTML = `<p style="color:#CE1126;padding:1rem;">Error loading updates. Please try again.</p>`;
+            }
+        }
+
+        async function rateArtisan(artisanName, wuId, rating) {
+            // Save rating to work update
+            const allWU = await fetchCollection('workUpdates');
+            const wu = allWU.find(w => String(w.id) === String(wuId));
+            if (wu?._docId) await saveDoc('workUpdates', wu._docId, { rating, ratedBy: user?.name });
+            // Also update artisan's rating
+            const artisan = sampleArtisans.find(a => a.name === artisanName);
+            if (artisan) {
+                const ratings = artisan.ratings || [];
+                ratings.push(rating);
+                artisan.rating = (ratings.reduce((s,r)=>s+r,0) / ratings.length).toFixed(1);
+                artisan.ratings = ratings;
+                await saveArtisanProfile(artisan);
+            }
+            showNotification(`Thank you! You rated ${artisanName} ${rating}/5 ⭐`, 'success');
+            renderCustomerWorkUpdates();
+        }
+
+        async function submitReview(artisanName, wuId) {
+            const review = document.getElementById(`review-${wuId}`)?.value.trim();
+            if (!review) { showNotification('Please write a review first', 'error'); return; }
+            const allWU = await fetchCollection('workUpdates');
+            const wu = allWU.find(w => String(w.id) === String(wuId));
+            if (wu?._docId) await saveDoc('workUpdates', wu._docId, { review, reviewBy: user?.name });
+            showNotification('Review submitted! Thank you.', 'success');
+            renderCustomerWorkUpdates();
+        }
+
+        // ---- Price Quotations from Admin (Escrow) ----
+        async function renderQuotations() {
+            const el = document.getElementById('quotations-list');
+            try {
+                const allQuotes = await fetchCollection('quotations');
+                const myQuotes  = allQuotes.filter(q =>
+                    q.clientEmail === user?.email || q.clientName === user?.name
+                );
+
+                // Update badge
+                const pending = myQuotes.filter(q => q.status === 'pending');
+                const badge   = document.getElementById('quot-badge');
+                if (pending.length > 0) { badge.style.display=''; badge.textContent = pending.length; }
+
+                if (myQuotes.length === 0) {
+                    el.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;">
+                        <i class="fas fa-file-invoice-dollar" style="font-size:3rem;margin-bottom:1rem;display:block;"></i>
+                        <p>No quotations yet. The admin will send you a price quotation for your service request.</p>
+                    </div>`;
+                    return;
+                }
+
+                el.innerHTML = myQuotes.map(q => `
+                    <div style="background:white;border-radius:14px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1.5px solid ${q.status==='paid'?'#25D366':q.status==='pending'?'#FF9900':'#eee'};">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+                            <div>
+                                <div style="font-weight:700;color:#333;font-size:1rem;font-family:'Poppins',sans-serif;">${q.artisanName}</div>
+                                <div style="color:#666;font-size:0.85rem;margin-top:4px;">${q.description || '—'}</div>
+                                <div style="color:#888;font-size:0.78rem;margin-top:4px;"><i class="fas fa-calendar-alt"></i> ${q.date || '—'}</div>
+                                ${q.notes ? `<div style="background:#fffbf0;border:1px solid #FFD580;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:0.82rem;color:#cc7700;"><i class="fas fa-info-circle"></i> Admin note: ${q.notes}</div>` : ''}
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:1.8rem;font-weight:700;color:#006600;">₵${parseFloat(q.amount||0).toFixed(2)}</div>
+                                <div style="margin-top:6px;">
+                                    ${q.status === 'paid'
+                                        ? `<span style="background:#e6fff0;color:#25D366;padding:5px 14px;border-radius:20px;font-size:0.82rem;font-weight:700;"><i class="fas fa-check-circle"></i> PAID</span>`
+                                        : `<button onclick="makePaymentForQuotation('${q._docId}','${q.clientName}','${q.artisanName}',${q.amount})"
+                                            style="padding:10px 20px;background:linear-gradient(135deg,#FF9900,#e68900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;">
+                                            <i class="fas fa-credit-card"></i> Pay Now
+                                          </button>`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            } catch(e) {
+                el.innerHTML = `<p style="color:#CE1126;padding:1rem;">Error loading quotations.</p>`;
+            }
+        }
+
+        function makePaymentForQuotation(docId, clientName, artisanName, amount) {
+            if (!amount || amount <= 0) { showNotification('Invalid amount', 'error'); return; }
+            const doPaystack = () => {
+                const handler = PaystackPop.setup({
+                    key:      'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack public key
+                    email:    user?.email || client?.email || 'customer@example.com',
+                    amount:   Math.round(parseFloat(amount) * 100),
+                    currency: 'GHS',
+                    ref:      `QUOT-${Date.now()}`,
+                    metadata: { custom_fields: [
+                        { display_name: 'Client',  variable_name: 'client',  value: clientName },
+                        { display_name: 'Artisan', variable_name: 'artisan', value: artisanName }
+                    ]},
+                    callback: async function(response) {
+                        await saveDoc('quotations', docId, { status: 'paid', paystackRef: response.reference, paidAt: new Date().toISOString() });
+                        await updateServiceRequest(docId, { paymentStatus: 'paid' });
+                        showNotification(`✅ Payment of ₵${parseFloat(amount).toFixed(2)} successful!`, 'success');
+                        renderQuotations();
+                    },
+                    onClose: () => showNotification('Payment cancelled.', 'info')
+                });
+                handler.openIframe();
+            };
+            if (!window.PaystackPop) {
+                const s = document.createElement('script');
+                s.src = 'https://js.paystack.co/v1/inline.js';
+                s.onload = doPaystack;
+                document.head.appendChild(s);
+            } else doPaystack();
+        }
+
         function doLogout() {
             clearUser();
             clearClientProfile();
@@ -1222,6 +1477,59 @@
         // ---- Toggle sidebar on mobile ----
         function toggleSidebar() {
             document.getElementById('portal-sidebar').classList.toggle('open');
+        }
+    </script>
+    <!-- Emergency Service Modal -->
+    <div id="emergency-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:4000;align-items:center;justify-content:center;padding:1rem;">
+        <div style="background:white;border-radius:20px;max-width:420px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+            <div style="background:linear-gradient(135deg,#CE1126,#a0001c);padding:1.5rem;text-align:center;">
+                <div style="font-size:3rem;margin-bottom:0.5rem;">🚨</div>
+                <h2 style="color:white;font-family:'Poppins',sans-serif;margin:0;">Emergency Request</h2>
+                <p style="color:rgba(255,255,255,0.85);font-size:0.88rem;margin:4px 0 0;">Your request will be marked URGENT and sent immediately to admin</p>
+            </div>
+            <div style="padding:1.5rem;">
+                <p id="emergency-artisan-label" style="font-weight:700;color:#333;margin-bottom:1rem;"></p>
+                <label style="font-size:0.85rem;font-weight:600;color:#333;">Describe your emergency</label>
+                <textarea id="emergency-desc" rows="3" placeholder="e.g. Pipe burst in kitchen, flooding the floor..." style="width:100%;padding:10px;border:1.5px solid #CE1126;border-radius:8px;margin:8px 0 12px;font-family:inherit;resize:none;box-sizing:border-box;"></textarea>
+                <label style="font-size:0.85rem;font-weight:600;color:#333;">Your Address</label>
+                <input type="text" id="emergency-addr" placeholder="House No., Street, Community" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;margin:8px 0 12px;font-family:inherit;box-sizing:border-box;">
+                <div style="display:flex;gap:10px;">
+                    <button onclick="submitEmergency()" style="flex:1;padding:12px;background:linear-gradient(135deg,#CE1126,#a0001c);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
+                        🚨 Send Emergency Request
+                    </button>
+                    <button onclick="document.getElementById('emergency-overlay').style.display='none'" style="padding:12px 18px;background:#f0f0f0;border:none;border-radius:10px;cursor:pointer;font-family:inherit;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let emergencyArtisanKey = null;
+        function openEmergencyModal(artisanKey) {
+            emergencyArtisanKey = artisanKey;
+            const a = sampleArtisans.find(x => x.email === artisanKey || String(x.id) === String(artisanKey));
+            document.getElementById('emergency-artisan-label').textContent = a ? `Artisan: ${a.name} (${a.category})` : 'Emergency Service';
+            document.getElementById('emergency-desc').value = '';
+            document.getElementById('emergency-addr').value = client?.address || '';
+            document.getElementById('emergency-overlay').style.display = 'flex';
+        }
+
+        async function submitEmergency() {
+            const desc = document.getElementById('emergency-desc').value.trim();
+            const addr = document.getElementById('emergency-addr').value.trim();
+            if (!desc) { showNotification('Please describe your emergency', 'error'); return; }
+            const a = sampleArtisans.find(x => x.email === emergencyArtisanKey || String(x.id) === String(emergencyArtisanKey));
+            const req = {
+                clientName:   user?.name, clientEmail: user?.email, clientPhone: client?.phone || '',
+                artisanId:    a?.id, artisanName: a?.name, artisanEmail: a?.email,
+                category:     a?.category, description: desc, address: addr,
+                urgency:      'EMERGENCY', status: 'pending_admin',
+                date:         new Date().toISOString().split('T')[0],
+                paymentStatus:'pending', createdAt: new Date().toISOString()
+            };
+            await addServiceRequest(req);
+            document.getElementById('emergency-overlay').style.display = 'none';
+            showNotification('🚨 Emergency request sent! Admin has been notified immediately.', 'success');
         }
     </script>
 </body>
