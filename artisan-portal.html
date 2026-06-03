@@ -334,10 +334,15 @@
                     <div class="profile-grid" style="margin-bottom:1rem;">
                         <div><label class="flabel">Service Category</label><select id="p-category"></select></div>
                         <div><label class="flabel">Years of Experience</label><input type="number" id="p-experience" min="0" max="60"></div>
-                        <div><label class="flabel">Hourly / Service Rate</label><input type="text" id="p-price" placeholder="₵150/hour"></div>
                     </div>
                     <div style="margin-bottom:1rem;"><label class="flabel">Skills (comma-separated)</label><input type="text" id="p-skills"></div>
                     <div style="margin-bottom:1.5rem;"><label class="flabel">Bio / Description</label><textarea id="p-bio" rows="3"></textarea></div>
+                    <!-- Subscription Tier Display -->
+                    <div style="margin-bottom:1.5rem;">
+                        <label class="flabel">Subscription Tier</label>
+                        <div id="subscription-tier-display" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+                        <p style="font-size:0.78rem;color:#888;margin-top:6px;">Your tier is managed by the admin. Higher tiers get more visibility.</p>
+                    </div>
                     <button class="save-btn" onclick="saveProfessional()"><i class="fas fa-save"></i> Save Changes</button>
                 </div>
 
@@ -466,6 +471,21 @@
         setupSidebar();
         updateBadge();
         showSection('overview');
+
+        // Render subscription tier
+        const tierEl = document.getElementById('subscription-tier-display');
+        if (tierEl) {
+            const tiers = ['Bronze','Silver','Gold','Platinum','Diamond'];
+            const tierColors = { Bronze:'#cd7f32', Silver:'#c0c0c0', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+            const currentTier = artisan?.subscriptionTier || 'Bronze';
+            tierEl.innerHTML = tiers.map(t => `
+                <span style="padding:6px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;
+                    background:${t===currentTier?tierColors[t]:'#f0f0f0'};
+                    color:${t===currentTier?'white':'#aaa'};
+                    border:2px solid ${t===currentTier?tierColors[t]:'#ddd'};">
+                    ${t==='Diamond'?'💎':t==='Platinum'?'🏆':t==='Gold'?'🥇':t==='Silver'?'🥈':'🥉'} ${t}
+                </span>`).join('');
+        }
 
         // Populate customer dropdown from artisan's job requests
         const cusSel = document.getElementById('wu-customer');
@@ -757,7 +777,6 @@
             if (!artisan) return;
             artisan.category=document.getElementById('p-category').value;
             artisan.experience=parseInt(document.getElementById('p-experience').value)||0;
-            artisan.price=document.getElementById('p-price').value;
             artisan.skills=document.getElementById('p-skills').value.split(',').map(s=>s.trim()).filter(Boolean);
             artisan.bio=document.getElementById('p-bio').value.trim();
             await saveArtisanProfile(artisan);
