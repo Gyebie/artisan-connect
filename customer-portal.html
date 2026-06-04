@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portal - GhanaArtisan</title>
+    <title>My Portal - SkillBridge Africa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -393,11 +393,15 @@
                 <button class="snav-btn active" data-section="overview" onclick="showSection('overview')">
                     <i class="fas fa-th-large"></i> Overview
                 </button>
+                <button class="snav-btn" data-section="notifications" onclick="showSection('notifications')">
+                    <i class="fas fa-bell"></i> Notifications
+                    <span class="badge" id="notif-badge" style="display:none;">0</span>
+                </button>
                 <button class="snav-btn" data-section="profile" onclick="showSection('profile')">
                     <i class="fas fa-user-edit"></i> My Profile
                 </button>
                 <button class="snav-btn" data-section="find" onclick="showSection('find')">
-                    <i class="fas fa-search"></i> Find an Artisan
+                    <i class="fas fa-search"></i> Book Verified Artisans
                 </button>
                 <button class="snav-btn" data-section="requests" onclick="showSection('requests')">
                     <i class="fas fa-clipboard-list"></i> My Requests
@@ -410,6 +414,9 @@
                 <button class="snav-btn" data-section="quotations" onclick="showSection('quotations')">
                     <i class="fas fa-file-invoice-dollar"></i> Quotations
                     <span class="badge" id="quot-badge" style="display:none;">0</span>
+                </button>
+                <button class="snav-btn" data-section="build-house" onclick="showSection('build-house')">
+                    <i class="fas fa-home"></i> Build a House
                 </button>
                 <button class="snav-btn" data-section="payments" onclick="showSection('payments')">
                     <i class="fas fa-credit-card"></i> Payment Enquiries
@@ -432,6 +439,85 @@
 
             <!-- OVERVIEW -->
             <div class="section-panel active" id="sec-overview">
+
+            <!-- Notifications Section -->
+            <div class="section-panel" id="sec-notifications">
+                <div class="panel-title"><i class="fas fa-bell"></i> Notifications</div>
+                <p class="panel-sub">Approval notifications from admin including artisan ID card details for security</p>
+                <div id="notifications-list"><div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i></div></div>
+            </div>
+
+            <!-- Build a House Section -->
+            <div class="section-panel" id="sec-build-house">
+                <div class="panel-title"><i class="fas fa-home"></i> Build a House — Full Project</div>
+                <p class="panel-sub">Request a full home construction project. Our admin will coordinate all artisan teams and provide progress updates. Ideal for diaspora clients.</p>
+
+                <div class="white-card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,#f0fff4,#e6f4e6);border:1.5px solid #b3e0b3;">
+                    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+                        <div style="width:48px;height:48px;background:#006600;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-globe" style="color:white;font-size:1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin:0;color:#006600;font-family:'Poppins',sans-serif;">For Diaspora Clients</h4>
+                            <p style="margin:0;font-size:0.82rem;color:#666;">Living abroad? We manage your entire construction project in Ghana from start to finish.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Submit Construction Project Request</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label class="flabel">Project Type</label>
+                            <select id="bh-type" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="new-house">New House Construction</option>
+                                <option value="renovation">Renovation / Remodelling</option>
+                                <option value="extension">House Extension</option>
+                                <option value="commercial">Commercial Building</option>
+                                <option value="finishing">Finishing Works Only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">Number of Bedrooms</label>
+                            <select id="bh-bedrooms" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option>1 Bedroom</option><option>2 Bedrooms</option>
+                                <option>3 Bedrooms</option><option>4 Bedrooms</option>
+                                <option>5+ Bedrooms</option><option>N/A (Commercial)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">Region / Location</label>
+                            <select id="bh-region" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="">Select Region</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">Estimated Budget (₵ GHS)</label>
+                            <input type="number" id="bh-budget" placeholder="e.g. 50000" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Land Address / Location</label>
+                        <input type="text" id="bh-address" placeholder="House No., Street, Community, Region" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                        <button onclick="useLocationForBuildHouse()" style="margin-top:6px;padding:7px 16px;background:#f0f9f0;border:1.5px solid #006600;border-radius:8px;color:#006600;font-weight:600;font-size:0.82rem;cursor:pointer;font-family:inherit;">
+                            <i class="fas fa-map-marker-alt"></i> Use My Live Location
+                        </button>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Project Description & Special Requirements</label>
+                        <textarea id="bh-desc" rows="4" placeholder="Describe your project in detail. Include any special requirements, preferred materials, timeline, etc."></textarea>
+                    </div>
+                    <div style="margin-bottom:1rem;background:#fffbf0;border:1px solid #FFD580;border-radius:8px;padding:0.8rem;">
+                        <p style="font-size:0.82rem;color:#cc7700;margin:0;"><i class="fas fa-info-circle"></i> Your request will be reviewed by our admin team. We will contact you within 24 hours with a full project plan and cost estimate. All communications are private between you and admin.</p>
+                    </div>
+                    <button onclick="submitBuildHouseRequest()" class="submit-req-btn" style="width:100%;">
+                        <i class="fas fa-paper-plane"></i> Submit Project Request
+                    </button>
+                </div>
+
+                <!-- Existing Build House Projects -->
+                <div id="build-house-projects" style="margin-top:1.5rem;"></div>
+            </div>
                 <div class="panel-title"><i class="fas fa-th-large"></i> Welcome Back</div>
                 <p class="panel-sub" id="overview-sub">Here's a summary of your activity</p>
 
@@ -707,13 +793,15 @@
                 b.classList.toggle('active', b.dataset.section === id);
             });
 
-            if (id === 'overview')      renderOverview();
-            if (id === 'profile')       renderProfile();
-            if (id === 'find')          renderFind();
-            if (id === 'requests')      renderRequests();
-            if (id === 'payments')      renderPayments();
-            if (id === 'work-updates')  renderCustomerWorkUpdates();
-            if (id === 'quotations')    renderQuotations();
+            if (id === 'overview')       renderOverview();
+            if (id === 'notifications')  renderNotifications();
+            if (id === 'profile')        renderProfile();
+            if (id === 'find')           renderFind();
+            if (id === 'requests')       renderRequests();
+            if (id === 'payments')       renderPayments();
+            if (id === 'work-updates')   renderCustomerWorkUpdates();
+            if (id === 'quotations')     renderQuotations();
+            if (id === 'build-house')    { loadRegionsIntoSelect(document.getElementById('bh-region')); renderBuildHouseProjects(); }
 
             // Update pending badge
             const pending = myRequests().filter(r => r.status === 'pending_admin').length;
@@ -1460,6 +1548,145 @@
             } else doPaystack();
         }
 
+        // ---- Notifications (from admin approvals) ----
+        async function renderNotifications() {
+            const el = document.getElementById('notifications-list');
+            try {
+                const allNotifs = await fetchCollection('notifications');
+                const mine = allNotifs.filter(n => n.clientEmail === user?.email || n.clientName === user?.name)
+                                      .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                const unread = mine.filter(n => !n.read).length;
+                const badge  = document.getElementById('notif-badge');
+                if (unread > 0) { badge.style.display=''; badge.textContent = unread; }
+
+                if (mine.length === 0) {
+                    el.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-bell" style="font-size:3rem;margin-bottom:1rem;display:block;"></i><p>No notifications yet.</p></div>`;
+                    return;
+                }
+
+                el.innerHTML = mine.map(n => `
+                    <div style="background:${n.read?'white':'#f0fff4'};border:1.5px solid ${n.read?'#eee':'#b3e0b3'};border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1rem;cursor:pointer;" onclick="markNotifRead('${n._docId}')">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                            <div style="flex:1;">
+                                <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;">${n.title || 'Notification'}</div>
+                                <div style="font-size:0.78rem;color:#888;margin:3px 0 8px;">${new Date(n.date).toLocaleString('en-GH')}</div>
+                                ${n.type === 'approval' && n.artisanPhoto ? `
+                                <div style="display:flex;align-items:center;gap:10px;background:#f8f9fa;border-radius:10px;padding:10px;margin-bottom:10px;">
+                                    <div style="width:48px;height:48px;border-radius:50%;border:2px solid #006600;overflow:hidden;flex-shrink:0;background:#eee;display:flex;align-items:center;justify-content:center;">
+                                        <img src="${n.artisanPhoto}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">
+                                    </div>
+                                    <div>
+                                        <div style="font-weight:700;color:#006600;font-size:0.9rem;">${n.artisanName || '—'}</div>
+                                        <div style="font-size:0.78rem;color:#888;">Platform ID: <strong style="letter-spacing:1px;">${n.artisanId || '—'}</strong></div>
+                                    </div>
+                                </div>` : ''}
+                                <p style="font-size:0.85rem;color:#555;margin:0;white-space:pre-wrap;">${(n.message||'').substring(0,300)}${(n.message||'').length>300?'...':''}</p>
+                            </div>
+                            ${!n.read ? '<span style="width:10px;height:10px;background:#25D366;border-radius:50%;flex-shrink:0;margin-top:4px;"></span>' : ''}
+                        </div>
+                    </div>`).join('');
+
+                // Mark all as read
+                mine.filter(n => !n.read && n._docId).forEach(n => {
+                    saveDoc('notifications', n._docId, { read: true }).catch(()=>{});
+                });
+            } catch(e) {
+                el.innerHTML = `<p style="color:#CE1126;padding:1rem;">Error loading notifications.</p>`;
+            }
+        }
+
+        async function markNotifRead(docId) {
+            if (docId) await saveDoc('notifications', docId, { read: true }).catch(()=>{});
+            document.getElementById('notif-badge').style.display = 'none';
+        }
+
+        // ---- Build a House ----
+        function useLocationForBuildHouse() {
+            if (!navigator.geolocation) { showNotification('Geolocation not supported', 'error'); return; }
+            navigator.geolocation.getCurrentPosition(async pos => {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+                    const d = await res.json();
+                    document.getElementById('bh-address').value = d.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                    showNotification('Location detected!', 'success');
+                } catch {
+                    document.getElementById('bh-address').value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+                    showNotification('GPS coordinates added.', 'success');
+                }
+            }, () => showNotification('Could not get location', 'error'), { enableHighAccuracy: true });
+        }
+
+        async function submitBuildHouseRequest() {
+            const type    = document.getElementById('bh-type').value;
+            const rooms   = document.getElementById('bh-bedrooms').value;
+            const region  = document.getElementById('bh-region').value;
+            const budget  = document.getElementById('bh-budget').value;
+            const address = document.getElementById('bh-address').value.trim();
+            const desc    = document.getElementById('bh-desc').value.trim();
+            if (!address) { showNotification('Please enter the land address', 'error'); return; }
+            if (!desc)    { showNotification('Please describe your project', 'error'); return; }
+
+            await addDoc_('buildHouseRequests', {
+                clientName:  user?.name, clientEmail: user?.email, clientPhone: client?.phone || '',
+                projectType: type, bedrooms: rooms, region, budget: parseFloat(budget)||0,
+                address, description: desc,
+                status:      'submitted',
+                submittedAt: new Date().toISOString(),
+                updates:     []
+            });
+
+            // Notify admin via Firebase
+            await addDoc_('adminNotifications', {
+                type:    'build-house',
+                title:   `🏠 New Build House Request from ${user?.name}`,
+                message: `${type} — ${rooms} — Budget: ₵${budget||'TBD'} — ${address}`,
+                date:    new Date().toISOString(),
+                read:    false
+            });
+
+            ['bh-budget','bh-address','bh-desc'].forEach(id => document.getElementById(id).value = '');
+            showNotification('🏠 Project request submitted! Admin will contact you within 24 hours.', 'success');
+            renderBuildHouseProjects();
+        }
+
+        async function renderBuildHouseProjects() {
+            const el = document.getElementById('build-house-projects');
+            if (!el) return;
+            try {
+                const all = await fetchCollection('buildHouseRequests');
+                const mine = all.filter(r => r.clientEmail === user?.email || r.clientName === user?.name)
+                               .sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+                if (mine.length === 0) { el.innerHTML = ''; return; }
+                el.innerHTML = `
+                    <h3 style="color:#006600;font-family:'Poppins',sans-serif;margin-bottom:1rem;font-size:1rem;"><i class="fas fa-hard-hat"></i> Your Construction Projects</h3>
+                    ${mine.map(r => `
+                    <div style="background:white;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid #eee;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;">
+                            <div>
+                                <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;">${r.projectType?.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase())}</div>
+                                <div style="font-size:0.82rem;color:#888;margin-top:3px;">${r.bedrooms} · ${r.region||'—'} · ₵${r.budget?.toLocaleString()||'TBD'} budget</div>
+                                <div style="font-size:0.78rem;color:#aaa;margin-top:2px;">${r.address?.substring(0,50)||'—'}</div>
+                            </div>
+                            <span style="background:${r.status==='completed'?'#e6fff0':r.status==='in-progress'?'#fff8e6':'#f0f0f0'};color:${r.status==='completed'?'#25D366':r.status==='in-progress'?'#FF9900':'#888'};padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;">
+                                ${r.status==='completed'?'✅ Completed':r.status==='in-progress'?'🔨 In Progress':'📋 Submitted'}
+                            </span>
+                        </div>
+                        ${(r.updates||[]).length > 0 ? `
+                        <div style="margin-top:1rem;border-top:1px solid #eee;padding-top:0.8rem;">
+                            <div style="font-size:0.82rem;font-weight:600;color:#555;margin-bottom:6px;">Admin Progress Updates:</div>
+                            ${r.updates.slice(-3).map(u => `
+                            <div style="background:#f8f9fa;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:0.82rem;">
+                                <div style="font-weight:600;color:#006600;">${u.stage || 'Update'}</div>
+                                <div style="color:#555;margin-top:2px;">${u.note}</div>
+                                ${u.photos?.length ? `<div style="display:flex;gap:6px;margin-top:6px;">${u.photos.map(p=>`<img src="${p}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`).join('')}</div>` : ''}
+                                <div style="color:#aaa;font-size:0.72rem;margin-top:4px;">${u.date||'—'}</div>
+                            </div>`).join('')}
+                        </div>` : ''}
+                    </div>`).join('')}`;
+            } catch(e) { el.innerHTML = ''; }
+        }
+
         function doLogout() {
             clearUser();
             clearClientProfile();
@@ -1531,6 +1758,35 @@
             document.getElementById('emergency-overlay').style.display = 'none';
             showNotification('🚨 Emergency request sent! Admin has been notified immediately.', 'success');
         }
+    </script>
+
+    <!-- WhatsApp Floating Button — Chat with Admin -->
+    <div id="whatsapp-fab" style="position:fixed;bottom:80px;right:24px;z-index:3000;display:flex;flex-direction:column;align-items:flex-end;gap:10px;">
+        <div id="whatsapp-menu" style="display:none;flex-direction:column;gap:8px;align-items:flex-end;">
+            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%20SkillBridge%20Africa%20Admin%2C%20I%20need%20help%20with%20my%20account."
+               target="_blank"
+               style="background:white;color:#25D366;padding:10px 16px;border-radius:20px;font-weight:700;font-size:0.85rem;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.15);display:flex;align-items:center;gap:8px;white-space:nowrap;">
+                <i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Chat with Admin
+            </a>
+            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%2C%20I%20need%20urgent%20help!"
+               target="_blank"
+               style="background:white;color:#CE1126;padding:10px 16px;border-radius:20px;font-weight:700;font-size:0.85rem;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.15);display:flex;align-items:center;gap:8px;white-space:nowrap;">
+                <i class="fas fa-phone" style="font-size:1rem;"></i> Call Admin
+            </a>
+            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%2C%20I%20would%20like%20a%20price%20quote%20for%20a%20service."
+               target="_blank"
+               style="background:white;color:#FF9900;padding:10px 16px;border-radius:20px;font-weight:700;font-size:0.85rem;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.15);display:flex;align-items:center;gap:8px;white-space:nowrap;">
+                <i class="fas fa-file-invoice" style="font-size:1rem;"></i> Request Quote via WhatsApp
+            </a>
+        </div>
+        <button onclick="document.getElementById('whatsapp-menu').style.display=document.getElementById('whatsapp-menu').style.display==='flex'?'none':'flex'"
+            style="width:56px;height:56px;border-radius:50%;background:#25D366;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(37,211,102,0.5);animation:pulse 2s infinite;">
+            <i class="fab fa-whatsapp" style="font-size:1.8rem;color:white;"></i>
+        </button>
+    </div>
+    <script>
+        // Replace 233XXXXXXXXXX with your admin WhatsApp number (e.g. 233241234567)
+        // The number is already embedded in the href links above
     </script>
 </body>
 </html>
