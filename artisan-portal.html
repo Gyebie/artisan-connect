@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artisan Dashboard - GhanaArtisan</title>
+    <title>Artisan Dashboard - SkillBridge Africa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -194,10 +194,17 @@
                     </div>
                 </div>
             </div>
+            <!-- ID Card Button — only shows when verified -->
+            <div id="id-card-btn-wrap" style="display:none;margin-bottom:0.8rem;">
+                <button onclick="showIDCard()" style="width:100%;padding:9px 14px;background:linear-gradient(135deg,#FFD700,#cc9900);color:#333;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    🪪 View My ID Card
+                </button>
+            </div>
             <div class="sidebar-nav">
                 <button class="snav-btn active" data-section="overview"     onclick="showSection('overview')">    <i class="fas fa-th-large"></i>Overview</button>
                 <button class="snav-btn"         data-section="job-requests" onclick="showSection('job-requests')"><i class="fas fa-clipboard-list"></i>Job Requests<span class="nbadge" id="pending-badge" style="display:none">0</span></button>
                 <button class="snav-btn"         data-section="work-updates" onclick="showSection('work-updates')"><i class="fas fa-camera"></i>Work Updates</button>
+                <button class="snav-btn"         data-section="portfolio"    onclick="showSection('portfolio')">   <i class="fas fa-images"></i>My Portfolio</button>
                 <button class="snav-btn"         data-section="profile"      onclick="showSection('profile')">     <i class="fas fa-user-edit"></i>My Profile</button>
                 <button class="snav-btn"         data-section="credentials"  onclick="showSection('credentials')"> <i class="fas fa-certificate"></i>Credentials</button>
                 <button class="snav-btn"         data-section="payments"     onclick="showSection('payments')">    <i class="fas fa-credit-card"></i>Payments</button>
@@ -359,6 +366,61 @@
                 </div>
             </div>
 
+            <!-- PORTFOLIO GALLERY -->
+            <div class="section-panel" id="sec-portfolio">
+                <div class="panel-title"><i class="fas fa-images"></i> Portfolio Gallery</div>
+                <p class="panel-sub">Showcase your best work — before & after photos, completed projects and customer testimonials</p>
+
+                <!-- Upload Work Photos -->
+                <div class="white-card" style="margin-bottom:1.5rem;">
+                    <div class="card-title"><i class="fas fa-upload"></i> Add Portfolio Item</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label class="flabel">Project Title</label>
+                            <input type="text" id="pf-title" placeholder="e.g. Complete Plumbing Installation, East Legon">
+                        </div>
+                        <div>
+                            <label class="flabel">Project Type</label>
+                            <select id="pf-type" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="before-after">Before & After</option>
+                                <option value="completed">Completed Project</option>
+                                <option value="in-progress">Work In Progress</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label class="flabel">Photo 1 (Before / Main)</label>
+                            <input type="file" id="pf-photo1" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev1')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev1" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                        <div>
+                            <label class="flabel">Photo 2 (After / Detail)</label>
+                            <input type="file" id="pf-photo2" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev2')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev2" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                        <div>
+                            <label class="flabel">Photo 3 (Optional)</label>
+                            <input type="file" id="pf-photo3" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev3')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev3" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                        <div>
+                            <label class="flabel">Photo 4 (Optional)</label>
+                            <input type="file" id="pf-photo4" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev4')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev4" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Description / Customer Testimonial</label>
+                        <textarea id="pf-desc" rows="3" placeholder="Describe the project or paste a customer testimonial..."></textarea>
+                    </div>
+                    <button class="save-btn" onclick="addPortfolioItem()"><i class="fas fa-plus-circle"></i> Add to Portfolio</button>
+                </div>
+
+                <!-- Portfolio Display -->
+                <div id="portfolio-gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;"></div>
+            </div>
+
             <!-- CREDENTIALS -->
             <div class="section-panel" id="sec-credentials">
                 <div class="panel-title"><i class="fas fa-certificate"></i> Credentials</div>
@@ -509,6 +571,10 @@
             dot.className = 'status-dot ' + (verified ? 'dot-verified' : 'dot-pending');
             txt.textContent = verified ? 'Verified ✅' : 'Pending Verification ⏳';
 
+            // Show ID Card button only when verified
+            const idBtnWrap = document.getElementById('id-card-btn-wrap');
+            if (idBtnWrap) idBtnWrap.style.display = verified ? 'block' : 'none';
+
             const photo = artisan?.profilePhoto || artisan?.profilePic;
             if (photo) {
                 document.getElementById('sb-avatar').innerHTML = `<img src="${photo}" alt="${displayName}" style="width:100%;height:100%;object-fit:cover;">`;
@@ -536,6 +602,7 @@
             if (id === 'overview')     renderOverview();
             if (id === 'job-requests') renderJobs();
             if (id === 'work-updates') renderWorkUpdates();
+            if (id === 'portfolio')    renderPortfolio();
             if (id === 'profile')      renderProfile();
             if (id === 'credentials')  renderCredentials();
             if (id === 'payments')     { buildMonthSelect(); renderPayments(); }
@@ -918,7 +985,7 @@
             doc.rect(0, 0, 210, 32, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-            doc.text('GhanaArtisan', 14, 13);
+            doc.text('SkillBridge Africa', 14, 13);
             doc.setFontSize(11); doc.setFont('helvetica', 'normal');
             doc.text('Monthly Payslip', 14, 22);
             doc.text(`Generated: ${today}`, 196, 22, { align: 'right' });
@@ -952,10 +1019,213 @@
 
             // Footer
             doc.setFontSize(8); doc.setTextColor(150, 150, 150);
-            doc.text('GhanaArtisan Platform — Connecting Clients with Verified Artisans across Ghana', 105, 287, { align: 'center' });
+            doc.text('SkillBridge Africa Platform — Connecting Clients with Verified Artisans across Ghana', 105, 287, { align: 'center' });
 
-            doc.save(`GhanaArtisan_Payslip_${artisan.name.replace(/\s/g,'_')}_${month.replace(/\s/g,'_')}.pdf`);
+            doc.save(`SkillBridge Africa_Payslip_${artisan.name.replace(/\s/g,'_')}_${month.replace(/\s/g,'_')}.pdf`);
             showNotification('Payslip downloaded as PDF!', 'success');
+        }
+
+        // ---- ID Card ----
+        function showIDCard() {
+            if (!artisan?.verified) { showNotification('ID Card is only available after admin verification', 'error'); return; }
+            document.getElementById('id-card-overlay').style.display = 'flex';
+            renderIDCard();
+        }
+
+        function renderIDCard() {
+            const el = document.getElementById('id-card-content');
+            const tierColors = { Bronze:'#cd7f32', Silver:'#c0c0c0', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+            const tier = artisan.subscriptionTier || 'Bronze';
+            el.innerHTML = `
+                <div style="background:linear-gradient(135deg,#006600 0%,#004d00 60%,#FFD700 100%);border-radius:16px;padding:1.5rem;color:white;max-width:340px;margin:0 auto;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:rgba(255,215,0,0.08);border-radius:50%;transform:translate(30px,-30px);"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
+                        <div>
+                            <div style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;margin-bottom:2px;">SKILLBRIDGE AFRICA</div>
+                            <div style="font-size:0.72rem;opacity:0.75;">Verified Artisan ID Card</div>
+                        </div>
+                        <span style="background:${tierColors[tier]};color:${tier==='Gold'||tier==='Bronze'?'#333':'white'};padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;">${tier}</span>
+                    </div>
+                    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
+                        <div style="width:70px;height:70px;border-radius:50%;border:3px solid #FFD700;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            ${artisan.profilePic ? `<img src="${artisan.profilePic}" style="width:100%;height:100%;object-fit:cover;">` : `<i class="fas fa-user" style="font-size:2rem;color:rgba(255,255,255,0.7);"></i>`}
+                        </div>
+                        <div>
+                            <div style="font-size:1.1rem;font-weight:700;font-family:'Poppins',sans-serif;">${artisan.name}</div>
+                            <div style="font-size:0.78rem;opacity:0.85;margin-top:2px;">${artisan.category || '—'}</div>
+                            <div style="font-size:0.78rem;opacity:0.75;">${artisan.region || '—'}</div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:0.8rem;margin-bottom:0.8rem;">
+                        <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:6px;opacity:0.8;">
+                            <span>PLATFORM ID</span><span>ID TYPE</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.9rem;font-weight:700;">
+                            <span style="letter-spacing:2px;">${artisan.platformId || '—'}</span>
+                            <span style="font-size:0.78rem;">${artisan.idType?.toUpperCase() || '—'}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.7rem;opacity:0.75;">
+                        <span>ISSUED: ${artisan.idIssueDate || '—'}</span>
+                        <span>EXPIRES: ${artisan.idExpiryDate || '—'}</span>
+                    </div>
+                    <div style="margin-top:0.8rem;text-align:center;">
+                        <i class="fas fa-check-circle" style="color:#FFD700;"></i>
+                        <span style="font-size:0.72rem;margin-left:4px;">Verified & Approved by SkillBridge Africa</span>
+                    </div>
+                </div>`;
+        }
+
+        async function downloadIDCard() {
+            if (!artisan?.verified) return;
+            if (!window.jspdf) {
+                await new Promise((resolve, reject) => {
+                    const s1 = document.createElement('script');
+                    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    s1.onload = resolve; s1.onerror = reject;
+                    document.head.appendChild(s1);
+                });
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85, 54] }); // Credit card size
+
+            // Background
+            doc.setFillColor(0, 77, 0);
+            doc.rect(0, 0, 85, 54, 'F');
+            doc.setFillColor(0, 102, 0);
+            doc.rect(0, 0, 85, 16, 'F');
+
+            // Header
+            doc.setTextColor(255, 215, 0);
+            doc.setFontSize(7); doc.setFont('helvetica','bold');
+            doc.text('SKILLBRIDGE AFRICA', 5, 6);
+            doc.setTextColor(255,255,255);
+            doc.setFontSize(5); doc.setFont('helvetica','normal');
+            doc.text('Verified Artisan ID Card', 5, 11);
+
+            // Photo placeholder
+            doc.setFillColor(255,255,255);
+            doc.rect(5, 19, 18, 22, 'F');
+            if (artisan.profilePic && artisan.profilePic.startsWith('data:image')) {
+                try { doc.addImage(artisan.profilePic, 'JPEG', 5, 19, 18, 22); } catch(e) {}
+            }
+
+            // Name & details
+            doc.setTextColor(255,255,255);
+            doc.setFontSize(9); doc.setFont('helvetica','bold');
+            doc.text(artisan.name, 27, 24);
+            doc.setFontSize(6); doc.setFont('helvetica','normal');
+            doc.text(artisan.category || '—', 27, 29);
+            doc.text(artisan.region || '—', 27, 33);
+
+            // ID info
+            doc.setFillColor(0,0,0,0.3);
+            doc.setFontSize(5);
+            doc.text('PLATFORM ID', 27, 40);
+            doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(255,215,0);
+            doc.text(artisan.platformId || '—', 27, 45);
+
+            doc.setFontSize(4); doc.setFont('helvetica','normal'); doc.setTextColor(200,200,200);
+            doc.text(`Issued: ${artisan.idIssueDate||'—'}   Expires: ${artisan.idExpiryDate||'—'}`, 5, 51);
+
+            doc.save(`SkillBridge_ID_${artisan.name.replace(/\s/g,'_')}.pdf`);
+            showNotification('ID Card downloaded as PDF!', 'success');
+        }
+
+        // ---- Portfolio ----
+        function previewPortfolioPhoto(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+            const el = document.getElementById(previewId);
+            const reader = new FileReader();
+            reader.onload = e => {
+                if (file.type.startsWith('video/')) {
+                    el.innerHTML = `<video src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" controls></video>`;
+                } else {
+                    el.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function addPortfolioItem() {
+            if (!artisan) return;
+            const title = document.getElementById('pf-title').value.trim();
+            const type  = document.getElementById('pf-type').value;
+            const desc  = document.getElementById('pf-desc').value.trim();
+            if (!title) { showNotification('Please enter a project title', 'error'); return; }
+
+            const getPhotoData = async (id) => {
+                const file = document.getElementById(id).files[0];
+                if (!file) return null;
+                return new Promise(res => {
+                    const r = new FileReader();
+                    r.onload = e => res(e.target.result);
+                    r.readAsDataURL(file);
+                });
+            };
+
+            showNotification('Uploading portfolio item...', 'info');
+            const [p1, p2, p3, p4] = await Promise.all([
+                getPhotoData('pf-photo1'), getPhotoData('pf-photo2'),
+                getPhotoData('pf-photo3'), getPhotoData('pf-photo4')
+            ]);
+
+            const item = {
+                id: Date.now(), title, type, desc,
+                photos: [p1, p2, p3, p4].filter(Boolean),
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            if (!artisan.portfolio) artisan.portfolio = [];
+            artisan.portfolio.unshift(item);
+            await saveArtisanProfile(artisan);
+
+            // Clear form
+            ['pf-title','pf-desc'].forEach(id => document.getElementById(id).value = '');
+            ['pf-photo1','pf-photo2','pf-photo3','pf-photo4'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            ['pf-prev1','pf-prev2','pf-prev3','pf-prev4'].forEach(id => {
+                document.getElementById(id).innerHTML = '<i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i>';
+            });
+
+            showNotification('Portfolio item added!', 'success');
+            renderPortfolio();
+        }
+
+        function renderPortfolio() {
+            const el = document.getElementById('portfolio-gallery');
+            if (!el) return;
+            const items = artisan?.portfolio || [];
+            if (items.length === 0) {
+                el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-images" style="font-size:3rem;margin-bottom:1rem;display:block;"></i><p>No portfolio items yet. Add your first project above!</p></div>`;
+                return;
+            }
+            el.innerHTML = items.map(item => `
+                <div style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #eee;">
+                    <div style="display:grid;grid-template-columns:${item.photos.length>1?'1fr 1fr':'1fr'};gap:2px;height:160px;overflow:hidden;">
+                        ${item.photos.slice(0,4).map(p => p.startsWith('data:video') ?
+                            `<video src="${p}" style="width:100%;height:100%;object-fit:cover;"></video>` :
+                            `<img src="${p}" style="width:100%;height:100%;object-fit:cover;">`
+                        ).join('')}
+                    </div>
+                    <div style="padding:1rem;">
+                        <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;font-size:0.9rem;">${item.title}</div>
+                        <div style="font-size:0.75rem;color:#888;margin-top:3px;">${item.type} · ${item.date}</div>
+                        ${item.desc ? `<p style="font-size:0.82rem;color:#666;margin-top:6px;font-style:italic;">"${item.desc}"</p>` : ''}
+                        <button onclick="deletePortfolioItem(${item.id})" style="margin-top:8px;padding:4px 12px;background:#fff0f0;color:#CE1126;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:0.75rem;font-family:inherit;">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function deletePortfolioItem(id) {
+            if (!confirm('Remove this portfolio item?')) return;
+            artisan.portfolio = (artisan.portfolio || []).filter(p => p.id !== id);
+            await saveArtisanProfile(artisan);
+            renderPortfolio();
         }
 
         function doLogout() {
@@ -969,5 +1239,23 @@
         window.addEventListener('pagehide',()=>{ clearUser(); });
         document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeInfo(); });
     </script>
+    <!-- ID Card Modal -->
+    <div id="id-card-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:5000;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)this.style.display='none'">
+        <div style="background:white;border-radius:20px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+                <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin:0;">🪪 Artisan ID Card</h3>
+                <button onclick="document.getElementById('id-card-overlay').style.display='none'" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
+            </div>
+            <div id="id-card-content"></div>
+            <div style="display:flex;gap:10px;margin-top:1.2rem;">
+                <button onclick="downloadIDCard()" style="flex:1;padding:12px;background:linear-gradient(135deg,#006600,#009900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <button onclick="window.print()" style="flex:1;padding:12px;background:#f0f0f0;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;color:#333;">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
