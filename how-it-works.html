@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How It Works - GhanaArtisan</title>
+    <title>My Portal - SkillBridge Africa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,225 +13,1780 @@
     <script src="nav.js"></script>
     <style id="shared-css"></style>
     <style>
-        .hero-how {
-            background: var(--gradient-primary);
-            padding: 8rem 5% 4rem;
-            text-align: center;
-            color: white;
-            position: relative;
-        }
-        .hero-how::after {
-            content:''; position:absolute; bottom:-1px; left:0; right:0; height:40px;
-            background: var(--light); clip-path: ellipse(55% 100% at 50% 100%);
-        }
-        .hero-how h1 { font-family:'Poppins',sans-serif; font-size:clamp(1.8rem,4vw,3rem); margin-bottom:1rem; }
-        .hero-how p  { opacity:.9; font-size:1.1rem; max-width:600px; margin:0 auto; }
-
-        .content-section { padding: 4rem 5%; max-width: 1000px; margin: 0 auto; }
-
-        /* Steps */
-        .steps-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 2rem; margin-bottom: 4rem;
-        }
-        .step-card {
-            background: white; border-radius: 15px; padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.07); text-align: center;
-            border-top: 5px solid #006600; position: relative; overflow: hidden;
-            transition: transform 0.3s;
-        }
-        .step-card:nth-child(2) { border-top-color: #FF9900; }
-        .step-card:nth-child(3) { border-top-color: #CE1126; }
-        .step-card:nth-child(4) { border-top-color: #006600; }
-        .step-card:hover { transform: translateY(-5px); }
-        .step-num {
-            width: 50px; height: 50px; border-radius: 50%; background: #006600;
-            color: white; display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem; font-weight: 700; margin: 0 auto 1rem;
-        }
-        .step-card:nth-child(2) .step-num { background: #FF9900; }
-        .step-card:nth-child(3) .step-num { background: #CE1126; }
-        .step-card h3 { color: #006600; margin-bottom: 0.7rem; font-family:'Poppins',sans-serif; }
-        .step-card:nth-child(2) h3 { color: #FF9900; }
-        .step-card:nth-child(3) h3 { color: #CE1126; }
-        .step-card p  { color: #666; font-size: 0.95rem; line-height: 1.6; }
-
-        /* Roles */
-        .roles-section {
-            background: white; border-radius: 15px; padding: 3rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.07); margin-bottom: 3rem;
-        }
-        .roles-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem; margin-top: 2rem;
-        }
-        .role-card {
-            padding: 2rem; border-radius: 12px; text-align: center;
-        }
-        .role-card.artisan { background: rgba(0,102,0,0.05); border: 2px solid rgba(0,102,0,0.2); }
-        .role-card.client  { background: rgba(255,153,0,0.05); border: 2px solid rgba(255,153,0,0.2); }
-        .role-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .role-card.artisan .role-icon { color: #006600; }
-        .role-card.client  .role-icon { color: #FF9900; }
-        .role-card h3 { margin-bottom: 1rem; font-family:'Poppins',sans-serif; }
-        .role-card.artisan h3 { color: #006600; }
-        .role-card.client  h3 { color: #FF9900; }
-        .role-card ul { list-style: none; text-align: left; }
-        .role-card ul li { color: #555; padding: 6px 0; font-size: 0.95rem; display:flex;align-items:center;gap:8px; }
-        .role-card ul li::before { content:'✓'; font-weight:700; }
-        .role-card.artisan ul li::before { color:#006600; }
-        .role-card.client  ul li::before { color:#FF9900; }
-
-        /* ID Verification section */
-        .verify-section {
-            background: #006600; color: white; border-radius: 15px;
-            padding: 3rem; margin-bottom: 3rem; text-align: center;
-        }
-        .verify-section h2 { font-family:'Poppins',sans-serif; margin-bottom:1rem; }
-        .verify-section p  { opacity:.9; max-width:600px; margin:0 auto 2rem; line-height:1.7; }
-        .id-types {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem;
-        }
-        .id-type-badge {
-            background: rgba(255,255,255,0.15); padding: 8px 18px;
-            border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.3);
+        /* ===== LAYOUT ===== */
+        /* Sidebar is position:fixed, so we just use margin-left on main content */
+        .portal-layout {
+            min-height: 100vh;
+            padding-top: 58px;
         }
 
-        /* Categories */
-        .categories-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem; margin-top: 1.5rem;
+        /* ===== SIDEBAR ===== */
+        .portal-sidebar {
+            background: linear-gradient(170deg, #003d00, #006600 70%, #007700);
+            position: fixed; top: 58px; left: 0; bottom: 0; width: 260px;
+            display: flex; flex-direction: column;
+            padding: 1.5rem 1.2rem; overflow-y: auto; z-index: 400;
         }
-        .cat-card {
-            background: white; border-radius: 10px; padding: 1.2rem;
-            text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-            border: 1px solid rgba(0,102,0,0.1); transition: all 0.2s;
-            text-decoration: none;
+        @media(max-width: 860px) {
+            .portal-sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+            .portal-sidebar.open { transform: translateX(0); }
         }
-        .cat-card:hover { border-color: #006600; transform: translateY(-3px); }
-        .cat-card i { font-size: 1.6rem; color: #006600; margin-bottom: 0.5rem; display:block; }
-        .cat-card span { color: #333; font-size: 0.85rem; font-weight: 500; }
 
-        /* CTA */
-        .cta-row {
-            display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 3rem;
+        .sidebar-user {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.12); border-radius: 14px;
+            padding: 1rem; margin-bottom: 2rem;
         }
+        .sidebar-avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); display: flex; align-items: center;
+            justify-content: center; font-size: 1.4rem; color: white; flex-shrink: 0;
+        }
+        .sidebar-user-name { color: white; font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+        .sidebar-user-role { color: rgba(255,255,255,0.65); font-size: 0.75rem; margin-top: 2px; }
+
+        .sidebar-nav { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; }
+        .snav-btn {
+            display: flex; align-items: center; gap: 12px;
+            padding: 0.85rem 1rem; border-radius: 10px; border: none;
+            background: transparent; color: rgba(255,255,255,0.75);
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; text-align: left; transition: all 0.2s; text-decoration: none;
+        }
+        .snav-btn i { width: 18px; text-align: center; font-size: 1rem; }
+        .snav-btn:hover  { background: rgba(255,255,255,0.12); color: white; }
+        .snav-btn.active { background: rgba(255,255,255,0.2); color: white; font-weight: 700; }
+        .snav-btn .badge {
+            margin-left: auto; background: #FF9900; color: white;
+            font-size: 0.72rem; font-weight: 700; padding: 2px 7px;
+            border-radius: 10px; min-width: 20px; text-align: center;
+        }
+
+        .sidebar-logout {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0.85rem 1rem; border-radius: 10px; border: none;
+            background: rgba(206,17,38,0.3); color: white;
+            font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 600;
+            cursor: pointer; margin-top: 1.5rem; transition: background 0.2s;
+        }
+        .sidebar-logout:hover { background: rgba(206,17,38,0.55); }
+
+        /* Mobile sidebar toggle */
+        .sidebar-toggle {
+            display: none; position: fixed; bottom: 80px; left: 16px; z-index: 500;
+            background: #006600; color: white; border: none; border-radius: 12px;
+            padding: 10px 14px; cursor: pointer; font-size: 1.1rem;
+            box-shadow: 0 4px 16px rgba(0,102,0,0.4);
+        }
+        @media(max-width: 860px) { .sidebar-toggle { display: flex; align-items:center; gap:6px; } }
+
+        /* ===== MAIN CONTENT ===== */
+        .portal-main {
+            margin-left: 260px;
+            padding: 2.5rem 3rem;
+            background: #f4f6f4;
+            min-height: calc(100vh - 58px);
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        @media(max-width: 860px) { .portal-main { margin-left: 0; padding: 1.5rem; } }
+
+        .section-panel { display: none; }
+        .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+        .panel-title {
+            font-family: 'Poppins', sans-serif; color: #006600;
+            font-size: 1.6rem; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 10px;
+            line-height: 1.3;
+        }
+        .panel-sub { color: #888; font-size: 0.9rem; margin-bottom: 1.8rem; line-height: 1.5; }
+
+        /* ===== CARDS ===== */
+        .white-card {
+            background: white; border-radius: 16px; padding: 2rem;
+            box-shadow: 0 3px 16px rgba(0,0,0,0.07); margin-bottom: 1.5rem;
+            border: 1px solid rgba(0,102,0,0.06);
+            width: 100%; box-sizing: border-box;
+        }
+        .card-title {
+            font-family: 'Poppins', sans-serif; color: #006600;
+            font-size: 1rem; margin-bottom: 1.2rem;
+            display: flex; align-items: center; gap: 8px;
+            border-bottom: 2px solid rgba(0,102,0,0.08); padding-bottom: 0.8rem;
+        }
+
+        /* ===== STAT MINI ===== */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        @media(max-width: 1100px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
+        @media(max-width: 600px)  { .stat-row { grid-template-columns: 1fr; } }
+        .stat-mini {
+            background: white; border-radius: 14px; padding: 1.4rem;
+            text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,102,0,0.06); min-width: 0;
+        }
+        .stat-mini .sv { font-size: 2rem; font-weight: 700; font-family: 'Poppins', sans-serif; color: #006600; }
+        .stat-mini .sl { color: #888; font-size: 0.8rem; margin-top: 4px; }
+
+        /* ===== PROFILE FORM ===== */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+        }
+        @media(max-width: 700px) { .profile-grid { grid-template-columns: 1fr; } }
+        .flabel {
+            color: #555; font-weight: 600; font-size: 0.84rem;
+            display: block; margin-bottom: 5px;
+        }
+        /* Make all inputs inside portal full-width and readable */
+        .portal-main input,
+        .portal-main select,
+        .portal-main textarea {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            font-size: 0.92rem;
+        }
+        .save-btn {
+            background: #006600; color: white; border: none; padding: 12px 28px;
+            border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s; box-shadow: 0 4px 14px rgba(0,102,0,0.3);
+        }
+        .save-btn:hover { background: #004d00; transform: translateY(-1px); }
+
+        /* ===== FIND ARTISAN (search) ===== */
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-bottom: 1.2rem;
+        }
+        @media(max-width: 1100px) { .search-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media(max-width: 600px)  { .search-grid { grid-template-columns: 1fr; } }
+        .search-btn {
+            width: 100%; padding: 13px; background: #006600; color: white; border: none;
+            border-radius: 10px; font-weight: 700; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .search-btn:hover { background: #004d00; }
+
+        /* Artisan result card */
+        .artisan-result {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            flex-wrap: wrap; gap: 1rem; padding: 1.2rem;
+            border: 1px solid rgba(0,102,0,0.1); border-radius: 12px;
+            background: white; margin-bottom: 1rem; transition: box-shadow 0.2s;
+        }
+        .artisan-result:hover { box-shadow: 0 6px 20px rgba(0,102,0,0.12); }
+        .ar-info h4 { color: #006600; font-family: 'Poppins', sans-serif; margin-bottom: 4px; }
+        .ar-info .ar-loc { color: #888; font-size: 0.82rem; margin-bottom: 6px; }
+        .ar-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+        .ar-tag {
+            background: rgba(0,102,0,0.08); color: #006600;
+            padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+        }
+        .ar-tag.gold { background: rgba(255,153,0,0.1); color: #cc7700; }
+        .ar-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; }
+        .ar-rate { font-weight: 700; color: #006600; font-size: 1.1rem; margin-bottom: 4px; }
+        .req-btn {
+            background: #FF9900; color: white; border: none; padding: 9px 18px;
+            border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .req-btn:hover { background: #cc7700; transform: translateY(-1px); }
+
+        /* ===== REQUEST MODAL ===== */
+        .req-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 2000;
+            align-items: center; justify-content: center; padding: 1.5rem;
+        }
+        .req-overlay.active { display: flex; }
+        .req-modal {
+            background: white; border-radius: 20px; width: 100%; max-width: 520px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: fadeIn 0.25s ease; margin: auto;
+            overflow: hidden;
+        }
+        .req-modal-header {
+            background: var(--gradient-primary); padding: 1.5rem 2rem; color: white;
+        }
+        .req-modal-header h3 { font-family: 'Poppins', sans-serif; margin-bottom: 0.2rem; }
+        .req-modal-header p  { opacity: .85; font-size: 0.85rem; }
+        .req-modal-body { padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem; }
+        .req-modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .submit-req-btn {
+            width: 100%; padding: 13px; background: #FF9900; color: white; border: none;
+            border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: all 0.2s;
+        }
+        .submit-req-btn:hover { background: #cc7700; }
+
+        /* ===== MY REQUESTS (status tracker) ===== */
+        .request-card {
+            border: 1px solid rgba(0,102,0,0.1); border-radius: 14px;
+            overflow: hidden; margin-bottom: 1.2rem;
+            background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .request-card-top {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            flex-wrap: wrap; gap: 0.8rem; padding: 1.2rem 1.4rem;
+            border-bottom: 1px solid rgba(0,102,0,0.07);
+        }
+        .rc-artisan { font-weight: 700; color: #006600; font-family: 'Poppins', sans-serif; font-size: 0.95rem; }
+        .rc-desc { color: #555; font-size: 0.88rem; margin-top: 3px; line-height: 1.5; }
+        .rc-date { color: #aaa; font-size: 0.78rem; margin-top: 4px; }
+
+        /* Status pills */
+        .pill {
+            padding: 5px 14px; border-radius: 20px; font-size: 0.78rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+            display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+        }
+        .pill.pending  { background: rgba(255,153,0,0.15);  color: #cc7700; }
+        .pill.approved { background: rgba(37,211,102,0.15); color: #1a9e4e; }
+        .pill.reassigned { background: rgba(30,144,255,0.12); color: #1565c0; }
+        .pill.rejected { background: rgba(206,17,38,0.12);  color: #CE1126; }
+        .pill.completed { background: rgba(0,102,0,0.12);   color: #006600; }
+
+        /* Progress tracker */
+        .progress-track {
+            display: flex; align-items: center; padding: 1rem 1.4rem;
+            gap: 0; overflow-x: auto;
+        }
+        .pt-step {
+            display: flex; flex-direction: column; align-items: center;
+            min-width: 80px; flex: 1; position: relative;
+        }
+        .pt-step:not(:last-child)::after {
+            content: ''; position: absolute; top: 14px; left: 50%; right: -50%;
+            height: 2px; background: #e0e0e0; z-index: 0;
+        }
+        .pt-step.done::after { background: #006600; }
+        .pt-dot {
+            width: 28px; height: 28px; border-radius: 50%; border: 2px solid #e0e0e0;
+            background: white; display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; color: #ccc; z-index: 1; position: relative; margin-bottom: 5px;
+        }
+        .pt-step.done .pt-dot { background: #006600; border-color: #006600; color: white; }
+        .pt-step.current .pt-dot { border-color: #FF9900; color: #FF9900; }
+        .pt-label { font-size: 0.7rem; color: #999; text-align: center; }
+        .pt-step.done .pt-label { color: #006600; font-weight: 600; }
+        .pt-step.current .pt-label { color: #FF9900; font-weight: 600; }
+
+        /* Admin note strip */
+        .admin-note-strip {
+            background: rgba(30,144,255,0.07); border-left: 3px solid #1e90ff;
+            padding: 0.7rem 1.4rem; font-size: 0.84rem; color: #1565c0;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ===== PAYMENT ENQUIRY ===== */
+        .pay-card {
+            border: 1px solid rgba(0,102,0,0.1); border-radius: 14px;
+            overflow: hidden; margin-bottom: 1.2rem; background: white;
+        }
+        .pay-card-top {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 0.8rem; padding: 1.2rem 1.4rem;
+            border-bottom: 1px solid rgba(0,102,0,0.07);
+        }
+        .pay-card-actions { padding: 1rem 1.4rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .pay-enq-btn {
+            background: rgba(0,102,0,0.08); color: #006600; border: none;
+            padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.84rem;
+            cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .pay-enq-btn:hover { background: #006600; color: white; }
+        .pay-enq-btn.orange { background: rgba(255,153,0,0.1); color: #cc7700; }
+        .pay-enq-btn.orange:hover { background: #FF9900; color: white; }
+
+        /* Payment enquiry modal */
+        .enq-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 2000;
+            align-items: center; justify-content: center; padding: 1.5rem;
+        }
+        .enq-overlay.active { display: flex; }
+        .enq-modal {
+            background: white; border-radius: 20px; width: 100%; max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: fadeIn 0.25s ease; margin: auto;
+        }
+        .enq-modal-header {
+            background: linear-gradient(135deg, #006600, #FF9900);
+            padding: 1.5rem 2rem; border-radius: 20px 20px 0 0; color: white; position: relative;
+        }
+        .enq-modal-header h3 { font-family: 'Poppins', sans-serif; margin-bottom: 0.2rem; }
+        .enq-modal-header p  { opacity: .85; font-size: 0.84rem; }
+        .enq-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .enq-body { padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem; }
+        .enq-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .enq-type-btn {
+            padding: 0.9rem; border: 2px solid rgba(0,102,0,0.15); border-radius: 10px;
+            background: white; cursor: pointer; text-align: center; transition: all 0.2s; font-family: 'Inter', sans-serif;
+        }
+        .enq-type-btn i { font-size: 1.5rem; color: #006600; display: block; margin-bottom: 5px; }
+        .enq-type-btn span { font-size: 0.82rem; font-weight: 600; color: #444; }
+        .enq-type-btn:hover, .enq-type-btn.sel { border-color: #006600; background: rgba(0,102,0,0.05); }
+        .enq-submit {
+            width: 100%; padding: 13px; background: var(--gradient-primary); color: white; border: none;
+            border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+        .enq-submit:hover { opacity: 0.88; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 3rem; color: #aaa;
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.4; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* Override shared styles that conflict with portal layout */
+        body { overflow-x: hidden; }
+        .page-wrapper { padding-top: 0 !important; min-height: unset !important; }
+
+        /* Hide floating admin button — not needed inside customer portal */
+        .floating-admin-btn { display: none !important; }
+
+        /* Flag stripe */
+        .flag-stripe { height: 5px; background: var(--gradient-ghana); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; }
+        @keyframes pulse { 0%,100% { transform:scale(1); box-shadow:0 0 0 0 rgba(206,17,38,0.4); } 50% { transform:scale(1.03); box-shadow:0 0 0 8px rgba(206,17,38,0); } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body>
     <div id="navbar-mount"></div>
+    <div class="flag-stripe"></div>
 
-    <div class="page-wrapper">
-        <!-- Hero -->
-        <div class="hero-how">
-            <h1>How GhanaArtisan Works</h1>
-            <p>A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions.</p>
+    <div class="portal-layout">
+
+        <!-- SIDEBAR -->
+        <div class="portal-sidebar" id="portal-sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar"><i class="fas fa-user"></i></div>
+                <div>
+                    <div class="sidebar-user-name" id="sb-name">Customer</div>
+                    <div class="sidebar-user-role"><i class="fas fa-circle" style="color:#25D366;font-size:0.5rem;"></i> Customer Account</div>
+                </div>
+            </div>
+
+            <div class="sidebar-nav">
+                <button class="snav-btn active" data-section="overview" onclick="showSection('overview')">
+                    <i class="fas fa-th-large"></i> Overview
+                </button>
+                <button class="snav-btn" data-section="notifications" onclick="showSection('notifications')">
+                    <i class="fas fa-bell"></i> Notifications
+                    <span class="badge" id="notif-badge" style="display:none;">0</span>
+                </button>
+                <button class="snav-btn" data-section="profile" onclick="showSection('profile')">
+                    <i class="fas fa-user-edit"></i> My Profile
+                </button>
+                <button class="snav-btn" data-section="find" onclick="showSection('find')">
+                    <i class="fas fa-search"></i> Book Verified Artisans
+                </button>
+                <button class="snav-btn" data-section="requests" onclick="showSection('requests')">
+                    <i class="fas fa-clipboard-list"></i> My Requests
+                    <span class="badge" id="pending-badge" style="display:none;">0</span>
+                </button>
+                <button class="snav-btn" data-section="work-updates" onclick="showSection('work-updates')">
+                    <i class="fas fa-camera"></i> Work Updates
+                    <span class="badge" id="wu-badge" style="display:none;">0</span>
+                </button>
+                <button class="snav-btn" data-section="quotations" onclick="showSection('quotations')">
+                    <i class="fas fa-file-invoice-dollar"></i> Quotations
+                    <span class="badge" id="quot-badge" style="display:none;">0</span>
+                </button>
+                <button class="snav-btn" data-section="build-house" onclick="showSection('build-house')">
+                    <i class="fas fa-home"></i> Build a House
+                </button>
+                <button class="snav-btn" data-section="payments" onclick="showSection('payments')">
+                    <i class="fas fa-credit-card"></i> Payment Enquiries
+                </button>
+                <a href="contact.html" class="snav-btn">
+                    <i class="fas fa-headset"></i> Contact Support
+                </a>
+            </div>
+
+            <button class="sidebar-logout" onclick="doLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
 
-        <div class="content-section">
-            <!-- Steps -->
-            <h2 class="section-title" style="margin-bottom:0.5rem;">Simple 4-Step Process</h2>
-            <p class="section-sub">Whether you're hiring or offering services</p>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-num">1</div>
-                    <h3>Register &amp; Verify</h3>
-                    <p>Create your account and upload a valid Ghana ID card. Our admin team verifies your identity within 24 hours.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-num">2</div>
-                    <h3>Build Your Profile</h3>
-                    <p>Add your skills, experience, service category, and set your rate. Upload credentials and certificates.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-num">3</div>
-                    <h3>Get Hired</h3>
-                    <p>Clients search by region and skill. You receive job requests directly and can accept or decline.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-num">4</div>
-                    <h3>Get Paid</h3>
-                    <p>Receive secure payments via Paystack — Ghana's leading payment platform — directly to your account.</p>
-                </div>
+        <!-- MOBILE TOGGLE -->
+        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+
+        <!-- MAIN CONTENT -->
+        <div class="portal-main">
+
+            <!-- OVERVIEW -->
+            <div class="section-panel active" id="sec-overview">
+
+            <!-- Notifications Section -->
+            <div class="section-panel" id="sec-notifications">
+                <div class="panel-title"><i class="fas fa-bell"></i> Notifications</div>
+                <p class="panel-sub">Approval notifications from admin including artisan ID card details for security</p>
+                <div id="notifications-list"><div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i></div></div>
             </div>
 
-            <!-- Roles -->
-            <div class="roles-section">
-                <h2 class="section-title" style="text-align:left;margin-bottom:0;">Who Is It For?</h2>
-                <div class="roles-grid">
-                    <div class="role-card artisan">
-                        <div class="role-icon"><i class="fas fa-tools"></i></div>
-                        <h3>Artisans</h3>
-                        <ul>
-                            <li>Register and get ID-verified</li>
-                            <li>List your skills &amp; set your rate</li>
-                            <li>Receive job requests from clients</li>
-                            <li>Accept or decline requests</li>
-                            <li>Get paid securely via Paystack</li>
-                            <li>Build reviews &amp; grow your business</li>
-                        </ul>
-                    </div>
-                    <div class="role-card client">
-                        <div class="role-icon"><i class="fas fa-user-tie"></i></div>
-                        <h3>Clients</h3>
-                        <ul>
-                            <li>Create a free client account</li>
-                            <li>Search artisans by region &amp; skill</li>
-                            <li>View verified profiles &amp; ratings</li>
-                            <li>Send service requests directly</li>
-                            <li>Pay securely after job completion</li>
-                            <li>Leave ratings and reviews</li>
-                        </ul>
+            <!-- Build a House Section -->
+            <div class="section-panel" id="sec-build-house">
+                <div class="panel-title"><i class="fas fa-home"></i> Build a House — Full Project</div>
+                <p class="panel-sub">Request a full home construction project. Our admin will coordinate all artisan teams and provide progress updates. Ideal for diaspora clients.</p>
+
+                <div class="white-card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,#f0fff4,#e6f4e6);border:1.5px solid #b3e0b3;">
+                    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+                        <div style="width:48px;height:48px;background:#006600;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-globe" style="color:white;font-size:1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin:0;color:#006600;font-family:'Poppins',sans-serif;">For Diaspora Clients</h4>
+                            <p style="margin:0;font-size:0.82rem;color:#666;">Living abroad? We manage your entire construction project in Ghana from start to finish.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- ID Verification -->
-            <div class="verify-section">
-                <h2><i class="fas fa-id-card"></i> ID Verification</h2>
-                <p>Every artisan on GhanaArtisan is verified using a valid Ghana government-issued ID. This ensures trust, safety, and accountability for both clients and artisans.</p>
-                <div class="id-types">
-                    <span class="id-type-badge"><i class="fas fa-check"></i> ECOWAS Card</span>
-                    <span class="id-type-badge"><i class="fas fa-check"></i> Voter's ID</span>
-                    <span class="id-type-badge"><i class="fas fa-check"></i> Driver's License</span>
-                    <span class="id-type-badge"><i class="fas fa-check"></i> Ghana Passport</span>
-                    <span class="id-type-badge"><i class="fas fa-check"></i> NHIS Card</span>
-                    <span class="id-type-badge"><i class="fas fa-check"></i> SSNIT Card</span>
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Submit Construction Project Request</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label class="flabel">Project Type</label>
+                            <select id="bh-type" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="new-house">New House Construction</option>
+                                <option value="renovation">Renovation / Remodelling</option>
+                                <option value="extension">House Extension</option>
+                                <option value="commercial">Commercial Building</option>
+                                <option value="finishing">Finishing Works Only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">Number of Bedrooms</label>
+                            <select id="bh-bedrooms" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option>1 Bedroom</option><option>2 Bedrooms</option>
+                                <option>3 Bedrooms</option><option>4 Bedrooms</option>
+                                <option>5+ Bedrooms</option><option>N/A (Commercial)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">Region / Location</label>
+                            <select id="bh-region" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="">Select Region</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">Estimated Budget (₵ GHS)</label>
+                            <input type="number" id="bh-budget" placeholder="e.g. 50000" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Land Address / Location</label>
+                        <input type="text" id="bh-address" placeholder="House No., Street, Community, Region" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                        <button onclick="useLocationForBuildHouse()" style="margin-top:6px;padding:7px 16px;background:#f0f9f0;border:1.5px solid #006600;border-radius:8px;color:#006600;font-weight:600;font-size:0.82rem;cursor:pointer;font-family:inherit;">
+                            <i class="fas fa-map-marker-alt"></i> Use My Live Location
+                        </button>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Project Description & Special Requirements</label>
+                        <textarea id="bh-desc" rows="4" placeholder="Describe your project in detail. Include any special requirements, preferred materials, timeline, etc."></textarea>
+                    </div>
+                    <div style="margin-bottom:1rem;background:#fffbf0;border:1px solid #FFD580;border-radius:8px;padding:0.8rem;">
+                        <p style="font-size:0.82rem;color:#cc7700;margin:0;"><i class="fas fa-info-circle"></i> Your request will be reviewed by our admin team. We will contact you within 24 hours with a full project plan and cost estimate. All communications are private between you and admin.</p>
+                    </div>
+                    <button onclick="submitBuildHouseRequest()" class="submit-req-btn" style="width:100%;">
+                        <i class="fas fa-paper-plane"></i> Submit Project Request
+                    </button>
+                </div>
+
+                <!-- Existing Build House Projects -->
+                <div id="build-house-projects" style="margin-top:1.5rem;"></div>
+            </div>
+                <div class="panel-title"><i class="fas fa-th-large"></i> Welcome Back</div>
+                <p class="panel-sub" id="overview-sub">Here's a summary of your activity</p>
+
+                <div class="stat-row" id="overview-stats"></div>
+
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-clipboard-list"></i> Recent Requests</div>
+                    <div id="overview-requests"></div>
                 </div>
             </div>
 
-            <!-- Categories -->
-            <h2 class="section-title">Service Categories</h2>
-            <p class="section-sub">Find experts in 15 skilled trades across Ghana</p>
-            <div class="categories-grid">
-                <!-- Injected by JS -->
+            <!-- PROFILE -->
+            <div class="section-panel" id="sec-profile">
+                <div class="panel-title"><i class="fas fa-user-edit"></i> My Profile</div>
+                <p class="panel-sub">Update your contact details and location</p>
+
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-user"></i> Personal Information</div>
+                    <div class="profile-grid" style="margin-bottom:1rem;">
+                        <div><label class="flabel">Full Name</label><input type="text" id="p-name" placeholder="Full Name"></div>
+                        <div><label class="flabel">Email Address</label><input type="email" id="p-email" placeholder="Email"></div>
+                        <div><label class="flabel">Phone Number</label><input type="tel" id="p-phone" placeholder="024XXXXXXX"></div>
+                        <div><label class="flabel">WhatsApp Number</label><input type="tel" id="p-whatsapp" placeholder="024XXXXXXX (if different)"></div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Residential Address</label>
+                        <textarea id="p-address" rows="2" placeholder="House No., Street, Community, City"></textarea>
+                    </div>
+                    <div class="profile-grid" style="margin-bottom:1.5rem;">
+                        <div>
+                            <label class="flabel">Region</label>
+                            <select id="p-region" onchange="profileRegionChange()"></select>
+                        </div>
+                        <div>
+                            <label class="flabel">District</label>
+                            <select id="p-district"></select>
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="saveProfile()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-lock"></i> Change Password</div>
+                    <div class="profile-grid">
+                        <div><label class="flabel">Current Password</label><input type="password" id="p-old-pw" placeholder="Current password"></div>
+                        <div></div>
+                        <div><label class="flabel">New Password</label><input type="password" id="p-new-pw" placeholder="New password (min 8 chars)"></div>
+                        <div><label class="flabel">Confirm New Password</label><input type="password" id="p-conf-pw" placeholder="Repeat new password"></div>
+                    </div>
+                    <br>
+                    <button class="save-btn" onclick="changePassword()">
+                        <i class="fas fa-key"></i> Update Password
+                    </button>
+                </div>
             </div>
 
-            <!-- CTA -->
-            <div class="cta-row">
-                <a href="login-artisan.html?tab=register" class="ghana-btn">
-                    <i class="fas fa-tools"></i> Register as Artisan
-                </a>
-                <a href="find-artisans.html" class="ghana-btn secondary">
-                    <i class="fas fa-search"></i> Find an Artisan
-                </a>
+            <!-- FIND ARTISAN -->
+            <div class="section-panel" id="sec-find">
+                <div class="panel-title"><i class="fas fa-search"></i> Find an Artisan</div>
+                <p class="panel-sub">Search across all 16 regions of Ghana</p>
+
+                <div class="white-card">
+                    <div class="search-grid">
+                        <div>
+                            <label class="flabel">Region</label>
+                            <select id="s-region" onchange="searchRegionChange()"></select>
+                        </div>
+                        <div>
+                            <label class="flabel">District</label>
+                            <select id="s-district"></select>
+                        </div>
+                        <div>
+                            <label class="flabel">Category</label>
+                            <select id="s-category"></select>
+                        </div>
+                        <div>
+                            <label class="flabel">Skills / Name</label>
+                            <input type="text" id="s-skills" placeholder="e.g. plumbing, wiring...">
+                        </div>
+                    </div>
+                    <button class="search-btn" onclick="doSearch()">
+                        <i class="fas fa-search"></i> Search Artisans
+                    </button>
+                </div>
+
+                <div id="search-results"></div>
+            </div>
+
+            <!-- MY REQUESTS -->
+            <div class="section-panel" id="sec-requests">
+                <div class="panel-title"><i class="fas fa-clipboard-list"></i> My Requests</div>
+                <p class="panel-sub">Track the status of every service request you have made</p>
+                <div id="requests-list"></div>
+            </div>
+
+            <!-- PAYMENT ENQUIRIES -->
+            <div class="section-panel" id="sec-payments">
+                <div class="panel-title"><i class="fas fa-credit-card"></i> Payment Enquiries</div>
+                <p class="panel-sub">View payment statuses and raise enquiries for any transaction</p>
+                <div id="payments-list"></div>
+            </div>
+
+            <!-- Work Updates Section -->
+            <div class="section-panel" id="sec-work-updates">
+                <div class="panel-title"><i class="fas fa-camera"></i> Work Updates</div>
+                <p class="panel-sub">Before & after photos of work done on your jobs by artisans</p>
+                <div id="customer-wu-list"><div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p style="margin-top:1rem;">Loading updates...</p></div></div>
+            </div>
+
+            <!-- Quotations Section -->
+            <div class="section-panel" id="sec-quotations">
+                <div class="panel-title"><i class="fas fa-file-invoice-dollar"></i> Price Quotations</div>
+                <p class="panel-sub">Price quotations submitted by admin. Review and make payment to proceed.</p>
+                <div id="quotations-list"><div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p style="margin-top:1rem;">Loading quotations...</p></div></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Request Artisan Modal -->
+    <div class="req-overlay" id="req-overlay" onclick="closeReqModal(event)">
+        <div class="req-modal" style="position:relative;">
+            <div class="req-modal-header">
+                <button class="req-modal-close" onclick="closeReqModal()">&times;</button>
+                <h3>Request Service</h3>
+                <p id="req-artisan-label">Requesting from artisan</p>
+            </div>
+            <div class="req-modal-body">
+                <div>
+                    <label class="flabel">Describe the job you need done</label>
+                    <textarea id="req-desc" rows="4" placeholder="e.g. My kitchen pipe is leaking near the sink. Need urgent repair..."></textarea>
+                </div>
+                <div>
+                    <label class="flabel">Your Address for this Job</label>
+                    <input type="text" id="req-addr" placeholder="House No., Street, Community">
+                    <button type="button" onclick="useMyLocation()" id="loc-btn" style="margin-top:8px;width:100%;padding:9px;background:#f0f9f0;border:1.5px solid #006600;border-radius:8px;color:#006600;font-weight:600;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
+                        <i class="fas fa-map-marker-alt"></i> Use My Live Location
+                    </button>
+                    <div id="loc-status" style="font-size:0.78rem;color:#666;margin-top:4px;display:none;"></div>
+                </div>
+                <div class="profile-grid">
+                    <div>
+                        <label class="flabel">Preferred Date</label>
+                        <input type="date" id="req-date">
+                    </div>
+                    <div>
+                        <label class="flabel">Urgency</label>
+                        <select id="req-urgency">
+                            <option value="normal">Normal</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="flexible">Flexible / Anytime</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="background:rgba(255,153,0,0.08);border:1px solid rgba(255,153,0,0.2);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:#cc7700;display:flex;gap:8px;align-items:flex-start;">
+                    <i class="fas fa-info-circle" style="margin-top:2px;flex-shrink:0;"></i>
+                    <span>Your request goes to the artisan <strong>and</strong> to our admin team. The admin will approve or reassign you to the best available artisan.</span>
+                </div>
+                <button class="submit-req-btn" onclick="submitRequest()">
+                    <i class="fas fa-paper-plane"></i> Send Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Enquiry Modal -->
+    <div class="enq-overlay" id="enq-overlay" onclick="closeEnqModal(event)">
+        <div class="enq-modal">
+            <div class="enq-modal-header">
+                <button class="enq-close" onclick="closeEnqModal()">&times;</button>
+                <h3>Payment Enquiry</h3>
+                <p id="enq-payment-label">Raise an enquiry about this payment</p>
+            </div>
+            <div class="enq-body">
+                <div>
+                    <label class="flabel">Type of Enquiry</label>
+                    <div class="enq-type-grid" id="enq-type-grid">
+                        <div class="enq-type-btn sel" onclick="selectEnqType(this,'status')">
+                            <i class="fas fa-question-circle"></i><span>Payment Status</span>
+                        </div>
+                        <div class="enq-type-btn" onclick="selectEnqType(this,'dispute')">
+                            <i class="fas fa-exclamation-triangle"></i><span>Dispute / Refund</span>
+                        </div>
+                        <div class="enq-type-btn" onclick="selectEnqType(this,'receipt')">
+                            <i class="fas fa-receipt"></i><span>Request Receipt</span>
+                        </div>
+                        <div class="enq-type-btn" onclick="selectEnqType(this,'other')">
+                            <i class="fas fa-ellipsis-h"></i><span>Other Issue</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="flabel">Describe your issue</label>
+                    <textarea id="enq-desc" rows="4" placeholder="Please describe your payment issue in detail..."></textarea>
+                </div>
+                <button class="enq-submit" onclick="submitEnquiry()">
+                    <i class="fas fa-paper-plane"></i> Submit Enquiry
+                </button>
             </div>
         </div>
     </div>
 
     <script>
         document.getElementById('shared-css').innerHTML = sharedCSS;
-        document.getElementById('navbar-mount').innerHTML = renderNavbar('how-it-works');
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('portal');
 
-        // Populate categories
-        const grid = document.querySelector('.categories-grid');
-        categories.forEach(c => {
-            const a = document.createElement('a');
-            a.className = 'cat-card';
-            a.href = `find-artisans.html?category=${c.id}`;
-            a.innerHTML = `<i class="fas ${c.icon}"></i><span>${c.name}</span>`;
-            grid.appendChild(a);
+        // Global variables — accessible by all functions
+        let user   = loadUser();
+        let client = null;
+
+        (async () => {
+        await initAppData();
+
+        // ---- Auth guard ----
+        if (!user || user.role !== 'client') {
+            showNotification('Please login as a customer to access your portal', 'error');
+            setTimeout(() => { window.location.href = 'login-customer.html'; }, 1200);
+        }
+
+        // Get client record — check Firestore cache first, then session, then build stub
+        client = sampleClients.find(c => c.email === user?.email)
+               || loadClientProfile()
+               || {
+                    name: user?.name, email: user?.email, phone: user?.phone,
+                    address: '', region: '', district: '', whatsapp: '', password: ''
+                 };
+
+        // If client not in sample array yet, push them so saves work
+        if (!sampleClients.find(c => c.email === user?.email)) {
+            client.id = client.id || Date.now();
+            client.role = 'client';
+            client.jobsRequested = client.jobsRequested || 0;
+            client.paymentsMade  = client.paymentsMade  || [];
+            sampleClients.push(client);
+        }
+
+        // Set sidebar name using client (most accurate) then user fallback
+        const displayName = client?.name || user?.name || 'Customer';
+        document.getElementById('sb-name').textContent = displayName;
+        // Also refresh navbar with correct name
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('portal');
+
+        showSection('overview');
+
+        })(); // end async IIFE — all functions below are global
+
+        // My requests — filter by email
+        function myRequests() {
+            const own = serviceRequests.filter(r => r.clientEmail === user?.email);
+            if (own.length === 0) {
+                return serviceRequests.filter(r => r.clientName === user?.name);
+            }
+            return own;
+        }
+
+        // ---- Section navigation ----
+        async function showSection(id) {
+            // Reload fresh data from Firebase on each navigation
+            if (id === 'overview' || id === 'requests' || id === 'work-updates' || id === 'quotations') {
+                await initAppData();
+                const freshClient = sampleClients.find(c => c.email === user?.email);
+                if (freshClient) {
+                    Object.assign(client, freshClient);
+                    document.getElementById('sb-name').textContent = client.name || user?.name || 'Customer';
+                }
+            }
+            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('sec-' + id).classList.add('active');
+
+            document.querySelectorAll('.snav-btn[data-section]').forEach(b => {
+                b.classList.toggle('active', b.dataset.section === id);
+            });
+
+            if (id === 'overview')       renderOverview();
+            if (id === 'notifications')  renderNotifications();
+            if (id === 'profile')        renderProfile();
+            if (id === 'find')           renderFind();
+            if (id === 'requests')       renderRequests();
+            if (id === 'payments')       renderPayments();
+            if (id === 'work-updates')   renderCustomerWorkUpdates();
+            if (id === 'quotations')     renderQuotations();
+            if (id === 'build-house')    { loadRegionsIntoSelect(document.getElementById('bh-region')); renderBuildHouseProjects(); }
+
+            // Update pending badge
+            const pending = myRequests().filter(r => r.status === 'pending_admin').length;
+            const badge = document.getElementById('pending-badge');
+            badge.textContent = pending;
+            badge.style.display = pending > 0 ? 'inline-block' : 'none';
+
+            // Close mobile sidebar
+            document.getElementById('portal-sidebar').classList.remove('open');
+        }
+
+        // ---- OVERVIEW ----
+        function renderOverview() {
+            const reqs      = myRequests();
+            const approved  = reqs.filter(r => r.status === 'approved').length;
+            const pending   = reqs.filter(r => r.status === 'pending_admin').length;
+            const completed = reqs.filter(r => r.status === 'completed').length;
+            const reassigned = reqs.filter(r => r.status === 'reassigned').length;
+
+            document.getElementById('overview-sub').textContent =
+                `Welcome back, ${user.name}! Here's a summary of your activity.`;
+
+            document.getElementById('overview-stats').innerHTML = `
+                <div class="stat-mini">
+                    <div class="sv">${reqs.length}</div>
+                    <div class="sl">Total Requests</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="sv" style="color:#FF9900;">${pending}</div>
+                    <div class="sl">Awaiting Admin</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="sv" style="color:#25D366;">${approved + reassigned}</div>
+                    <div class="sl">Approved</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="sv" style="color:#006600;">${completed}</div>
+                    <div class="sl">Completed</div>
+                </div>`;
+
+            const recentEl = document.getElementById('overview-requests');
+            if (reqs.length === 0) {
+                recentEl.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p style="margin-bottom:1rem;">You haven't made any service requests yet.</p>
+                        <button onclick="showSection('find')" class="save-btn">
+                            <i class="fas fa-search"></i> Find an Artisan
+                        </button>
+                    </div>`;
+            } else {
+                recentEl.innerHTML = reqs.slice(-3).reverse().map(r => requestCardHTML(r)).join('');
+            }
+        }
+
+        // ---- PROFILE ----
+        let profileInit = false;
+        function renderProfile() {
+            if (!profileInit) {
+                loadRegionsIntoSelect(document.getElementById('p-region'));
+                profileInit = true;
+            }
+            document.getElementById('p-name').value     = client.name     || user.name  || '';
+            document.getElementById('p-email').value    = client.email    || user.email || '';
+            document.getElementById('p-phone').value    = client.phone    || user.phone || '';
+            document.getElementById('p-whatsapp').value = client.whatsapp || '';
+            document.getElementById('p-address').value  = client.address  || '';
+            document.getElementById('p-region').value   = client.region   || '';
+            if (client.region) {
+                loadDistrictsIntoSelect(document.getElementById('p-district'), client.region);
+                document.getElementById('p-district').value = client.district || '';
+            }
+        }
+
+        function profileRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('p-district'), document.getElementById('p-region').value);
+        }
+
+        async function saveProfile() {
+            const g = id => document.getElementById(id).value;
+            client.name     = g('p-name');
+            client.email    = g('p-email');
+            client.phone    = g('p-phone');
+            client.whatsapp = g('p-whatsapp');
+            client.address  = g('p-address');
+            client.region   = g('p-region');
+            client.district = g('p-district');
+            const u = loadUser(); u.name = client.name; saveUser(u);
+            await saveClientProfile(client);
+            document.getElementById('sb-name').textContent = client.name;
+            showNotification('Profile updated successfully!', 'success');
+        }
+
+        async function changePassword() {
+            const oldPw  = document.getElementById('p-old-pw').value;
+            const newPw  = document.getElementById('p-new-pw').value;
+            const confPw = document.getElementById('p-conf-pw').value;
+            if (!oldPw)              { showNotification('Enter your current password', 'error'); return; }
+            if (!newPw || newPw.length < 8) { showNotification('New password must be at least 8 characters', 'error'); return; }
+            if (newPw !== confPw)    { showNotification('Passwords do not match', 'error'); return; }
+            if (client.password && client.password !== oldPw) { showNotification('Current password is incorrect', 'error'); return; }
+            client.password = newPw;
+            await saveClientProfile(client);
+            document.getElementById('p-old-pw').value = '';
+            document.getElementById('p-new-pw').value  = '';
+            document.getElementById('p-conf-pw').value = '';
+            showNotification('Password updated successfully!', 'success');
+        }
+
+        // ---- FIND ARTISAN ----
+        let findInit = false;
+        function renderFind() {
+            if (!findInit) {
+                loadRegionsIntoSelect(document.getElementById('s-region'));
+                loadCategoriesIntoSelect(document.getElementById('s-category'));
+                findInit = true;
+            }
+            doSearch();
+        }
+
+        function searchRegionChange() {
+            loadDistrictsIntoSelect(document.getElementById('s-district'), document.getElementById('s-region').value);
+        }
+
+        function doSearch() {
+            const region   = document.getElementById('s-region').value;
+            const district = document.getElementById('s-district').value;
+            const category = document.getElementById('s-category').value;
+            const skills   = document.getElementById('s-skills').value.toLowerCase().trim();
+
+            let results = sampleArtisans.filter(a => a.verified);
+            if (region)   results = results.filter(a => a.region === region);
+            if (district) results = results.filter(a => a.district === district);
+            if (category) results = results.filter(a => a.category === category);
+            if (skills)   results = results.filter(a =>
+                a.skills.some(s => s.toLowerCase().includes(skills)) ||
+                a.name.toLowerCase().includes(skills) ||
+                a.bio.toLowerCase().includes(skills)
+            );
+
+            const container = document.getElementById('search-results');
+            if (results.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><p>No artisans match your search. Try different filters.</p></div>`;
+                return;
+            }
+            container.innerHTML = `<p style="color:#888;font-size:0.88rem;margin-bottom:1rem;">${results.length} artisan${results.length!==1?'s':''} found</p>` +
+                results.map(a => {
+                    const cat = categories.find(c => c.id === a.category);
+                    return `
+                    <div class="artisan-result">
+                        <div class="ar-info">
+                            <h4>${a.name}</h4>
+                            <div class="ar-loc"><i class="fas fa-map-marker-alt"></i> ${a.district}, ${a.region}</div>
+                            <div class="ar-meta">
+                                <span class="ar-tag"><i class="fas ${cat?.icon||'fa-tools'}"></i> ${cat?.name||a.category}</span>
+                                <span class="ar-tag gold"><i class="fas fa-star"></i> ${a.rating} (${a.completedJobs} jobs)</span>
+                                <span class="ar-tag"><i class="fas fa-clock"></i> ${a.experience} yrs</span>
+                            </div>
+                            <p style="color:#555;font-size:0.85rem;margin-top:8px;line-height:1.5;">${a.bio}</p>
+                            <div class="ar-meta" style="margin-top:6px;">
+                                ${a.skills.slice(0,3).map(s=>`<span class="ar-tag">${s}</span>`).join('')}
+                                ${a.skills.length>3?`<span class="ar-tag">+${a.skills.length-3} more</span>`:''}
+                            </div>
+                        </div>
+                        <div class="ar-actions">
+                            <div class="ar-rate">${a.price || '—'}</div>
+                            <button class="req-btn" onclick="openReqModal('${a.email || a.id}')">
+                                <i class="fas fa-paper-plane"></i> Request Service
+                            </button>
+                            ${a.whatsapp || a.phone ? `
+                            <a href="https://wa.me/233${(a.whatsapp||a.phone||'').replace(/^0/,'').replace(/\D/g,'')}" target="_blank"
+                                style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:#25D366;color:white;border-radius:8px;font-weight:600;font-size:0.82rem;text-decoration:none;justify-content:center;">
+                                <i class="fab fa-whatsapp" style="font-size:1rem;"></i> WhatsApp
+                            </a>` : ''}
+                            ${a.category && ['plumbing','electrical','electronics','automobile'].includes(a.category) ? `
+                            <button onclick="openEmergencyModal('${a.email || a.id}')"
+                                style="padding:8px 14px;background:linear-gradient(135deg,#CE1126,#a0001c);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;font-family:inherit;display:flex;align-items:center;gap:6px;justify-content:center;animation:pulse 1.5s infinite;">
+                                🚨 Need Help Now!
+                            </button>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+        }
+
+        // ---- REQUEST MODAL ----
+        let selectedArtisanId = null;
+        function useMyLocation() {
+            const btn    = document.getElementById('loc-btn');
+            const status = document.getElementById('loc-status');
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by your browser', 'error'); return;
+            }
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting location...';
+            btn.disabled  = true;
+            status.style.display = 'block';
+            status.textContent   = 'Fetching your location...';
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const { latitude, longitude } = pos.coords;
+                    try {
+                        const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                        const data = await res.json();
+                        const addr = data.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                        document.getElementById('req-addr').value = addr;
+                        status.textContent   = '✅ Location detected successfully!';
+                        status.style.color   = '#006600';
+                        btn.innerHTML = '<i class="fas fa-check"></i> Location Added';
+                        btn.style.background = '#e6f4e6';
+                    } catch {
+                        document.getElementById('req-addr').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+                        status.textContent = '✅ GPS coordinates added.';
+                        btn.innerHTML = '<i class="fas fa-check"></i> Location Added';
+                    }
+                    btn.disabled = false;
+                },
+                (err) => {
+                    status.textContent = '❌ Could not get location. Please enter manually.';
+                    status.style.color = '#CE1126';
+                    btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Use My Live Location';
+                    btn.disabled  = false;
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        function openReqModal(artisanKey) {
+            selectedArtisanId = artisanKey;
+            const a = sampleArtisans.find(x => x.email === artisanKey || String(x.id) === String(artisanKey));
+            if (!a) { showNotification('Artisan not found. Please try again.', 'error'); return; }
+            document.getElementById('req-artisan-label').textContent = `Requesting from: ${a.name}`;
+            document.getElementById('req-addr').value = client.address || '';
+            document.getElementById('req-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('req-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeReqModal(e) {
+            if (!e || e.target === document.getElementById('req-overlay')) {
+                document.getElementById('req-overlay').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function contactArtisan(artisanId) {
+            const a = sampleArtisans.find(x => x.id === artisanId);
+            if (!a) return;
+            // Show a clean info card instead of a browser alert
+            showNotification(`📞 ${a.name}: ${a.phone} | ✉️ ${a.email}`, 'info');
+        }
+
+        async function submitRequest() {
+            const desc    = document.getElementById('req-desc').value.trim();
+            const addr    = document.getElementById('req-addr').value.trim();
+            const urgency = document.getElementById('req-urgency').value;
+            const date    = document.getElementById('req-date').value;
+            if (!desc) { showNotification('Please describe the job you need done', 'error'); return; }
+            if (!addr) { showNotification('Please enter your address for this job', 'error'); return; }
+
+            const artisan = sampleArtisans.find(x => x.email === selectedArtisanId || String(x.id) === String(selectedArtisanId));
+            if (!artisan) { showNotification('Artisan not found. Please refresh and try again.', 'error'); return; }
+            const newReq = {
+                id: serviceRequests.length + 1,
+                clientName:  user.name,
+                clientEmail: user.email,
+                clientPhone: user.phone || client.phone || '',
+                artisanId:   artisan.id,
+                artisanName: artisan.name,
+                category:    artisan.category,
+                description: desc,
+                address:     addr,
+                region:      artisan.region,
+                district:    artisan.district,
+                date:        date || new Date().toISOString().split('T')[0],
+                urgency:     urgency,
+                status:      'pending_admin',
+                adminNote:   '',
+                paymentStatus: 'not_paid',
+                amount:      ''
+            };
+
+            await addServiceRequest(newReq);
+
+            // Also push to artisan's own jobRequests array and save to Firebase
+            artisan.jobRequests = artisan.jobRequests || [];
+            artisan.jobRequests.push({
+                id:          artisan.jobRequests.length + 1,
+                clientName:  user.name,
+                clientPhone: user.phone || client.phone || '',
+                clientEmail: user.email,
+                description: desc,
+                date:        newReq.date,
+                status:      'pending'
+            });
+            await saveArtisanProfile(artisan);
+
+            // Clear form fields
+            document.getElementById('req-desc').value = '';
+            document.getElementById('req-addr').value = '';
+
+            document.getElementById('req-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+            showNotification(`✅ Request sent to ${artisan.name} and admin for approval!`, 'success');
+            showSection('requests');
+        }
+
+        // ---- MY REQUESTS ----
+        function renderRequests() {
+            const reqs = myRequests();
+            const container = document.getElementById('requests-list');
+            if (reqs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p style="margin-bottom:1rem;">You haven't made any service requests yet.</p>
+                        <button onclick="showSection('find')" class="save-btn">
+                            <i class="fas fa-search"></i> Find an Artisan
+                        </button>
+                    </div>`;
+                return;
+            }
+            container.innerHTML = reqs.slice().reverse().map(r => requestCardHTML(r)).join('');
+        }
+
+        function requestCardHTML(r) {
+            const steps = [
+                { label: 'Submitted',   done: true },
+                { label: 'Admin Review',done: ['approved','reassigned','rejected','completed'].includes(r.status) },
+                { label: 'Approved',    done: ['approved','reassigned','completed'].includes(r.status) },
+                { label: 'In Progress', done: r.status === 'completed' },
+                { label: 'Completed',   done: r.status === 'completed' },
+            ];
+            const firstUndone = steps.findIndex(s => !s.done);
+            const statusMap = {
+                pending_admin: { cls:'pending',    icon:'fa-clock',        text:'Awaiting Admin Approval' },
+                approved:      { cls:'approved',   icon:'fa-check-circle', text:'Approved' },
+                reassigned:    { cls:'reassigned', icon:'fa-exchange-alt', text:'Reassigned by Admin' },
+                rejected:      { cls:'rejected',   icon:'fa-times-circle', text:'Rejected' },
+                completed:     { cls:'completed',  icon:'fa-trophy',       text:'Completed' },
+            };
+            const st = statusMap[r.status] || statusMap.pending_admin;
+
+            return `
+            <div class="request-card">
+                <div class="request-card-top">
+                    <div style="flex:1;min-width:0;">
+                        <div class="rc-artisan"><i class="fas fa-user-hard-hat"></i> ${r.artisanName}</div>
+                        <div class="rc-desc">${r.description}</div>
+                        <div class="rc-date">
+                            <i class="fas fa-calendar-alt"></i> ${r.date}
+                            &nbsp;|&nbsp;
+                            <i class="fas fa-map-marker-alt"></i> ${r.district || r.region || ''}
+                            ${r.urgency ? `&nbsp;|&nbsp;<i class="fas fa-bolt"></i> ${r.urgency}` : ''}
+                        </div>
+                    </div>
+                    <span class="pill ${st.cls}"><i class="fas ${st.icon}"></i> ${st.text}</span>
+                </div>
+                ${r.adminNote ? `
+                    <div class="admin-note-strip">
+                        <i class="fas fa-user-shield"></i>
+                        <span><strong>Admin note:</strong> ${r.adminNote}</span>
+                    </div>` : ''}
+                <div class="progress-track">
+                    ${steps.map((s, i) => {
+                        const cls = s.done ? 'done' : (i === firstUndone ? 'current' : '');
+                        return `
+                        <div class="pt-step ${cls}">
+                            <div class="pt-dot">
+                                <i class="fas ${s.done ? 'fa-check' : (i === firstUndone ? 'fa-circle' : 'fa-circle')}"></i>
+                            </div>
+                            <div class="pt-label">${s.label}</div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }
+
+        // ---- PAYMENT ENQUIRIES ----
+        // ---- Request Receipt → saves to Firebase for admin to process ----
+        async function requestReceipt(reqDocId, clientName, artisanName, description, amount, date) {
+            try {
+                await addDoc_('receiptRequests', {
+                    reqDocId, clientName, artisanName, description, amount, date,
+                    requestedAt: new Date().toISOString(),
+                    status: 'pending',
+                    clientEmail: user?.email || ''
+                });
+                showNotification('Receipt request sent to admin! You will receive it shortly.', 'success');
+            } catch(e) {
+                showNotification('Receipt request sent!', 'success');
+            }
+        }
+
+        // ---- Make Payment via Paystack ----
+        function makePayment(reqDocId, clientName, artisanName, amount) {
+            if (!amount || amount <= 0) {
+                showNotification('Payment amount not set yet. Please wait for admin to set the amount.', 'error');
+                return;
+            }
+            // Load Paystack inline script if not already loaded
+            if (!window.PaystackPop) {
+                const script = document.createElement('script');
+                script.src = 'https://js.paystack.co/v1/inline.js';
+                script.onload = () => initPaystack(reqDocId, clientName, artisanName, amount);
+                document.head.appendChild(script);
+            } else {
+                initPaystack(reqDocId, clientName, artisanName, amount);
+            }
+        }
+
+        function initPaystack(reqDocId, clientName, artisanName, amount) {
+            const handler = PaystackPop.setup({
+                key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack public key
+                email: user?.email || client?.email || 'customer@example.com',
+                amount: Math.round(amount * 100), // Paystack uses pesewas (kobo)
+                currency: 'GHS',
+                ref: `ARTISAN-${Date.now()}`,
+                metadata: {
+                    custom_fields: [
+                        { display_name: 'Client',  variable_name: 'client',   value: clientName },
+                        { display_name: 'Artisan', variable_name: 'artisan',  value: artisanName },
+                        { display_name: 'Service', variable_name: 'service',  value: reqDocId }
+                    ]
+                },
+                callback: async function(response) {
+                    // Payment successful — update Firebase
+                    await updateServiceRequest(reqDocId, { paymentStatus: 'paid', paystackRef: response.reference });
+                    showNotification(`Payment of ₵${amount.toFixed(2)} successful! Reference: ${response.reference}`, 'success');
+                    await showSection('payments');
+                },
+                onClose: function() {
+                    showNotification('Payment cancelled.', 'info');
+                }
+            });
+            handler.openIframe();
+        }
+
+        async function renderPayments() {
+            const reqs = myRequests();
+            const container = document.getElementById('payments-list');
+
+            // Load receipts sent by admin for this customer
+            let myReceipts = [];
+            try {
+                const allReceipts = await fetchCollection('receipts');
+                myReceipts = allReceipts.filter(r =>
+                    r.clientName === user?.name || r.clientEmail === user?.email
+                );
+            } catch(e) {}
+
+            if (reqs.length === 0 && myReceipts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-credit-card"></i>
+                        <p>No payment records yet. Payments appear here once you have made a service request.</p>
+                    </div>`;
+                return;
+            }
+
+            // Show receipts at top if any
+            const receiptsHTML = myReceipts.length > 0 ? `
+                <div style="margin-bottom:1.5rem;">
+                    <h3 style="color:#006600;font-family:'Poppins',sans-serif;margin-bottom:0.8rem;font-size:1rem;">
+                        <i class="fas fa-file-pdf" style="color:#CE1126;"></i> Receipts from Admin
+                    </h3>
+                    ${myReceipts.map(r => `
+                    <div style="background:#fff9f0;border:1.5px solid #FFD580;border-radius:12px;padding:1rem 1.4rem;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                        <div>
+                            <div style="font-weight:700;color:#cc7700;">${r.artisanName} — ${r.description?.substring(0,40)||'—'}</div>
+                            <div style="font-size:0.82rem;color:#888;margin-top:3px;">Amount: <strong style="color:#006600;">${r.amount||'—'}</strong> &nbsp;·&nbsp; Date: ${r.date||'—'} &nbsp;·&nbsp; Ref: ${r.ref||'—'}</div>
+                        </div>
+                        ${r.pdfData ? `
+                        <a href="${r.pdfData}" download="${r.filename||'receipt.pdf'}"
+                            style="padding:8px 18px;background:#CE1126;color:white;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none;display:flex;align-items:center;gap:6px;">
+                            <i class="fas fa-file-pdf"></i> Download Receipt
+                        </a>` : `<span style="color:#aaa;font-size:0.82rem;">Processing...</span>`}
+                    </div>`).join('')}
+                </div>` : '';
+
+            const payPillCls = ps =>
+                ps === 'paid'    ? 'approved' :
+                ps === 'pending' ? 'pending'  : 'pending';
+            const payPillTxt = ps =>
+                ps === 'paid'    ? '<i class="fas fa-check-circle"></i> Paid' :
+                ps === 'pending' ? '<i class="fas fa-clock"></i> Pending Payment' :
+                                   '<i class="fas fa-clock"></i> Not Yet Billed';
+
+            container.innerHTML = receiptsHTML + reqs.slice().reverse().map(r => `
+                <div class="pay-card">
+                    <div class="pay-card-top">
+                        <div>
+                            <div style="font-weight:700;color:#006600;font-family:'Poppins',sans-serif;">${r.artisanName}</div>
+                            <div style="color:#888;font-size:0.82rem;margin-top:3px;">
+                                ${(r.description||'').length > 60 ? (r.description||'').substring(0,60)+'...' : (r.description||'')}
+                            </div>
+                            <div style="color:#aaa;font-size:0.78rem;margin-top:3px;">
+                                <i class="fas fa-calendar-alt"></i> ${r.date}
+                                &nbsp;|&nbsp;
+                                <span class="pill ${r.status === 'approved' || r.status === 'reassigned' ? 'approved' : r.status === 'rejected' ? 'rejected' : 'pending'}" style="font-size:0.7rem;padding:2px 8px;">
+                                    ${r.status === 'approved' || r.status === 'reassigned' ? 'Job Approved' : r.status === 'completed' ? 'Completed' : r.status === 'rejected' ? 'Rejected' : 'Awaiting Admin'}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;">
+                            <div style="font-size:1.2rem;font-weight:700;color:#006600;">${r.amount || '—'}</div>
+                            <span class="pill ${payPillCls(r.paymentStatus)}" style="font-size:0.72rem;margin-top:6px;display:inline-flex;">
+                                ${payPillTxt(r.paymentStatus)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="pay-card-actions">
+                        <button class="pay-enq-btn" onclick="openEnqModal(${r.id})">
+                            <i class="fas fa-question-circle"></i> Raise Enquiry
+                        </button>
+                        <button class="pay-enq-btn orange" onclick="requestReceipt('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', '${r.description.replace(/'/g,"\\'")}', '${r.amount || '—'}', '${r.date}')">
+                            <i class="fas fa-receipt"></i> Request Receipt
+                        </button>
+                        ${(r.status === 'approved' || r.status === 'reassigned' || r.status === 'completed') && r.paymentStatus !== 'paid' ? `
+                        <button class="pay-enq-btn" style="background:rgba(37,211,102,0.1);color:#1a9e4e;border:1.5px solid rgba(37,211,102,0.3);" onclick="makePayment('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', ${r.amount ? parseFloat((r.amount+'').replace('₵',''))||0 : 0})">
+                            <i class="fas fa-credit-card"></i> Make Payment
+                        </button>` : r.paymentStatus === 'paid' ? `
+                        <span style="color:#25D366;font-size:0.82rem;font-weight:600;padding:7px 14px;"><i class="fas fa-check-circle"></i> Payment Confirmed</span>` : ''}
+                    </div>
+                </div>`).join('');
+        }
+
+        // ---- ENQUIRY MODAL ----
+        let selectedEnqReqId = null;
+        let selectedEnqType  = 'status';
+
+        function openEnqModal(reqId) {
+            selectedEnqReqId = reqId;
+            const r = serviceRequests.find(x => x.id === reqId);
+            document.getElementById('enq-payment-label').textContent = `For request with ${r.artisanName}`;
+            document.getElementById('enq-desc').value = '';
+            document.getElementById('enq-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeEnqModal(e) {
+            if (!e || e.target === document.getElementById('enq-overlay')) {
+                document.getElementById('enq-overlay').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        function selectEnqType(el, type) {
+            document.querySelectorAll('.enq-type-btn').forEach(b => b.classList.remove('sel'));
+            el.classList.add('sel');
+            selectedEnqType = type;
+        }
+        function submitEnquiry() {
+            const desc = document.getElementById('enq-desc').value.trim();
+            if (!desc) { showNotification('Please describe your issue', 'error'); return; }
+            document.getElementById('enq-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+            showNotification('Payment enquiry submitted! Admin will respond within 24 hours.', 'success');
+        }
+
+        // ---- Work Updates visible to Customer ----
+        async function renderCustomerWorkUpdates() {
+            const el = document.getElementById('customer-wu-list');
+            try {
+                // Get all work updates where customerName matches this customer
+                const allWU = await fetchCollection('workUpdates');
+                const myWU  = allWU.filter(w =>
+                    w.customerName === user?.name ||
+                    w.clientName   === user?.name ||
+                    w.clientEmail  === user?.email
+                );
+
+                // Also check artisan profiles
+                const profileWU = [];
+                sampleArtisans.forEach(a => {
+                    (a.workUpdates || []).forEach(w => {
+                        if ((w.customerName === user?.name || w.clientEmail === user?.email) &&
+                            !myWU.find(g => g.id === w.id)) {
+                            profileWU.push({ ...w, artisanName: a.name });
+                        }
+                    });
+                });
+                const combined = [...myWU, ...profileWU].sort((a,b) => (b.id||0) - (a.id||0));
+
+                // Update badge
+                const badge = document.getElementById('wu-badge');
+                if (combined.length > 0) { badge.style.display=''; badge.textContent = combined.length; }
+
+                if (combined.length === 0) {
+                    el.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;">
+                        <i class="fas fa-camera" style="font-size:3rem;margin-bottom:1rem;display:block;"></i>
+                        <p>No work updates yet. Artisans will post before & after photos as they complete your jobs.</p>
+                    </div>`;
+                    return;
+                }
+
+                el.innerHTML = combined.map(w => `
+                    <div style="background:white;border-radius:14px;overflow:hidden;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #eee;">
+                        <div style="background:linear-gradient(135deg,#006600,#009900);padding:1rem 1.5rem;">
+                            <div style="color:white;font-weight:700;font-size:1rem;">${w.jobDesc || w.description || '—'}</div>
+                            <div style="color:rgba(255,255,255,0.85);font-size:0.82rem;margin-top:4px;">
+                                <i class="fas fa-hard-hat"></i> ${w.artisanName || '—'} &nbsp;·&nbsp;
+                                <i class="fas fa-calendar-alt"></i> ${w.date || '—'} &nbsp;·&nbsp;
+                                <span style="background:${w.adminStatus==='completed'||w.status==='completed'?'rgba(37,211,102,0.3)':'rgba(255,153,0,0.3)'};padding:2px 10px;border-radius:10px;font-size:0.78rem;">
+                                    ${w.adminStatus==='completed'||w.status==='completed'?'✅ Completed':'🔄 In Progress'}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;">
+                            <div style="border-right:1px solid #eee;">
+                                <div style="background:#fff0f0;padding:8px 14px;font-size:0.78rem;font-weight:700;color:#CE1126;border-bottom:1px solid #eee;"><i class="fas fa-times-circle"></i> Before</div>
+                                ${w.beforePhoto ? `<img src="${w.beforePhoto}" style="width:100%;height:180px;object-fit:cover;display:block;">` : `<div style="height:180px;display:flex;align-items:center;justify-content:center;background:#fafafa;"><i class="fas fa-image" style="font-size:2rem;color:#ddd;"></i></div>`}
+                                ${w.beforeNote ? `<p style="padding:8px 12px;font-size:0.82rem;color:#666;margin:0;">${w.beforeNote}</p>` : ''}
+                            </div>
+                            <div>
+                                <div style="background:#f0fff4;padding:8px 14px;font-size:0.78rem;font-weight:700;color:#1a9e4e;border-bottom:1px solid #eee;"><i class="fas fa-check-circle"></i> After</div>
+                                ${w.afterPhoto ? `<img src="${w.afterPhoto}" style="width:100%;height:180px;object-fit:cover;display:block;">` : `<div style="height:180px;display:flex;align-items:center;justify-content:center;background:#fafafa;"><i class="fas fa-image" style="font-size:2rem;color:#ddd;"></i></div>`}
+                                ${w.afterNote ? `<p style="padding:8px 12px;font-size:0.82rem;color:#666;margin:0;">${w.afterNote}</p>` : ''}
+                            </div>
+                        </div>
+                        ${(w.adminStatus==='completed'||w.status==='completed') ? `
+                        <div style="padding:1rem 1.5rem;background:#f8f9fa;border-top:1px solid #eee;">
+                            <p style="font-size:0.85rem;color:#555;margin:0 0 8px 0;font-weight:600;">Rate this work:</p>
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                ${[1,2,3,4,5].map(n=>`
+                                    <button onclick="rateArtisan('${w.artisanName}','${w.id}',${n})"
+                                        style="padding:6px 14px;border:1.5px solid #FFD700;background:${(w.rating||0)>=n?'#FFD700':'white'};border-radius:8px;cursor:pointer;font-size:1rem;">
+                                        ⭐ ${n}
+                                    </button>`).join('')}
+                                ${w.rating ? `<span style="color:#888;font-size:0.82rem;">You rated: ${w.rating}/5</span>` : ''}
+                            </div>
+                            ${w.review ? `<p style="font-size:0.82rem;color:#888;margin:8px 0 0;font-style:italic;">"${w.review}"</p>` : `
+                            <div style="margin-top:8px;display:flex;gap:8px;">
+                                <input type="text" id="review-${w.id}" placeholder="Write a short review..." style="flex:1;padding:8px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:0.85rem;">
+                                <button onclick="submitReview('${w.artisanName}','${w.id}')" style="padding:8px 16px;background:#006600;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;">Submit</button>
+                            </div>`}
+                        </div>` : ''}
+                    </div>`).join('');
+            } catch(e) {
+                el.innerHTML = `<p style="color:#CE1126;padding:1rem;">Error loading updates. Please try again.</p>`;
+            }
+        }
+
+        async function rateArtisan(artisanName, wuId, rating) {
+            // Save rating to work update
+            const allWU = await fetchCollection('workUpdates');
+            const wu = allWU.find(w => String(w.id) === String(wuId));
+            if (wu?._docId) await saveDoc('workUpdates', wu._docId, { rating, ratedBy: user?.name });
+            // Also update artisan's rating
+            const artisan = sampleArtisans.find(a => a.name === artisanName);
+            if (artisan) {
+                const ratings = artisan.ratings || [];
+                ratings.push(rating);
+                artisan.rating = (ratings.reduce((s,r)=>s+r,0) / ratings.length).toFixed(1);
+                artisan.ratings = ratings;
+                await saveArtisanProfile(artisan);
+            }
+            showNotification(`Thank you! You rated ${artisanName} ${rating}/5 ⭐`, 'success');
+            renderCustomerWorkUpdates();
+        }
+
+        async function submitReview(artisanName, wuId) {
+            const review = document.getElementById(`review-${wuId}`)?.value.trim();
+            if (!review) { showNotification('Please write a review first', 'error'); return; }
+            const allWU = await fetchCollection('workUpdates');
+            const wu = allWU.find(w => String(w.id) === String(wuId));
+            if (wu?._docId) await saveDoc('workUpdates', wu._docId, { review, reviewBy: user?.name });
+            showNotification('Review submitted! Thank you.', 'success');
+            renderCustomerWorkUpdates();
+        }
+
+        // ---- Price Quotations from Admin (Escrow) ----
+        async function renderQuotations() {
+            const el = document.getElementById('quotations-list');
+            try {
+                const allQuotes = await fetchCollection('quotations');
+                const myQuotes  = allQuotes.filter(q =>
+                    q.clientEmail === user?.email || q.clientName === user?.name
+                );
+
+                // Update badge
+                const pending = myQuotes.filter(q => q.status === 'pending');
+                const badge   = document.getElementById('quot-badge');
+                if (pending.length > 0) { badge.style.display=''; badge.textContent = pending.length; }
+
+                if (myQuotes.length === 0) {
+                    el.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;">
+                        <i class="fas fa-file-invoice-dollar" style="font-size:3rem;margin-bottom:1rem;display:block;"></i>
+                        <p>No quotations yet. The admin will send you a price quotation for your service request.</p>
+                    </div>`;
+                    return;
+                }
+
+                el.innerHTML = myQuotes.map(q => `
+                    <div style="background:white;border-radius:14px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1.5px solid ${q.status==='paid'?'#25D366':q.status==='pending'?'#FF9900':'#eee'};">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+                            <div>
+                                <div style="font-weight:700;color:#333;font-size:1rem;font-family:'Poppins',sans-serif;">${q.artisanName}</div>
+                                <div style="color:#666;font-size:0.85rem;margin-top:4px;">${q.description || '—'}</div>
+                                <div style="color:#888;font-size:0.78rem;margin-top:4px;"><i class="fas fa-calendar-alt"></i> ${q.date || '—'}</div>
+                                ${q.notes ? `<div style="background:#fffbf0;border:1px solid #FFD580;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:0.82rem;color:#cc7700;"><i class="fas fa-info-circle"></i> Admin note: ${q.notes}</div>` : ''}
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:1.8rem;font-weight:700;color:#006600;">₵${parseFloat(q.amount||0).toFixed(2)}</div>
+                                <div style="margin-top:6px;">
+                                    ${q.status === 'paid'
+                                        ? `<span style="background:#e6fff0;color:#25D366;padding:5px 14px;border-radius:20px;font-size:0.82rem;font-weight:700;"><i class="fas fa-check-circle"></i> PAID</span>`
+                                        : `<button onclick="makePaymentForQuotation('${q._docId}','${q.clientName}','${q.artisanName}',${q.amount})"
+                                            style="padding:10px 20px;background:linear-gradient(135deg,#FF9900,#e68900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;">
+                                            <i class="fas fa-credit-card"></i> Pay Now
+                                          </button>`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            } catch(e) {
+                el.innerHTML = `<p style="color:#CE1126;padding:1rem;">Error loading quotations.</p>`;
+            }
+        }
+
+        function makePaymentForQuotation(docId, clientName, artisanName, amount) {
+            if (!amount || amount <= 0) { showNotification('Invalid amount', 'error'); return; }
+            const doPaystack = () => {
+                const handler = PaystackPop.setup({
+                    key:      'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack public key
+                    email:    user?.email || client?.email || 'customer@example.com',
+                    amount:   Math.round(parseFloat(amount) * 100),
+                    currency: 'GHS',
+                    ref:      `QUOT-${Date.now()}`,
+                    metadata: { custom_fields: [
+                        { display_name: 'Client',  variable_name: 'client',  value: clientName },
+                        { display_name: 'Artisan', variable_name: 'artisan', value: artisanName }
+                    ]},
+                    callback: async function(response) {
+                        await saveDoc('quotations', docId, { status: 'paid', paystackRef: response.reference, paidAt: new Date().toISOString() });
+                        await updateServiceRequest(docId, { paymentStatus: 'paid' });
+                        showNotification(`✅ Payment of ₵${parseFloat(amount).toFixed(2)} successful!`, 'success');
+                        renderQuotations();
+                    },
+                    onClose: () => showNotification('Payment cancelled.', 'info')
+                });
+                handler.openIframe();
+            };
+            if (!window.PaystackPop) {
+                const s = document.createElement('script');
+                s.src = 'https://js.paystack.co/v1/inline.js';
+                s.onload = doPaystack;
+                document.head.appendChild(s);
+            } else doPaystack();
+        }
+
+        // ---- Notifications (from admin approvals) ----
+        async function renderNotifications() {
+            const el = document.getElementById('notifications-list');
+            try {
+                const allNotifs = await fetchCollection('notifications');
+                const mine = allNotifs.filter(n => n.clientEmail === user?.email || n.clientName === user?.name)
+                                      .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                const unread = mine.filter(n => !n.read).length;
+                const badge  = document.getElementById('notif-badge');
+                if (unread > 0) { badge.style.display=''; badge.textContent = unread; }
+
+                if (mine.length === 0) {
+                    el.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-bell" style="font-size:3rem;margin-bottom:1rem;display:block;"></i><p>No notifications yet.</p></div>`;
+                    return;
+                }
+
+                el.innerHTML = mine.map(n => `
+                    <div style="background:${n.read?'white':'#f0fff4'};border:1.5px solid ${n.read?'#eee':'#b3e0b3'};border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1rem;cursor:pointer;" onclick="markNotifRead('${n._docId}')">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                            <div style="flex:1;">
+                                <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;">${n.title || 'Notification'}</div>
+                                <div style="font-size:0.78rem;color:#888;margin:3px 0 8px;">${new Date(n.date).toLocaleString('en-GH')}</div>
+                                ${n.type === 'approval' && n.artisanPhoto ? `
+                                <div style="display:flex;align-items:center;gap:10px;background:#f8f9fa;border-radius:10px;padding:10px;margin-bottom:10px;">
+                                    <div style="width:48px;height:48px;border-radius:50%;border:2px solid #006600;overflow:hidden;flex-shrink:0;background:#eee;display:flex;align-items:center;justify-content:center;">
+                                        <img src="${n.artisanPhoto}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">
+                                    </div>
+                                    <div>
+                                        <div style="font-weight:700;color:#006600;font-size:0.9rem;">${n.artisanName || '—'}</div>
+                                        <div style="font-size:0.78rem;color:#888;">Platform ID: <strong style="letter-spacing:1px;">${n.artisanId || '—'}</strong></div>
+                                    </div>
+                                </div>` : ''}
+                                <p style="font-size:0.85rem;color:#555;margin:0;white-space:pre-wrap;">${(n.message||'').substring(0,300)}${(n.message||'').length>300?'...':''}</p>
+                            </div>
+                            ${!n.read ? '<span style="width:10px;height:10px;background:#25D366;border-radius:50%;flex-shrink:0;margin-top:4px;"></span>' : ''}
+                        </div>
+                    </div>`).join('');
+
+                // Mark all as read
+                mine.filter(n => !n.read && n._docId).forEach(n => {
+                    saveDoc('notifications', n._docId, { read: true }).catch(()=>{});
+                });
+            } catch(e) {
+                el.innerHTML = `<p style="color:#CE1126;padding:1rem;">Error loading notifications.</p>`;
+            }
+        }
+
+        async function markNotifRead(docId) {
+            if (docId) await saveDoc('notifications', docId, { read: true }).catch(()=>{});
+            document.getElementById('notif-badge').style.display = 'none';
+        }
+
+        // ---- Build a House ----
+        function useLocationForBuildHouse() {
+            if (!navigator.geolocation) { showNotification('Geolocation not supported', 'error'); return; }
+            navigator.geolocation.getCurrentPosition(async pos => {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+                    const d = await res.json();
+                    document.getElementById('bh-address').value = d.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                    showNotification('Location detected!', 'success');
+                } catch {
+                    document.getElementById('bh-address').value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+                    showNotification('GPS coordinates added.', 'success');
+                }
+            }, () => showNotification('Could not get location', 'error'), { enableHighAccuracy: true });
+        }
+
+        async function submitBuildHouseRequest() {
+            const type    = document.getElementById('bh-type').value;
+            const rooms   = document.getElementById('bh-bedrooms').value;
+            const region  = document.getElementById('bh-region').value;
+            const budget  = document.getElementById('bh-budget').value;
+            const address = document.getElementById('bh-address').value.trim();
+            const desc    = document.getElementById('bh-desc').value.trim();
+            if (!address) { showNotification('Please enter the land address', 'error'); return; }
+            if (!desc)    { showNotification('Please describe your project', 'error'); return; }
+
+            await addDoc_('buildHouseRequests', {
+                clientName:  user?.name, clientEmail: user?.email, clientPhone: client?.phone || '',
+                projectType: type, bedrooms: rooms, region, budget: parseFloat(budget)||0,
+                address, description: desc,
+                status:      'submitted',
+                submittedAt: new Date().toISOString(),
+                updates:     []
+            });
+
+            // Notify admin via Firebase
+            await addDoc_('adminNotifications', {
+                type:    'build-house',
+                title:   `🏠 New Build House Request from ${user?.name}`,
+                message: `${type} — ${rooms} — Budget: ₵${budget||'TBD'} — ${address}`,
+                date:    new Date().toISOString(),
+                read:    false
+            });
+
+            ['bh-budget','bh-address','bh-desc'].forEach(id => document.getElementById(id).value = '');
+            showNotification('🏠 Project request submitted! Admin will contact you within 24 hours.', 'success');
+            renderBuildHouseProjects();
+        }
+
+        async function renderBuildHouseProjects() {
+            const el = document.getElementById('build-house-projects');
+            if (!el) return;
+            try {
+                const all = await fetchCollection('buildHouseRequests');
+                const mine = all.filter(r => r.clientEmail === user?.email || r.clientName === user?.name)
+                               .sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+                if (mine.length === 0) { el.innerHTML = ''; return; }
+                el.innerHTML = `
+                    <h3 style="color:#006600;font-family:'Poppins',sans-serif;margin-bottom:1rem;font-size:1rem;"><i class="fas fa-hard-hat"></i> Your Construction Projects</h3>
+                    ${mine.map(r => `
+                    <div style="background:white;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid #eee;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;">
+                            <div>
+                                <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;">${r.projectType?.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase())}</div>
+                                <div style="font-size:0.82rem;color:#888;margin-top:3px;">${r.bedrooms} · ${r.region||'—'} · ₵${r.budget?.toLocaleString()||'TBD'} budget</div>
+                                <div style="font-size:0.78rem;color:#aaa;margin-top:2px;">${r.address?.substring(0,50)||'—'}</div>
+                            </div>
+                            <span style="background:${r.status==='completed'?'#e6fff0':r.status==='in-progress'?'#fff8e6':'#f0f0f0'};color:${r.status==='completed'?'#25D366':r.status==='in-progress'?'#FF9900':'#888'};padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;">
+                                ${r.status==='completed'?'✅ Completed':r.status==='in-progress'?'🔨 In Progress':'📋 Submitted'}
+                            </span>
+                        </div>
+                        ${(r.updates||[]).length > 0 ? `
+                        <div style="margin-top:1rem;border-top:1px solid #eee;padding-top:0.8rem;">
+                            <div style="font-size:0.82rem;font-weight:600;color:#555;margin-bottom:6px;">Admin Progress Updates:</div>
+                            ${r.updates.slice(-3).map(u => `
+                            <div style="background:#f8f9fa;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:0.82rem;">
+                                <div style="font-weight:600;color:#006600;">${u.stage || 'Update'}</div>
+                                <div style="color:#555;margin-top:2px;">${u.note}</div>
+                                ${u.photos?.length ? `<div style="display:flex;gap:6px;margin-top:6px;">${u.photos.map(p=>`<img src="${p}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`).join('')}</div>` : ''}
+                                <div style="color:#aaa;font-size:0.72rem;margin-top:4px;">${u.date||'—'}</div>
+                            </div>`).join('')}
+                        </div>` : ''}
+                    </div>`).join('')}`;
+            } catch(e) { el.innerHTML = ''; }
+        }
+
+        function doLogout() {
+            clearUser();
+            clearClientProfile();
+            showNotification('Logged out successfully', 'info');
+            setTimeout(() => { window.location.href = 'index.html'; }, 700);
+        }
+
+        // ---- Escape key closes modals ----
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeReqModal(); closeEnqModal();
+            }
         });
+
+        // ---- Toggle sidebar on mobile ----
+        function toggleSidebar() {
+            document.getElementById('portal-sidebar').classList.toggle('open');
+        }
+    </script>
+    <!-- Emergency Service Modal -->
+    <div id="emergency-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:4000;align-items:center;justify-content:center;padding:1rem;">
+        <div style="background:white;border-radius:20px;max-width:420px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+            <div style="background:linear-gradient(135deg,#CE1126,#a0001c);padding:1.5rem;text-align:center;">
+                <div style="font-size:3rem;margin-bottom:0.5rem;">🚨</div>
+                <h2 style="color:white;font-family:'Poppins',sans-serif;margin:0;">Emergency Request</h2>
+                <p style="color:rgba(255,255,255,0.85);font-size:0.88rem;margin:4px 0 0;">Your request will be marked URGENT and sent immediately to admin</p>
+            </div>
+            <div style="padding:1.5rem;">
+                <p id="emergency-artisan-label" style="font-weight:700;color:#333;margin-bottom:1rem;"></p>
+                <label style="font-size:0.85rem;font-weight:600;color:#333;">Describe your emergency</label>
+                <textarea id="emergency-desc" rows="3" placeholder="e.g. Pipe burst in kitchen, flooding the floor..." style="width:100%;padding:10px;border:1.5px solid #CE1126;border-radius:8px;margin:8px 0 12px;font-family:inherit;resize:none;box-sizing:border-box;"></textarea>
+                <label style="font-size:0.85rem;font-weight:600;color:#333;">Your Address</label>
+                <input type="text" id="emergency-addr" placeholder="House No., Street, Community" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;margin:8px 0 12px;font-family:inherit;box-sizing:border-box;">
+                <div style="display:flex;gap:10px;">
+                    <button onclick="submitEmergency()" style="flex:1;padding:12px;background:linear-gradient(135deg,#CE1126,#a0001c);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
+                        🚨 Send Emergency Request
+                    </button>
+                    <button onclick="document.getElementById('emergency-overlay').style.display='none'" style="padding:12px 18px;background:#f0f0f0;border:none;border-radius:10px;cursor:pointer;font-family:inherit;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let emergencyArtisanKey = null;
+        function openEmergencyModal(artisanKey) {
+            emergencyArtisanKey = artisanKey;
+            const a = sampleArtisans.find(x => x.email === artisanKey || String(x.id) === String(artisanKey));
+            document.getElementById('emergency-artisan-label').textContent = a ? `Artisan: ${a.name} (${a.category})` : 'Emergency Service';
+            document.getElementById('emergency-desc').value = '';
+            document.getElementById('emergency-addr').value = client?.address || '';
+            document.getElementById('emergency-overlay').style.display = 'flex';
+        }
+
+        async function submitEmergency() {
+            const desc = document.getElementById('emergency-desc').value.trim();
+            const addr = document.getElementById('emergency-addr').value.trim();
+            if (!desc) { showNotification('Please describe your emergency', 'error'); return; }
+            const a = sampleArtisans.find(x => x.email === emergencyArtisanKey || String(x.id) === String(emergencyArtisanKey));
+            const req = {
+                clientName:   user?.name, clientEmail: user?.email, clientPhone: client?.phone || '',
+                artisanId:    a?.id, artisanName: a?.name, artisanEmail: a?.email,
+                category:     a?.category, description: desc, address: addr,
+                urgency:      'EMERGENCY', status: 'pending_admin',
+                date:         new Date().toISOString().split('T')[0],
+                paymentStatus:'pending', createdAt: new Date().toISOString()
+            };
+            await addServiceRequest(req);
+            document.getElementById('emergency-overlay').style.display = 'none';
+            showNotification('🚨 Emergency request sent! Admin has been notified immediately.', 'success');
+        }
+    </script>
+
+    <!-- WhatsApp Floating Button — Chat with Admin -->
+    <div id="whatsapp-fab" style="position:fixed;bottom:80px;right:24px;z-index:3000;display:flex;flex-direction:column;align-items:flex-end;gap:10px;">
+        <div id="whatsapp-menu" style="display:none;flex-direction:column;gap:8px;align-items:flex-end;">
+            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%20SkillBridge%20Africa%20Admin%2C%20I%20need%20help%20with%20my%20account."
+               target="_blank"
+               style="background:white;color:#25D366;padding:10px 16px;border-radius:20px;font-weight:700;font-size:0.85rem;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.15);display:flex;align-items:center;gap:8px;white-space:nowrap;">
+                <i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Chat with Admin
+            </a>
+            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%2C%20I%20need%20urgent%20help!"
+               target="_blank"
+               style="background:white;color:#CE1126;padding:10px 16px;border-radius:20px;font-weight:700;font-size:0.85rem;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.15);display:flex;align-items:center;gap:8px;white-space:nowrap;">
+                <i class="fas fa-phone" style="font-size:1rem;"></i> Call Admin
+            </a>
+            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%2C%20I%20would%20like%20a%20price%20quote%20for%20a%20service."
+               target="_blank"
+               style="background:white;color:#FF9900;padding:10px 16px;border-radius:20px;font-weight:700;font-size:0.85rem;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.15);display:flex;align-items:center;gap:8px;white-space:nowrap;">
+                <i class="fas fa-file-invoice" style="font-size:1rem;"></i> Request Quote via WhatsApp
+            </a>
+        </div>
+        <button onclick="document.getElementById('whatsapp-menu').style.display=document.getElementById('whatsapp-menu').style.display==='flex'?'none':'flex'"
+            style="width:56px;height:56px;border-radius:50%;background:#25D366;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(37,211,102,0.5);animation:pulse 2s infinite;">
+            <i class="fab fa-whatsapp" style="font-size:1.8rem;color:white;"></i>
+        </button>
+    </div>
+    <script>
+        // Replace 233XXXXXXXXXX with your admin WhatsApp number (e.g. 233241234567)
+        // The number is already embedded in the href links above
     </script>
 </body>
 </html>
