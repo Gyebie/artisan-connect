@@ -6,7 +6,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Started - GhanaArtisan</title>
+    <title>Get Started - SkillBridge Africa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -344,7 +344,7 @@
                         <div class="li-btns">
                             ${user.role === 'artisan'
                                 ? `<button onclick="showNotification('Artisan portal — coming soon!','info')" class="ghana-btn"><i class="fas fa-tools"></i> My Portal</button>`
-                                : `<a href="find-artisans.html" class="ghana-btn"><i class="fas fa-search"></i> Find Artisans</a>`}
+                                : `<a href="find-artisans.html" class="ghana-btn"><i class="fas fa-search"></i> Book Verified Artisans</a>`}
                             <button onclick="doLogout()" class="ghana-btn red"><i class="fas fa-sign-out-alt"></i> Logout</button>
                         </div>
                     </div>`;
@@ -352,7 +352,7 @@
             }
 
             el.innerHTML = `
-                <h1>Join <span>GhanaArtisan</span> Today</h1>
+                <h1>Join <span>SkillBridge Africa</span> Today</h1>
                 <p>Ghana's most trusted platform connecting skilled artisans with clients across all 16 regions.</p>
                 <div class="action-cards">
                     <div class="action-card artisan" onclick="openModal('register','artisan')">
@@ -391,7 +391,7 @@
         // ---- Modal ----
         function openModal(tab, role) {
             const headers = {
-                login:    ['Welcome Back',    "Login to your GhanaArtisan account"],
+                login:    ['Welcome Back',    "Login to your SkillBridge Africa account"],
                 register: ['Create Account',  "Join Ghana's most trusted artisan platform"]
             };
             document.getElementById('modal-title').textContent = headers[tab][0];
