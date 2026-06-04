@@ -1,5 +1,5 @@
 // =============================================
-//  GhanaArtisan - Shared Navigation
+//  SkillBridge Africa - Shared Navigation
 // =============================================
 
 function renderNavbar(activePage) {
@@ -13,7 +13,7 @@ function renderNavbar(activePage) {
                 <div class="nav-container">
                     <a href="index.html" class="logo" style="font-size:1.4rem;">
                         <i class="fas fa-hands-helping" style="-webkit-text-fill-color:#006600;color:#006600;"></i>
-                        GhanaArtisan
+                        SkillBridge Africa
                     </a>
                     <div style="display:flex;align-items:center;gap:0.8rem;">
                         <div class="user-pill">
@@ -39,7 +39,7 @@ function renderNavbar(activePage) {
                 <div class="nav-container">
                     <a href="index.html" class="logo" style="font-size:1.4rem;">
                         <i class="fas fa-hands-helping" style="-webkit-text-fill-color:#006600;color:#006600;"></i>
-                        GhanaArtisan
+                        SkillBridge Africa
                     </a>
                     <div style="display:flex;align-items:center;gap:0.8rem;">
                         <div class="user-pill" style="background:rgba(0,102,0,0.08);color:#006600;border:1px solid rgba(0,102,0,0.2);">
@@ -61,7 +61,7 @@ function renderNavbar(activePage) {
     const pages = [
         { id: 'home',          label: 'Home',          href: 'index.html' },
         { id: 'login',         label: 'Get Started',   href: 'login.html' },
-        { id: 'find-artisans', label: 'Find Artisans', href: 'find-artisans.html' },
+        { id: 'find-artisans', label: 'Book Verified Artisans', href: 'find-artisans.html' },
         { id: 'how-it-works',  label: 'How It Works',  href: 'how-it-works.html' },
         { id: 'contact',       label: 'Contact',       href: 'contact.html' },
     ];
@@ -102,7 +102,7 @@ function renderNavbar(activePage) {
             <div class="nav-container">
                 <a href="index.html" class="logo">
                     <i class="fas fa-hands-helping" style="-webkit-text-fill-color:#006600;color:#006600;"></i>
-                    GhanaArtisan
+                    SkillBridge Africa
                 </a>
                 <div class="nav-links">
                     ${links}
