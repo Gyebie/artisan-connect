@@ -6,7 +6,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artisan Portal - GhanaArtisan</title>
+    <title>Artisan Portal - SkillBridge Africa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -371,7 +371,12 @@
                                         <div><label class="flabel">Years of Experience</label><input type="number" id="r-experience" min="0" max="60" placeholder="e.g. 5"></div>
                                     </div>
                                     <div><label class="flabel">Your Skills (comma-separated)</label><textarea id="r-skills" rows="2" placeholder="e.g. Pipe Installation, Leak Repair"></textarea></div>
-                                    <div><label class="flabel">Hourly / Service Rate</label><input type="text" id="r-price" placeholder="e.g. ₵150/hour"></div>
+                                    <div style="background:#fffbf0;border:1.5px solid #FFD580;border-radius:10px;padding:1rem;">
+                                        <label class="flabel" style="color:#cc7700;"><i class="fas fa-lock" style="font-size:0.75rem;"></i> Daily Rate (Private — visible to admin only)</label>
+                                        <p style="font-size:0.75rem;color:#888;margin:4px 0 8px;">Set based on economic activity in your region/district. This will NOT be shown publicly.</p>
+                                        <input type="number" id="r-daily-rate" placeholder="e.g. 150" min="1" style="width:100%;padding:9px;border:1.5px solid #FFD580;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                                        <p style="font-size:0.73rem;color:#aaa;margin:4px 0 0;">Amount in Ghana Cedis (₵) per day of work</p>
+                                    </div>
                                     <div><label class="flabel">Brief Bio</label><textarea id="r-bio" rows="2" placeholder="Tell clients about your experience..."></textarea></div>
                                 </div>
                             </div>
@@ -754,21 +759,31 @@
                 profilePicData = picImg.src;
             }
 
+            // Generate Platform ID: initials + first 6 digits of ID number
+            const initials   = name.trim().split(' ').map(w => w[0].toUpperCase()).join('');
+            const idDigits   = idNumber.replace(/\D/g, '').substring(0, 6);
+            const platformId = `${initials}${idDigits}`;
+            const issueDate  = new Date().toISOString().split('T')[0];
+            const expiryDate = new Date(Date.now() + 3 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 3 years
+
             const newArtisan = {
                 id: Date.now(), name, email, phone, password, category,
                 skills: g('r-skills').split(',').map(s => s.trim()).filter(Boolean),
                 region, district, address,
                 experience: parseInt(g('r-experience')) || 0,
-                price: g('r-price') || '₵100/hour',
+                dailyRate:  parseFloat(g('r-daily-rate')) || 0,  // private — admin only
                 bio: g('r-bio') || `Artisan from ${district}, ${region}.`,
                 rating: 0, completedJobs: 0, verified: false,
                 idType, idNumber, profilePic: profilePicData,
+                platformId, idIssueDate: issueDate, idExpiryDate: expiryDate,
+                subscriptionTier: 'Bronze',
                 credentials: [], jobRequests: [], payments: [], workUpdates: [],
+                portfolio: [], testimonials: [],
                 registeredAt: new Date().toISOString()
             };
             sampleArtisans.push(newArtisan);
 
-            // Save to Firebase — artisan-portal.html reads from Firestore
+            // Save to Firebase
             await saveArtisanProfile(newArtisan);
             saveUser({ email, name, phone, role: 'artisan' });
             showNotification('Registration submitted! Taking you to your dashboard...', 'success');
