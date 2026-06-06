@@ -243,10 +243,17 @@
             const jrBadge = document.getElementById('jr-badge');
             if (jrBadge) jrBadge.textContent = pendingJobs > 0 ? pendingJobs : '';
 
-            // Update pending verification badge
+            // Update pending verification badge (artisans + tier requests)
             const pendingVerify = sampleArtisans.filter(a => !a.verified).length;
-            const vBadge = document.getElementById('verify-badge');
-            if (vBadge) vBadge.textContent = pendingVerify > 0 ? pendingVerify : '';
+            fetchCollection('tierRequests').then(tiers => {
+                const pendingTiers = tiers.filter(t => t.status === 'pending').length;
+                const totalPending = pendingVerify + pendingTiers;
+                const vBadge = document.getElementById('verify-badge');
+                if (vBadge) vBadge.textContent = totalPending > 0 ? totalPending : '';
+            }).catch(() => {
+                const vBadge = document.getElementById('verify-badge');
+                if (vBadge) vBadge.textContent = pendingVerify > 0 ? pendingVerify : '';
+            });
 
             // Update work updates badge
             const wuCount = sampleArtisans.reduce((s, a) => s + (a.workUpdates?.length || 0), 0);
@@ -462,7 +469,52 @@
                                 <i class="fas fa-check-circle" style="font-size:3rem;color:#25D366;margin-bottom:1rem;display:block;"></i>
                                 <h3 style="color:#006600;">All artisans are verified!</h3>
                                 <p style="color:#888;">No pending ID verification requests.</p>
-                            </div>`}`;
+                            </div>`}\`
+
+                        <!-- Subscription Tier Requests -->
+                        <h2 style="color:#9b59b6;margin:2rem 0 1rem;font-family:'Poppins',sans-serif;"><i class="fas fa-crown"></i> Subscription Tier Requests</h2>
+                        <div id="tier-requests-list"><div style="text-align:center;padding:2rem;color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
+                    `;
+                    // Load tier requests from Firebase
+                    fetchCollection('tierRequests').then(tierReqs => {
+                        const pending = tierReqs.filter(r => r.status === 'pending');
+                        const el2 = document.getElementById('tier-requests-list');
+                        if (!el2) return;
+                        const TIER_COLORS = { SkillBridge:'#006600', Bronze:'#cd7f32', Silver:'#808080', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+                        el2.innerHTML = pending.length === 0
+                            ? `<div style="text-align:center;padding:2rem;color:#aaa;background:white;border-radius:12px;"><i class="fas fa-crown" style="font-size:2rem;margin-bottom:8px;display:block;"></i><p>No pending tier subscription requests.</p></div>`
+                            : pending.map(r => `
+                                <div class="edit-card" style="margin-bottom:1rem;">
+                                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+                                        <div>
+                                            <div style="font-weight:700;font-size:1rem;color:#333;">${r.artisanName}</div>
+                                            <div style="font-size:0.82rem;color:#888;margin-top:3px;">
+                                                Platform ID: <strong>${r.platformId||'—'}</strong> &nbsp;·&nbsp;
+                                                Email: ${r.artisanEmail||'—'}
+                                            </div>
+                                            <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+                                                <span>Requesting:</span>
+                                                <span style="background:${TIER_COLORS[r.requestedTier]||'#888'};color:white;padding:4px 14px;border-radius:20px;font-weight:700;font-size:0.82rem;">${r.requestedTier}</span>
+                                                <span style="color:#006600;font-weight:700;">GHS ${r.amount}</span>
+                                            </div>
+                                            <div style="font-size:0.78rem;color:#aaa;margin-top:4px;">
+                                                Paystack Ref: ${r.paystackRef||'—'} &nbsp;·&nbsp;
+                                                ${new Date(r.submittedAt).toLocaleDateString('en-GH')}
+                                            </div>
+                                        </div>
+                                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                            <button onclick="approveTierRequest('${r._docId}','${r.artisanEmail}',${r.artisanId},'${r.requestedTier}')"
+                                                style="padding:8px 18px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;">
+                                                <i class="fas fa-check"></i> Approve
+                                            </button>
+                                            <button onclick="rejectTierRequest('${r._docId}','${r.artisanName}')"
+                                                style="padding:8px 18px;background:#CE1126;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>`).join('');
+                    });
                     break;
                 } // end verifications block
 
@@ -1765,6 +1817,45 @@ Please verify this ID before allowing access to your premises.` : '';
             const label = status === 'completed' ? 'Completed' : status === 'verified' ? 'Verified & Approved' : 'In Progress';
             showNotification(`✅ Status updated to "${label}" — customer portal updated!`, 'success');
             showSection('work-updates');
+        }
+
+        // ---- Subscription Tier Approval ----
+        async function approveTierRequest(reqDocId, artisanEmail, artisanId, tier) {
+            // Update tier request status
+            await saveDoc('tierRequests', reqDocId, { status: 'approved', approvedAt: new Date().toISOString() });
+
+            // Update artisan's subscriptionTier in Firebase
+            const a = sampleArtisans.find(x => x.id === artisanId || x.email === artisanEmail);
+            if (a) {
+                a.subscriptionTier = tier;
+                a.pendingTier      = null;
+                a.pendingTierPaid  = false;
+                await saveArtisanProfile(a);
+            } else {
+                // Update directly via email-based docId
+                const docId = artisanEmail.replace(/[.#$/[\]]/g, '_');
+                await saveDoc('artisans', docId, { subscriptionTier: tier, pendingTier: null });
+            }
+
+            // Send notification to artisan
+            await addDoc_('notifications', {
+                clientEmail:  artisanEmail,
+                type:         'tier-approved',
+                title:        `🎉 ${tier} Subscription Approved!`,
+                message:      `Your ${tier} subscription has been approved by admin. Enjoy your new benefits!`,
+                date:         new Date().toISOString(),
+                read:         false
+            });
+
+            showNotification(`✅ ${tier} tier approved for artisan!`, 'success');
+            showSection('verifications');
+        }
+
+        async function rejectTierRequest(reqDocId, artisanName) {
+            if (!confirm(`Reject tier request from ${artisanName}? They will need to be refunded manually.`)) return;
+            await saveDoc('tierRequests', reqDocId, { status: 'rejected', rejectedAt: new Date().toISOString() });
+            showNotification(`Tier request from ${artisanName} rejected. Process refund manually.`, 'info');
+            showSection('verifications');
         }
 
         // ---- Build House Project Updates ----
