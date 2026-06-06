@@ -578,7 +578,7 @@
 
             <!-- FIND ARTISAN -->
             <div class="section-panel" id="sec-find">
-                <div class="panel-title"><i class="fas fa-search"></i> Find an Artisan</div>
+                <div class="panel-title"><i class="fas fa-search"></i> Book Verified Artisans</div>
                 <p class="panel-sub">Search across all 16 regions of Ghana</p>
 
                 <div class="white-card">
@@ -967,7 +967,7 @@
                             </div>
                         </div>
                         <div class="ar-actions">
-                            <div class="ar-rate">${a.price || '—'}</div>
+                            
                             <button class="req-btn" onclick="openReqModal('${a.email || a.id}')">
                                 <i class="fas fa-paper-plane"></i> Request Service
                             </button>
@@ -1066,8 +1066,9 @@
                 clientName:  user.name,
                 clientEmail: user.email,
                 clientPhone: user.phone || client.phone || '',
-                artisanId:   artisan.id,
-                artisanName: artisan.name,
+                artisanId:    artisan.id,
+                artisanName:  artisan.name,
+                artisanEmail: artisan.email || '',
                 category:    artisan.category,
                 description: desc,
                 address:     addr,
