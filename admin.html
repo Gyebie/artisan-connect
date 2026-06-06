@@ -1335,7 +1335,7 @@
             const artisanIdDetails = artisan ? `
 Artisan Details for Security & Authentication:
 • Name: ${artisan.name}
-• Platform ID: ${artisan.platformId || 'N/A'}
+• ID Number: ${artisan.platformId || 'N/A'}
 • Category: ${artisan.category || 'N/A'}
 • ID Type: ${artisan.idType || 'N/A'}
 • Region: ${artisan.region || 'N/A'}
@@ -1844,7 +1844,7 @@ Please verify this ID before allowing access to your premises.` : '';
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>Daily Rate:</strong> ₵${a.dailyRate || 0} per day</p>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>ID Type:</strong> ${a.idType || '—'}</p>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>ID Number:</strong> ${a.idNumber || '—'}</p>
-                    <p style="margin:4px 0;font-size:0.85rem;"><strong>Platform ID:</strong> <span style="font-weight:700;letter-spacing:2px;color:#006600;">${a.platformId || '—'}</span></p>
+                    <p style="margin:4px 0;font-size:0.85rem;"><strong>ID Number:</strong> <span style="font-weight:700;letter-spacing:2px;color:#006600;">${a.platformId || '—'}</span></p>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>Issued:</strong> ${a.idIssueDate || '—'} &nbsp;|&nbsp; <strong>Expires:</strong> ${a.idExpiryDate || '—'}</p>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>Registered:</strong> ${a.registeredAt ? new Date(a.registeredAt).toLocaleDateString('en-GH') : '—'}</p>
                 </div>
@@ -1904,7 +1904,7 @@ Please verify this ID before allowing access to your premises.` : '';
             doc.setFontSize(6); doc.setFont('helvetica','normal');
             doc.text(a.category || '—', 27, 29);
             doc.text(`${a.district||'—'}, ${a.region||'—'}`, 27, 33);
-            doc.setFontSize(5); doc.text('PLATFORM ID', 27, 39);
+            doc.setFontSize(5); doc.text('ID NUMBER', 27, 39);
             doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(255,215,0);
             doc.text(a.platformId || '—', 27, 44);
             doc.setFontSize(4); doc.setFont('helvetica','normal'); doc.setTextColor(200,200,200);
@@ -1920,37 +1920,190 @@ Please verify this ID before allowing access to your premises.` : '';
             quotationReqDocId = reqDocId;
             document.getElementById('quot-client-name').textContent  = clientName;
             document.getElementById('quot-artisan-name').textContent = artisanName;
-            document.getElementById('quot-desc').textContent         = description.substring(0,80);
+            document.getElementById('quot-desc').textContent         = description.substring(0,100);
             document.getElementById('quot-client-email').value       = clientEmail;
-            document.getElementById('quot-amount').value             = '';
-            document.getElementById('quot-notes').value              = '';
-            document.getElementById('quot-overlay').style.display    = 'flex';
+            // Reset line items
+            document.getElementById('quot-items-body').innerHTML = '';
+            addQuotationItem();
+            document.getElementById('quot-vat').value     = '15';
+            document.getElementById('quot-notes').value   = '';
+            document.getElementById('quot-validity').value = '14';
+            updateQuotationTotal();
+            document.getElementById('quot-overlay').style.display = 'flex';
+        }
+
+        function addQuotationItem() {
+            const tbody = document.getElementById('quot-items-body');
+            const row   = document.createElement('tr');
+            const idx   = tbody.children.length;
+            row.innerHTML = `
+                <td><input type="text" placeholder="e.g. Labour charges" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:0.85rem;" onchange="updateQuotationTotal()"></td>
+                <td><input type="number" placeholder="1" min="1" value="1" style="width:60px;padding:6px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:0.85rem;" onchange="updateQuotationTotal()"></td>
+                <td><input type="number" placeholder="0.00" min="0" step="0.01" value="0" style="width:90px;padding:6px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:0.85rem;" onchange="updateQuotationTotal()"></td>
+                <td style="text-align:right;font-weight:600;" id="quot-row-total-${idx}">₵0.00</td>
+                <td><button onclick="this.closest('tr').remove();updateQuotationTotal()" style="background:#fff0f0;color:#CE1126;border:1px solid #fcc;border-radius:6px;padding:4px 8px;cursor:pointer;">✕</button></td>`;
+            tbody.appendChild(row);
+        }
+
+        function updateQuotationTotal() {
+            const rows   = document.getElementById('quot-items-body').children;
+            let subtotal = 0;
+            Array.from(rows).forEach((row, i) => {
+                const qty   = parseFloat(row.cells[1].querySelector('input').value) || 0;
+                const price = parseFloat(row.cells[2].querySelector('input').value) || 0;
+                const total = qty * price;
+                subtotal += total;
+                const tCell = row.cells[3];
+                if (tCell) tCell.textContent = `₵${total.toFixed(2)}`;
+            });
+            const vatPct = parseFloat(document.getElementById('quot-vat').value) || 0;
+            const vat    = subtotal * vatPct / 100;
+            const grand  = subtotal + vat;
+            document.getElementById('quot-subtotal').textContent = `₵${subtotal.toFixed(2)}`;
+            document.getElementById('quot-vat-amt').textContent  = `₵${vat.toFixed(2)}`;
+            document.getElementById('quot-grand').textContent    = `GHS ${grand.toFixed(2)}`;
         }
 
         async function sendQuotation() {
-            const amount = parseFloat(document.getElementById('quot-amount').value);
-            const notes  = document.getElementById('quot-notes').value.trim();
-            const email  = document.getElementById('quot-client-email').value.trim();
-            if (!amount || amount <= 0) { showNotification('Please enter a valid amount', 'error'); return; }
-
             const clientName  = document.getElementById('quot-client-name').textContent;
             const artisanName = document.getElementById('quot-artisan-name').textContent;
+            const email       = document.getElementById('quot-client-email').value.trim();
+            const vatPct      = parseFloat(document.getElementById('quot-vat').value) || 0;
+            const notes       = document.getElementById('quot-notes').value.trim();
+            const validity    = document.getElementById('quot-validity').value || '14';
+            const description = document.getElementById('quot-desc').textContent;
 
+            // Collect line items
+            const rows  = document.getElementById('quot-items-body').children;
+            const items = [];
+            Array.from(rows).forEach(row => {
+                const desc  = row.cells[0].querySelector('input').value.trim();
+                const qty   = parseFloat(row.cells[1].querySelector('input').value) || 0;
+                const price = parseFloat(row.cells[2].querySelector('input').value) || 0;
+                if (desc && qty && price) items.push({ desc, qty, price, total: qty*price });
+            });
+            if (items.length === 0) { showNotification('Please add at least one line item', 'error'); return; }
+
+            const subtotal = items.reduce((s,i) => s+i.total, 0);
+            const vat      = subtotal * vatPct / 100;
+            const grand    = subtotal + vat;
+            const today    = new Date().toLocaleDateString('en-GH');
+            const quotRef  = `QUOT-${Date.now()}`;
+
+            // Generate PDF
+            if (!window.jspdf) {
+                await new Promise(resolve => {
+                    const s1 = document.createElement('script');
+                    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    s1.onload = () => {
+                        const s2 = document.createElement('script');
+                        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
+                        s2.onload = resolve; document.head.appendChild(s2);
+                    };
+                    document.head.appendChild(s1);
+                });
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(0, 102, 0); doc.rect(0, 0, 210, 35, 'F');
+            doc.setTextColor(255,255,255);
+            doc.setFontSize(20); doc.setFont('helvetica','bold');
+            doc.text('SkillBridge Africa', 14, 14);
+            doc.setFontSize(10); doc.setFont('helvetica','normal');
+            doc.text('Connecting Skilled Hands to Every Home', 14, 22);
+            doc.setFontSize(16); doc.setFont('helvetica','bold');
+            doc.text('PRICE QUOTATION', 196, 14, { align: 'right' });
+            doc.setFontSize(9); doc.setFont('helvetica','normal');
+            doc.text(`Ref: ${quotRef}`, 196, 22, { align: 'right' });
+            doc.text(`Date: ${today}`, 196, 28, { align: 'right' });
+            doc.setTextColor(0,0,0);
+
+            // Client & Artisan info
+            doc.setFillColor(248,248,248); doc.rect(14, 42, 85, 38, 'F');
+            doc.setFillColor(240,249,240); doc.rect(111, 42, 85, 38, 'F');
+            doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(0,102,0);
+            doc.text('QUOTATION FOR:', 18, 50);
+            doc.text('SERVICE PROVIDER:', 115, 50);
+            doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+            doc.setFontSize(10); doc.setFont('helvetica','bold');
+            doc.text(clientName, 18, 57);
+            doc.text(artisanName, 115, 57);
+            doc.setFont('helvetica','normal'); doc.setFontSize(8);
+            doc.text(`Email: ${email||'—'}`, 18, 63);
+            doc.text(`Category: ${(sampleArtisans.find(a=>a.name===artisanName)?.category)||'—'}`, 115, 63);
+            doc.text(`Service: ${description.substring(0,50)}`, 18, 69);
+            doc.text(`Valid for: ${validity} days`, 115, 69);
+            doc.text(`Validity: ${validity} days from ${today}`, 18, 75);
+
+            // Items table
+            doc.autoTable({
+                startY: 88,
+                head: [['#','Description','Qty','Unit Price (GHS)','Total (GHS)']],
+                body: items.map((item,i) => [
+                    i+1,
+                    item.desc,
+                    item.qty,
+                    `GHS ${item.price.toFixed(2)}`,
+                    `GHS ${item.total.toFixed(2)}`
+                ]),
+                headStyles:          { fillColor:[0,102,0], textColor:255, fontStyle:'bold' },
+                alternateRowStyles:  { fillColor:[245,255,245] },
+                columnStyles:        { 0:{cellWidth:10}, 3:{halign:'right'}, 4:{halign:'right'} },
+                foot: [
+                    ['','','','Subtotal:', `GHS ${subtotal.toFixed(2)}`],
+                    ['','','',`VAT (${vatPct}%):`, `GHS ${vat.toFixed(2)}`],
+                    ['','','','TOTAL PAYABLE:', `GHS ${grand.toFixed(2)}`]
+                ],
+                footStyles: { fontStyle:'bold', fillColor:[255,245,200] }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 10;
+            // Grand total highlight
+            doc.setFillColor(0,102,0); doc.rect(120, finalY, 76, 14, 'F');
+            doc.setTextColor(255,255,255); doc.setFontSize(12); doc.setFont('helvetica','bold');
+            doc.text(`TOTAL: GHS ${grand.toFixed(2)}`, 158, finalY+9, { align:'center' });
+            doc.setTextColor(0,0,0);
+
+            if (notes) {
+                doc.setFontSize(9); doc.setFont('helvetica','bold');
+                doc.text('Notes:', 14, finalY+28);
+                doc.setFont('helvetica','normal');
+                const splitNotes = doc.splitTextToSize(notes, 180);
+                doc.text(splitNotes, 14, finalY+35);
+            }
+
+            // Footer
+            doc.setFontSize(7); doc.setTextColor(150,150,150);
+            doc.text('SkillBridge Africa — Connecting Skilled Hands to Every Home', 105, 287, { align:'center' });
+            doc.text('This quotation is valid for the stated period. Payment confirms acceptance of terms.', 105, 291, { align:'center' });
+
+            const pdfBase64 = doc.output('datauristring');
+            doc.save(`Quotation_${clientName.replace(/\s/g,'_')}_${quotRef}.pdf`);
+
+            // Save to Firebase quotations collection
             await addDoc_('quotations', {
                 reqDocId:    quotationReqDocId,
                 clientName,  clientEmail: email,
-                artisanName, amount,
-                description: document.getElementById('quot-desc').textContent,
-                notes,       status: 'pending',
+                artisanName, amount: grand, subtotal, vat: vat, vatPct,
+                items,       description,
+                notes,       validity,
+                quotRef,     status: 'pending',
                 date:        new Date().toISOString().split('T')[0],
-                sentAt:      new Date().toISOString()
+                sentAt:      new Date().toISOString(),
+                pdfData:     pdfBase64
             });
 
-            // Update service request with amount
-            await updateServiceRequest(quotationReqDocId, { amount: `₵${amount.toFixed(2)}`, quotationSent: true });
+            // Update service request
+            await updateServiceRequest(quotationReqDocId, {
+                amount: `GHS ${grand.toFixed(2)}`,
+                quotationSent: true,
+                quotationRef: quotRef
+            });
 
             document.getElementById('quot-overlay').style.display = 'none';
-            showNotification(`✅ Quotation of ₵${amount.toFixed(2)} sent to ${clientName}!`, 'success');
+            showNotification(`✅ Quotation GHS ${grand.toFixed(2)} sent to ${clientName}! PDF downloaded.`, 'success');
         }
 
         // ---- Verify / Reject ----
@@ -1991,35 +2144,110 @@ Please verify this ID before allowing access to your premises.` : '';
         </div>
     </div>
 
-    <!-- Send Quotation Modal -->
-    <div id="quot-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:4000;align-items:center;justify-content:center;padding:1rem;">
-        <div style="background:white;border-radius:20px;max-width:480px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-            <div style="background:linear-gradient(135deg,#FF9900,#cc7700);padding:1.5rem 2rem;color:white;">
-                <h3 style="font-family:'Poppins',sans-serif;margin:0;">₵ Send Price Quotation</h3>
-                <p style="opacity:.85;font-size:0.85rem;margin:4px 0 0;">Customer: <strong id="quot-client-name"></strong> → Artisan: <strong id="quot-artisan-name"></strong></p>
+    <!-- Full Professional Quotation Modal -->
+    <div id="quot-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:4000;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;">
+        <div style="background:white;border-radius:20px;max-width:700px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);margin:auto;">
+            <div style="background:linear-gradient(135deg,#FF9900,#cc7700);padding:1.5rem 2rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <h3 style="font-family:'Poppins',sans-serif;margin:0;color:white;font-size:1.1rem;">📋 Draft Price Quotation — GHS</h3>
+                    <p style="opacity:.85;font-size:0.82rem;margin:4px 0 0;color:white;">For: <strong id="quot-client-name"></strong> &nbsp;|&nbsp; Artisan: <strong id="quot-artisan-name"></strong></p>
+                </div>
+                <button onclick="document.getElementById('quot-overlay').style.display='none'" style="background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.3rem;">&times;</button>
             </div>
-            <div style="padding:1.8rem;display:flex;flex-direction:column;gap:1rem;">
-                <div style="background:#f8f9fa;border-radius:8px;padding:10px 14px;">
-                    <span style="font-size:0.78rem;color:#888;font-weight:600;">SERVICE REQUEST</span>
+
+            <div style="padding:1.8rem;display:flex;flex-direction:column;gap:1.2rem;">
+                <!-- Service info -->
+                <div style="background:#f8f9fa;border-radius:10px;padding:10px 14px;">
+                    <span style="font-size:0.72rem;color:#888;font-weight:700;letter-spacing:1px;">SERVICE REQUEST</span>
                     <p id="quot-desc" style="margin:4px 0 0;font-size:0.88rem;color:#333;"></p>
                 </div>
-                <div>
-                    <label style="font-size:0.85rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Customer Email (to notify)</label>
-                    <input type="email" id="quot-client-email" placeholder="customer@email.com" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+
+                <!-- Client email + validity -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div>
+                        <label style="font-size:0.84rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Customer Email</label>
+                        <input type="email" id="quot-client-email" placeholder="customer@email.com" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.84rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Valid for (days)</label>
+                        <input type="number" id="quot-validity" value="14" min="1" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                    </div>
                 </div>
-                <div>
-                    <label style="font-size:0.85rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Quotation Amount (₵ GHS)</label>
-                    <input type="number" id="quot-amount" placeholder="e.g. 450" min="1" style="width:100%;padding:10px;border:1.5px solid #FF9900;border-radius:8px;font-size:1.1rem;font-weight:700;font-family:inherit;box-sizing:border-box;">
+
+                <!-- Payment terms + duration -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div>
+                        <label style="font-size:0.84rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Payment Terms</label>
+                        <select id="quot-terms" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                            <option>50% deposit, 50% on completion</option>
+                            <option>Full payment before work begins</option>
+                            <option>Full payment on completion</option>
+                            <option>30% deposit, 70% on completion</option>
+                            <option>Milestone-based payment</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.84rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Estimated Duration</label>
+                        <input type="text" id="quot-duration" placeholder="e.g. 3 days, 2 weeks" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;box-sizing:border-box;">
+                    </div>
                 </div>
+
+                <!-- Line items -->
                 <div>
-                    <label style="font-size:0.85rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Notes for Customer (optional)</label>
-                    <textarea id="quot-notes" rows="2" placeholder="e.g. Price includes labour and basic materials. Additional parts billed separately." style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;resize:none;box-sizing:border-box;"></textarea>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <label style="font-size:0.85rem;font-weight:700;color:#333;">Itemised Breakdown (GHS)</label>
+                        <button onclick="addQuotationItem()" style="padding:6px 14px;background:#006600;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;">
+                            <i class="fas fa-plus"></i> Add Line
+                        </button>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead style="background:#006600;color:white;">
+                            <tr>
+                                <th style="padding:8px 10px;text-align:left;font-size:0.8rem;">Description</th>
+                                <th style="padding:8px 6px;font-size:0.8rem;width:50px;">Qty</th>
+                                <th style="padding:8px 6px;font-size:0.8rem;width:110px;">Unit Price (GHS)</th>
+                                <th style="padding:8px 6px;font-size:0.8rem;width:100px;text-align:right;">Total (GHS)</th>
+                                <th style="padding:8px 6px;width:30px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="quot-items-body"></tbody>
+                    </table>
+
+                    <!-- Totals -->
+                    <div style="background:#fffbf0;border:1.5px solid #FFD580;border-radius:10px;padding:1rem;margin-top:10px;">
+                        <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:6px;">
+                            <span style="color:#666;">Subtotal:</span>
+                            <span id="quot-subtotal" style="font-weight:700;">GHS 0.00</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.88rem;margin-bottom:6px;">
+                            <span style="color:#666;">VAT %:</span>
+                            <input type="number" id="quot-vat" value="15" min="0" max="50" onchange="updateQuotationTotal()" style="width:65px;padding:4px 8px;border:1.5px solid #ddd;border-radius:6px;text-align:center;font-family:inherit;">
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:8px;">
+                            <span style="color:#666;">VAT Amount:</span>
+                            <span id="quot-vat-amt" style="font-weight:700;">GHS 0.00</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:1.15rem;font-weight:800;border-top:2px solid #FFD700;padding-top:8px;">
+                            <span style="color:#cc7700;">TOTAL PAYABLE (GHS):</span>
+                            <span id="quot-grand" style="color:#006600;">GHS 0.00</span>
+                        </div>
+                    </div>
                 </div>
-                <div style="display:flex;gap:10px;">
-                    <button onclick="sendQuotation()" style="flex:1;padding:12px;background:linear-gradient(135deg,#FF9900,#cc7700);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
-                        <i class="fas fa-paper-plane"></i> Send Quotation
+
+                <!-- Notes -->
+                <div>
+                    <label style="font-size:0.84rem;font-weight:600;color:#333;display:block;margin-bottom:4px;">Notes / Terms & Conditions</label>
+                    <textarea id="quot-notes" rows="3" placeholder="e.g. Price includes labour only. Materials to be supplied by client. Valid for 14 days from date of issue." style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;resize:none;box-sizing:border-box;"></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button onclick="sendQuotation()" style="flex:2;padding:13px;background:linear-gradient(135deg,#FF9900,#cc7700);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
+                        <i class="fas fa-paper-plane"></i> Generate PDF & Send to Customer
                     </button>
-                    <button onclick="document.getElementById('quot-overlay').style.display='none'" style="padding:12px 18px;background:#f0f0f0;border:none;border-radius:10px;cursor:pointer;font-family:inherit;">Cancel</button>
+                    <button onclick="document.getElementById('quot-overlay').style.display='none'" style="flex:1;padding:13px;background:#f0f0f0;border:none;border-radius:10px;font-weight:600;cursor:pointer;font-family:inherit;color:#555;">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>
