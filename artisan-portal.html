@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - SkillBridge Africa</title>
+    <title>Artisan Dashboard - SkillBridge Africa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,384 +13,1330 @@
     <script src="nav.js"></script>
     <style id="shared-css"></style>
     <style>
-        /* ---- Hero ---- */
-        .contact-hero {
-            background: var(--gradient-primary);
-            padding: 7rem 5% 5rem;
-            text-align: center;
-            color: white;
-            position: relative;
-        }
-        .contact-hero::after {
-            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
-            height: 50px; background: var(--light);
-            clip-path: ellipse(55% 100% at 50% 100%);
-        }
-        .contact-hero h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(2rem, 4.5vw, 3rem);
-            margin-bottom: 0.8rem;
-        }
-        .contact-hero p { opacity: .88; font-size: 1.1rem; max-width: 550px; margin: 0 auto; line-height: 1.7; }
+        body { overflow-x: hidden; }
+        .page-wrapper { padding-top: 0 !important; min-height: unset !important; }
+        .floating-admin-btn { display: none !important; }
+        .flag-stripe { height:5px; background:var(--gradient-ghana); position:fixed; bottom:0; left:0; right:0; z-index:100; }
+        .portal-layout { min-height:100vh; padding-top:58px; }
 
-        /* ---- Page body ---- */
-        .contact-body {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 3rem 5% 5rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2.5rem;
-            align-items: start;
+        /* SIDEBAR */
+        .portal-sidebar {
+            background: linear-gradient(170deg,#002800,#006600 70%,#007700);
+            position:fixed; top:58px; left:0; bottom:0; width:260px;
+            display:flex; flex-direction:column; padding:1.5rem 1.2rem; overflow-y:auto; z-index:400;
         }
-        @media(max-width: 768px) { .contact-body { grid-template-columns: 1fr; } }
+        @media(max-width:860px){.portal-sidebar{transform:translateX(-100%);transition:transform 0.3s;}.portal-sidebar.open{transform:translateX(0);}}
+        .sidebar-user{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.12);border-radius:14px;padding:1rem;margin-bottom:1.5rem;}
+        .sidebar-avatar{width:52px;height:52px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:white;overflow:hidden;border:2px solid rgba(255,255,255,0.3);}
+        .sidebar-avatar img{width:100%;height:100%;object-fit:cover;}
+        .sidebar-name{color:white;font-weight:700;font-size:0.9rem;line-height:1.3;}
+        .sidebar-status{display:flex;align-items:center;gap:5px;font-size:0.72rem;margin-top:4px;}
+        .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+        .dot-verified{background:#25D366;}
+        .dot-pending{background:#FF9900;animation:blink 1.5s infinite;}
+        @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
+        .sidebar-status span{color:rgba(255,255,255,0.75);}
+        .sidebar-nav{display:flex;flex-direction:column;gap:0.3rem;flex:1;}
+        .snav-btn{display:flex;align-items:center;gap:12px;padding:0.85rem 1rem;border-radius:10px;border:none;background:transparent;color:rgba(255,255,255,0.75);font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;text-align:left;transition:all 0.2s;text-decoration:none;width:100%;}
+        .snav-btn i{width:18px;text-align:center;font-size:1rem;flex-shrink:0;}
+        .snav-btn:hover{background:rgba(255,255,255,0.12);color:white;}
+        .snav-btn.active{background:rgba(255,255,255,0.22);color:white;font-weight:700;}
+        .snav-btn .nbadge{margin-left:auto;background:#FF9900;color:white;font-size:0.7rem;font-weight:700;padding:2px 7px;border-radius:10px;}
+        .sidebar-logout{display:flex;align-items:center;gap:10px;padding:0.85rem 1rem;border-radius:10px;border:none;background:rgba(206,17,38,0.3);color:white;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;margin-top:1.5rem;transition:background 0.2s;width:100%;}
+        .sidebar-logout:hover{background:rgba(206,17,38,0.55);}
+        .sidebar-toggle{display:none;position:fixed;bottom:80px;left:16px;z-index:500;background:#006600;color:white;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:1rem;box-shadow:0 4px 16px rgba(0,102,0,0.4);align-items:center;gap:6px;}
+        @media(max-width:860px){.sidebar-toggle{display:flex;}}
 
-        /* ---- Info cards column ---- */
-        .info-col { display: flex; flex-direction: column; gap: 1.2rem; }
+        /* MAIN */
+        .portal-main{margin-left:260px;padding:2.5rem 3rem;background:#f4f6f4;min-height:calc(100vh - 58px);box-sizing:border-box;overflow-x:hidden;}
+        @media(max-width:860px){.portal-main{margin-left:0;padding:1.5rem;}}
+        .section-panel{display:none;}
+        .section-panel.active{display:block;animation:fadeIn 0.3s ease;}
+        .panel-title{font-family:'Poppins',sans-serif;color:#006600;font-size:1.5rem;margin-bottom:0.3rem;display:flex;align-items:center;gap:10px;}
+        .panel-sub{color:#888;font-size:0.88rem;margin-bottom:1.8rem;}
 
-        .info-card {
-            background: white; border-radius: 16px; padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
-            border: 1px solid rgba(0,102,0,0.08);
-            display: flex; align-items: flex-start; gap: 1.2rem;
-            transition: transform 0.25s, box-shadow 0.25s;
-        }
-        .info-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0,102,0,0.14);
-        }
-        .info-icon {
-            width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
-        }
-        .info-icon.green    { background: rgba(0,102,0,0.1);   color: #006600; }
-        .info-icon.gold     { background: rgba(255,153,0,0.1);  color: #cc7700; }
-        .info-icon.whatsapp { background: rgba(37,211,102,0.1); color: #25D366; }
-        .info-icon.red      { background: rgba(206,17,38,0.1);  color: #CE1126; }
-        .info-icon.blue     { background: rgba(30,144,255,0.1); color: #1e90ff; }
+        /* CARDS */
+        .white-card{background:white;border-radius:16px;padding:1.8rem;box-shadow:0 3px 16px rgba(0,0,0,0.07);margin-bottom:1.5rem;border:1px solid rgba(0,102,0,0.06);box-sizing:border-box;}
+        .card-title{font-family:'Poppins',sans-serif;color:#006600;font-size:1rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:8px;border-bottom:2px solid rgba(0,102,0,0.08);padding-bottom:0.8rem;}
 
-        .info-label {
-            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.07em; color: #999; margin-bottom: 5px;
-        }
-        .info-value {
-            display: block; color: #006600; font-weight: 600;
-            font-size: 0.95rem; text-decoration: none; line-height: 1.7;
-            transition: color 0.2s;
-        }
-        .info-value:hover { color: #FF9900; }
-        .info-value.plain { color: #333; cursor: default; font-weight: 500; }
+        /* STATS */
+        .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
+        @media(max-width:900px){.stat-row{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:500px){.stat-row{grid-template-columns:1fr;}}
+        .stat-mini{background:white;border-radius:14px;padding:1.4rem;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,0.06);border:1px solid rgba(0,102,0,0.06);min-width:0;}
+        .stat-mini .sv{font-size:1.8rem;font-weight:700;font-family:'Poppins',sans-serif;}
+        .stat-mini .sl{color:#888;font-size:0.78rem;margin-top:4px;}
 
-        /* Hours table */
-        .hours-table { width: 100%; border-collapse: collapse; margin-top: 2px; }
-        .hours-table td { padding: 3px 0; font-size: 0.9rem; }
-        .hours-table td:first-child { color: #555; font-weight: 500; width: 55%; }
-        .hours-table td:last-child  { color: #006600; font-weight: 600; }
-        .hours-table tr.closed td:last-child { color: #CE1126; }
+        /* STATUS BANNERS */
+        .status-banner{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;border:2px solid;}
+        .status-banner.pending{background:rgba(255,153,0,0.08);border-color:rgba(255,153,0,0.3);}
+        .status-banner.verified{background:rgba(37,211,102,0.08);border-color:rgba(37,211,102,0.3);}
+        .status-banner.pending i{color:#FF9900;font-size:2rem;}
+        .status-banner.verified i{color:#25D366;font-size:2rem;}
+        .status-banner h4{font-family:'Poppins',sans-serif;font-size:0.95rem;margin-bottom:2px;}
+        .status-banner.pending h4{color:#cc7700;}
+        .status-banner.verified h4{color:#1a9e4e;}
+        .status-banner p{color:#888;font-size:0.82rem;}
 
-        /* Socials row */
-        .socials-card {
-            background: white; border-radius: 16px; padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
-            border: 1px solid rgba(0,102,0,0.08);
-        }
-        .socials-card h4 { color: #006600; font-family: 'Poppins', sans-serif; margin-bottom: 1rem; }
-        .socials-row { display: flex; gap: 0.9rem; flex-wrap: wrap; }
-        .social-btn {
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 18px; border-radius: 10px; color: white;
-            text-decoration: none; font-weight: 600; font-size: 0.88rem;
-            transition: transform 0.2s, opacity 0.2s;
-        }
-        .social-btn:hover { transform: translateY(-3px); opacity: 0.88; }
-        .social-btn.facebook  { background: #1877F2; }
-        .social-btn.twitter   { background: #1DA1F2; }
-        .social-btn.instagram { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
-        .social-btn.whatsapp  { background: #25D366; }
-        .social-btn.tiktok    { background: #010101; }
+        /* PILLS */
+        .pill{padding:4px 11px;border-radius:20px;font-size:0.75rem;font-weight:700;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+        .pill.pending_admin{background:rgba(255,153,0,0.15);color:#cc7700;}
+        .pill.approved{background:rgba(37,211,102,0.15);color:#1a9e4e;}
+        .pill.rejected{background:rgba(206,17,38,0.12);color:#CE1126;}
+        .pill.reassigned{background:rgba(0,102,0,0.12);color:#006600;}
+        .pill.completed{background:rgba(0,102,0,0.15);color:#004d00;}
 
-        /* ---- Contact form column ---- */
-        .form-col {}
-        .contact-form-card {
-            background: white; border-radius: 16px; padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
-            border: 1px solid rgba(0,102,0,0.08);
-            position: sticky; top: 100px;
-        }
-        .contact-form-card h3 {
-            color: #006600; font-family: 'Poppins', sans-serif;
-            margin-bottom: 0.4rem; font-size: 1.3rem;
-        }
-        .contact-form-card p { color: #888; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        /* JOB CARDS */
+        .job-card{background:white;border:1px solid rgba(0,102,0,0.1);border-radius:14px;margin-bottom:1rem;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+        .job-card-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;padding:1.2rem 1.4rem;border-bottom:1px solid rgba(0,102,0,0.07);}
+        .job-client{font-weight:700;color:#006600;font-family:'Poppins',sans-serif;font-size:0.95rem;}
+        .job-desc{color:#555;font-size:0.87rem;margin-top:3px;line-height:1.5;}
+        .job-meta{color:#aaa;font-size:0.77rem;margin-top:4px;}
+        .job-footer{padding:0.8rem 1.4rem;background:#f9fafb;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;}
+        .info-note{font-size:0.78rem;color:#999;font-style:italic;display:flex;align-items:center;gap:5px;}
 
-        .cform { display: flex; flex-direction: column; gap: 1rem; }
-        .cform-label { color: #006600; font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 4px; }
-        .cform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        @media(max-width: 500px) { .cform-grid { grid-template-columns: 1fr; } }
+        /* PROFILE */
+        .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+        @media(max-width:700px){.profile-grid{grid-template-columns:1fr;}}
+        .flabel{color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;}
+        .portal-main input,.portal-main select,.portal-main textarea{width:100%;min-width:0;box-sizing:border-box;font-size:0.92rem;}
+        .photo-editor{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+        .photo-circle{width:90px;height:90px;border-radius:50%;overflow:hidden;cursor:pointer;border:3px solid rgba(0,102,0,0.3);background:rgba(0,102,0,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+        .photo-circle img{width:100%;height:100%;object-fit:cover;}
+        .photo-circle i{font-size:2rem;color:#006600;opacity:0.5;}
+        .photo-overlay{position:absolute;inset:0;background:rgba(0,102,0,0.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:0.2s;}
+        .photo-circle:hover .photo-overlay{opacity:1;}
+        .photo-overlay i{color:white;font-size:1.2rem;opacity:1;}
+        .save-btn{background:#006600;color:white;border:none;padding:11px 26px;border-radius:10px;font-weight:700;font-size:0.92rem;cursor:pointer;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:7px;transition:all 0.2s;box-shadow:0 4px 14px rgba(0,102,0,0.3);}
+        .save-btn:hover{background:#004d00;transform:translateY(-1px);}
 
-        .subject-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
-        .chip {
-            padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600;
-            border: 2px solid rgba(0,102,0,0.2); color: #006600; background: white;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .chip:hover, .chip.selected { background: #006600; color: white; border-color: #006600; }
+        /* WORK UPDATES */
+        .work-update-card{background:white;border:1px solid rgba(0,102,0,0.1);border-radius:14px;overflow:hidden;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+        .work-update-hdr{padding:1rem 1.2rem;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
+        .work-update-body{padding:1rem 1.2rem;}
+        .before-after-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.8rem;}
+        @media(max-width:600px){.before-after-grid{grid-template-columns:1fr;}}
+        .ba-box{border-radius:10px;overflow:hidden;border:1px solid #eee;}
+        .ba-label{padding:7px 10px;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+        .ba-label.before{background:rgba(206,17,38,0.08);color:#CE1126;}
+        .ba-label.after{background:rgba(37,211,102,0.08);color:#1a9e4e;}
+        .ba-photo{width:100%;height:130px;object-fit:cover;display:block;}
+        .ba-photo-placeholder{width:100%;height:130px;display:flex;align-items:center;justify-content:center;background:#f8f8f8;cursor:pointer;border:none;width:100%;}
+        .ba-photo-placeholder i{font-size:2rem;color:#ccc;}
+        .ba-note{padding:8px 10px;font-size:0.82rem;color:#555;line-height:1.5;}
+        .work-form{background:rgba(0,102,0,0.03);border:1px solid rgba(0,102,0,0.12);border-radius:12px;padding:1.2rem;}
 
-        .send-btn {
-            width: 100%; padding: 14px; background: var(--gradient-primary); color: white;
-            border: none; border-radius: 10px; font-weight: 700; font-size: 1rem;
-            cursor: pointer; font-family: 'Inter', sans-serif;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: all 0.25s; box-shadow: var(--magic-shadow);
-        }
-        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,102,0,0.35); }
+        /* PAYMENTS */
+        .payslip-header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
+        .month-select{padding:8px 14px;border:2px solid rgba(0,102,0,0.2);border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;}
+        .download-btn{background:var(--gradient-primary);color:white;border:none;padding:10px 22px;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.88rem;display:inline-flex;align-items:center;gap:7px;transition:all 0.2s;}
+        .download-btn:hover{opacity:0.88;transform:translateY(-1px);}
+        .payslip-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 3px 16px rgba(0,0,0,0.08);border:1px solid rgba(0,102,0,0.08);}
+        .payslip-hdr{background:var(--gradient-primary);padding:1.5rem 2rem;color:white;}
+        .payslip-hdr h3{font-family:'Poppins',sans-serif;font-size:1.1rem;}
+        .payslip-hdr p{opacity:0.85;font-size:0.84rem;margin-top:3px;}
+        .payslip-body{padding:1.5rem 2rem;}
+        .payslip-row{display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid #f0f0f0;font-size:0.9rem;}
+        .payslip-row:last-child{border-bottom:none;}
+        .payslip-total{display:flex;justify-content:space-between;padding:1rem 0 0;border-top:2px solid rgba(0,102,0,0.15);font-weight:700;color:#006600;font-size:1rem;margin-top:0.5rem;}
 
-        /* Success state */
-        .form-success {
-            display: none; text-align: center; padding: 2rem;
-        }
-        .form-success i { font-size: 3.5rem; color: #25D366; margin-bottom: 1rem; display: block; }
-        .form-success h4 { color: #006600; font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem; font-size: 1.2rem; }
-        .form-success p  { color: #666; font-size: 0.9rem; line-height: 1.6; }
+        /* CREDENTIALS */
+        .cred-card{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.8rem;padding:1rem 1.2rem;border:1px solid rgba(0,102,0,0.1);border-radius:12px;background:white;margin-bottom:0.8rem;}
+        .cred-info{display:flex;align-items:center;gap:12px;}
+        .cred-icon{width:40px;height:40px;border-radius:10px;background:rgba(0,102,0,0.1);color:#006600;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+        .cred-name{font-weight:600;color:#333;font-size:0.9rem;}
+        .cred-type{color:#888;font-size:0.78rem;margin-top:2px;}
+        .upload-cred-box{border:2px dashed rgba(0,102,0,0.25);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(0,102,0,0.02);display:block;}
+        .upload-cred-box:hover{border-color:#006600;background:rgba(0,102,0,0.05);}
+        .upload-cred-box i{font-size:2rem;color:#006600;opacity:0.45;margin-bottom:0.5rem;display:block;}
 
-        /* Map embed section */
-        .map-section {
-            max-width: 1100px; margin: 0 auto 4rem; padding: 0 5%;
-        }
-        .map-section h3 {
-            color: #006600; font-family: 'Poppins', sans-serif;
-            margin-bottom: 1rem; font-size: 1.2rem;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .map-placeholder {
-            background: white; border-radius: 16px; overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
-            border: 1px solid rgba(0,102,0,0.08);
-            height: 300px; display: flex; align-items: center; justify-content: center;
-            flex-direction: column; gap: 1rem; color: #888;
-        }
-        .map-placeholder i { font-size: 3rem; color: rgba(0,102,0,0.2); }
-        .map-placeholder p { font-size: 0.9rem; text-align: center; max-width: 300px; line-height: 1.6; }
-        .map-directions-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: #006600; color: white; padding: 10px 22px;
-            border-radius: 8px; text-decoration: none; font-weight: 600;
-            font-size: 0.9rem; transition: all 0.2s;
-        }
-        .map-directions-btn:hover { background: #004d00; transform: translateY(-2px); }
+        /* BUTTONS */
+        .act-btn{padding:7px 14px;border:none;border-radius:8px;font-weight:600;font-size:0.82rem;cursor:pointer;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:5px;transition:all 0.2s;}
+        .act-btn.green{background:rgba(37,211,102,0.12);color:#1a9e4e;}.act-btn.green:hover{background:#25D366;color:white;}
+        .act-btn.red{background:rgba(206,17,38,0.1);color:#CE1126;}.act-btn.red:hover{background:#CE1126;color:white;}
+        .act-btn.blue{background:rgba(0,102,0,0.1);color:#006600;}.act-btn.blue:hover{background:#006600;color:white;}
 
-        /* Footer */
-        footer {
-            background: #333; color: #ccc; text-align: center;
-            padding: 2rem 5%; font-size: 0.9rem;
-        }
-        footer a { color: #FF9900; text-decoration: none; }
+        /* MODAL */
+        .info-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:1rem;}
+        .info-overlay.active{display:flex;}
+        .info-modal{background:white;border-radius:18px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.2);overflow:hidden;}
+        .info-modal-hdr{background:var(--gradient-primary);padding:1.4rem 1.8rem;color:white;position:relative;}
+        .info-modal-hdr h3{font-family:'Poppins',sans-serif;}
+        .info-modal-hdr p{opacity:.82;font-size:0.84rem;}
+        .modal-close-x{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.9rem;}
+        .info-modal-body{padding:1.5rem;display:flex;flex-direction:column;gap:0.8rem;}
+        .info-row{display:flex;align-items:center;gap:12px;padding:0.7rem;background:#f8f8f8;border-radius:10px;}
+        .info-row i{color:#006600;width:20px;text-align:center;}
+        .info-row span,.info-row a{color:#333;font-size:0.9rem;font-weight:500;}
+        .info-row a{color:#006600;}
+        .close-modal-btn{width:100%;padding:11px;background:#006600;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+
+        .empty-state{text-align:center;padding:2.5rem;color:#aaa;}
+        .empty-state i{font-size:2.8rem;margin-bottom:0.8rem;display:block;opacity:0.35;}
+        .empty-state p{font-size:0.88rem;}
     </style>
 </head>
 <body>
     <div id="navbar-mount"></div>
+    <div class="flag-stripe"></div>
 
-    <div class="page-wrapper">
+    <div class="portal-layout">
 
-        <!-- Hero -->
-        <div class="contact-hero">
-            <h1><i class="fas fa-headset"></i> Contact Us</h1>
-            <p>Have a question or need help? We're always ready to assist you across Ghana.</p>
+        <!-- SIDEBAR -->
+        <div class="portal-sidebar" id="portal-sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="sb-avatar"><i class="fas fa-hard-hat"></i></div>
+                <div>
+                    <div class="sidebar-name" id="sb-name">Artisan</div>
+                    <div class="sidebar-status">
+                        <div class="status-dot" id="sb-dot"></div>
+                        <span id="sb-status-text">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <!-- ID Card Button — only shows when verified -->
+            <div id="id-card-btn-wrap" style="display:none;margin-bottom:0.8rem;">
+                <button onclick="showIDCard()" style="width:100%;padding:9px 14px;background:linear-gradient(135deg,#FFD700,#cc9900);color:#333;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    🪪 View My ID Card
+                </button>
+            </div>
+            <div class="sidebar-nav">
+                <button class="snav-btn active" data-section="overview"     onclick="showSection('overview')">    <i class="fas fa-th-large"></i>Overview</button>
+                <button class="snav-btn"         data-section="job-requests" onclick="showSection('job-requests')"><i class="fas fa-clipboard-list"></i>Job Requests<span class="nbadge" id="pending-badge" style="display:none">0</span></button>
+                <button class="snav-btn"         data-section="work-updates" onclick="showSection('work-updates')"><i class="fas fa-camera"></i>Work Updates</button>
+                <button class="snav-btn"         data-section="portfolio"    onclick="showSection('portfolio')">   <i class="fas fa-images"></i>My Portfolio</button>
+                <button class="snav-btn"         data-section="profile"      onclick="showSection('profile')">     <i class="fas fa-user-edit"></i>My Profile</button>
+                <button class="snav-btn"         data-section="credentials"  onclick="showSection('credentials')"> <i class="fas fa-certificate"></i>Credentials</button>
+                <button class="snav-btn"         data-section="payments"     onclick="showSection('payments')">    <i class="fas fa-credit-card"></i>Payments</button>
+                <a href="contact.html" class="snav-btn"><i class="fas fa-headset"></i>Contact Support</a>
+            </div>
+            <button class="sidebar-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i>Logout</button>
         </div>
 
-        <!-- Main grid -->
-        <div class="contact-body">
+        <button class="sidebar-toggle" onclick="document.getElementById('portal-sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i> Menu
+        </button>
 
-            <!-- LEFT: Info cards -->
-            <div class="info-col">
+        <!-- MAIN CONTENT -->
+        <div class="portal-main">
 
-                <!-- Phone -->
-                <div class="info-card">
-                    <div class="info-icon green"><i class="fas fa-phone-alt"></i></div>
-                    <div>
-                        <div class="info-label">Phone</div>
-                        <a href="tel:+233240000000" class="info-value">+233 24 000 0000</a>
-                        <a href="tel:+233550000000" class="info-value">+233 55 000 0000</a>
-                    </div>
+            <!-- OVERVIEW -->
+            <div class="section-panel active" id="sec-overview">
+                <div class="panel-title"><i class="fas fa-th-large"></i> Dashboard</div>
+                <p class="panel-sub" id="overview-sub"></p>
+                <div id="verify-banner-area"></div>
+                <div class="stat-row" id="overview-stats"></div>
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-clipboard-list"></i> Recent Requests</div>
+                    <div id="overview-jobs"></div>
                 </div>
-
-                <!-- WhatsApp -->
-                <div class="info-card">
-                    <div class="info-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
-                    <div>
-                        <div class="info-label">WhatsApp</div>
-                        <a href="https://wa.me/233240000000" target="_blank" class="info-value">+233 24 000 0000</a>
-                        <a href="https://wa.me/233550000000" target="_blank" class="info-value">+233 55 000 0000</a>
-                    </div>
-                </div>
-
-                <!-- Email -->
-                <div class="info-card">
-                    <div class="info-icon gold"><i class="fas fa-envelope"></i></div>
-                    <div>
-                        <div class="info-label">Email</div>
-                        <a href="/cdn-cgi/l/email-protection#abc3cec7c7c4ebccc3cac5cacad9dfc2d8cac585c8c4c6" class="info-value"><span class="__cf_email__" data-cfemail="d4bcb1b8b8bb94b3bcb5bab5b5a6a0bda7b5bafab7bbb9">[email&#160;protected]</span></a>
-                        <a href="/cdn-cgi/l/email-protection#9be8eeebebf4e9efdbfcf3faf5fafae9eff2e8faf5b5f8f4f6" class="info-value"><span class="__cf_email__" data-cfemail="f98a8c8989968b8db99e91989798988b8d908a9897d79a9694">[email&#160;protected]</span></a>
-                    </div>
-                </div>
-
-                <!-- Address -->
-                <div class="info-card">
-                    <div class="info-icon red"><i class="fas fa-map-marker-alt"></i></div>
-                    <div>
-                        <div class="info-label">Office Address</div>
-                        <span class="info-value plain">
-                            SkillBridge Africa HQ<br>
-                            Independence Avenue, Accra<br>
-                            Greater Accra Region, Ghana
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Working Hours -->
-                <div class="info-card">
-                    <div class="info-icon blue"><i class="fas fa-clock"></i></div>
-                    <div style="width:100%;">
-                        <div class="info-label">Working Hours</div>
-                        <table class="hours-table">
-                            <tr><td>Monday – Friday</td><td>8:00 AM – 6:00 PM</td></tr>
-                            <tr><td>Saturday</td><td>9:00 AM – 3:00 PM</td></tr>
-                            <tr class="closed"><td>Sunday</td><td>Closed</td></tr>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Social Media -->
-                <div class="socials-card">
-                    <h4><i class="fas fa-share-alt"></i> Follow Us</h4>
-                    <div class="socials-row">
-                        <a href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
-                        <a href="#" class="social-btn twitter"><i class="fab fa-twitter"></i> Twitter</a>
-                        <a href="#" class="social-btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
-                        <a href="https://wa.me/233240000000" target="_blank" class="social-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                        <a href="#" class="social-btn tiktok"><i class="fab fa-tiktok"></i> TikTok</a>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- RIGHT: Contact Form -->
-            <div class="form-col">
-                <div class="contact-form-card">
-                    <div id="form-wrap">
-                        <h3>Send Us a Message</h3>
-                        <p>Fill the form and we'll get back to you within 24 hours.</p>
+            <!-- JOB REQUESTS -->
+            <div class="section-panel" id="sec-job-requests">
+                <div class="panel-title"><i class="fas fa-clipboard-list"></i> Job Requests</div>
+                <p class="panel-sub">All service requests assigned to you. Only the admin can approve or reassign.</p>
+                <div id="jobs-list"></div>
+            </div>
 
-                        <div class="cform">
-                            <div class="cform-grid">
-                                <div>
-                                    <label class="cform-label">Your Name</label>
-                                    <input type="text" id="cf-name" placeholder="Full name">
-                                </div>
-                                <div>
-                                    <label class="cform-label">Phone Number</label>
-                                    <input type="tel" id="cf-phone" placeholder="024XXXXXXX">
-                                </div>
-                            </div>
+            <!-- WORK UPDATES -->
+            <div class="section-panel" id="sec-work-updates">
+                <div class="panel-title"><i class="fas fa-camera"></i> Work Updates</div>
+                <p class="panel-sub">Post before &amp; after photos for each job. Admin can view your progress from their dashboard.</p>
 
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Post New Work Update</div>
+                    <div class="work-form">
+                        <div style="margin-bottom:0.9rem;">
+                            <label class="flabel">Customer Name (Who is this work for?)</label>
+                            <select id="wu-customer" style="width:100%;padding:10px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;font-size:0.9rem;">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom:0.9rem;">
+                            <label class="flabel">Job Description / Title</label>
+                            <input type="text" id="wu-title" placeholder="e.g. Fixed leaking pipe at Ring Road, Accra">
+                        </div>
+                        <div class="before-after-grid">
                             <div>
-                                <label class="cform-label">Email Address</label>
-                                <input type="email" id="cf-email" placeholder="your@email.com">
-                            </div>
-
-                            <div>
-                                <label class="cform-label">Subject</label>
-                                <div class="subject-chips">
-                                    <div class="chip selected" onclick="selectChip(this)">General Enquiry</div>
-                                    <div class="chip" onclick="selectChip(this)">Artisan Registration</div>
-                                    <div class="chip" onclick="selectChip(this)">Payment Issue</div>
-                                    <div class="chip" onclick="selectChip(this)">Report a Problem</div>
-                                    <div class="chip" onclick="selectChip(this)">Partnership</div>
-                                    <div class="chip" onclick="selectChip(this)">Other</div>
+                                <div class="ba-label before"><i class="fas fa-camera"></i> Before Photo</div>
+                                <label for="wu-before-file" class="ba-photo-placeholder" id="wu-before-preview-wrap" style="cursor:pointer;display:flex;">
+                                    <i class="fas fa-image"></i>
+                                </label>
+                                <input type="file" id="wu-before-file" accept="image/*" style="display:none" onchange="previewWU(this,'wu-before-preview-wrap','wu-before-data')">
+                                <input type="hidden" id="wu-before-data">
+                                <div style="padding:6px 0;">
+                                    <label class="flabel" style="font-size:0.76rem;">Notes (Before)</label>
+                                    <textarea id="wu-before-note" rows="2" placeholder="Describe the condition before work"></textarea>
                                 </div>
                             </div>
-
                             <div>
-                                <label class="cform-label">Your Message</label>
-                                <textarea id="cf-message" rows="5" placeholder="Tell us how we can help you..."></textarea>
+                                <div class="ba-label after"><i class="fas fa-camera"></i> After Photo</div>
+                                <label for="wu-after-file" class="ba-photo-placeholder" id="wu-after-preview-wrap" style="cursor:pointer;display:flex;">
+                                    <i class="fas fa-image"></i>
+                                </label>
+                                <input type="file" id="wu-after-file" accept="image/*" style="display:none" onchange="previewWU(this,'wu-after-preview-wrap','wu-after-data')">
+                                <input type="hidden" id="wu-after-data">
+                                <div style="padding:6px 0;">
+                                    <label class="flabel" style="font-size:0.76rem;">Notes (After)</label>
+                                    <textarea id="wu-after-note" rows="2" placeholder="Describe the result after work"></textarea>
+                                </div>
                             </div>
-
-                            <button class="send-btn" onclick="sendMessage()">
-                                <i class="fas fa-paper-plane"></i> Send Message
-                            </button>
+                        </div>
+                        <div style="margin-top:1rem;display:flex;gap:0.8rem;align-items:flex-end;flex-wrap:wrap;">
+                            <div style="flex:1;min-width:140px;">
+                                <label class="flabel">Work Status</label>
+                                <select id="wu-status">
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                            <button class="save-btn" onclick="postWorkUpdate()"><i class="fas fa-paper-plane"></i> Post Update</button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Success state -->
-                    <div class="form-success" id="form-success">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>Message Sent!</h4>
-                        <p>Thank you for reaching out. Our team will get back to you within 24 hours.</p>
-                        <br>
-                        <button onclick="resetForm()" style="background:none;border:2px solid #006600;color:#006600;padding:10px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;">
-                            Send Another Message
-                        </button>
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-history"></i> My Work History</div>
+                    <div id="work-updates-list"></div>
+                </div>
+            </div>
+
+            <!-- PROFILE -->
+            <div class="section-panel" id="sec-profile">
+                <div class="panel-title"><i class="fas fa-user-edit"></i> My Profile</div>
+                <p class="panel-sub">Update your information and service details</p>
+
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-user"></i> Personal &amp; Contact</div>
+                    <div class="photo-editor">
+                        <div class="photo-circle" onclick="document.getElementById('p-photo-file').click()">
+                            <i class="fas fa-hard-hat" id="profile-photo-icon"></i>
+                            <img id="profile-photo-img" src="" style="display:none;" alt="Profile">
+                            <div class="photo-overlay"><i class="fas fa-camera"></i></div>
+                        </div>
+                        <input type="file" id="p-photo-file" accept="image/*" style="display:none" onchange="updateProfilePhoto(this)">
+                        <div>
+                            <div style="font-weight:600;color:#333;margin-bottom:3px;">Profile Photo</div>
+                            <div style="color:#888;font-size:0.82rem;margin-bottom:8px;">Click the circle to change your photo</div>
+                            <button class="act-btn blue" onclick="document.getElementById('p-photo-file').click()"><i class="fas fa-camera"></i> Change Photo</button>
+                        </div>
                     </div>
+                    <div class="profile-grid" style="margin-bottom:1rem;">
+                        <div><label class="flabel">Full Name</label><input type="text" id="p-name"></div>
+                        <div><label class="flabel">Email Address</label><input type="email" id="p-email"></div>
+                        <div><label class="flabel">Phone Number</label><input type="tel" id="p-phone"></div>
+                        <div><label class="flabel">WhatsApp</label><input type="tel" id="p-whatsapp" placeholder="If different from phone"></div>
+                    </div>
+                    <div style="margin-bottom:1rem;"><label class="flabel">Residential Address</label><textarea id="p-address" rows="2"></textarea></div>
+                    <div class="profile-grid" style="margin-bottom:1.5rem;">
+                        <div><label class="flabel">Region</label><select id="p-region" onchange="profileRegionChange()"></select></div>
+                        <div><label class="flabel">District</label><select id="p-district"></select></div>
+                    </div>
+                    <button class="save-btn" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-briefcase"></i> Professional Details</div>
+                    <div class="profile-grid" style="margin-bottom:1rem;">
+                        <div><label class="flabel">Service Category</label><select id="p-category"></select></div>
+                        <div><label class="flabel">Years of Experience</label><input type="number" id="p-experience" min="0" max="60"></div>
+                    </div>
+                    <div style="margin-bottom:1rem;"><label class="flabel">Skills (comma-separated)</label><input type="text" id="p-skills"></div>
+                    <div style="margin-bottom:1.5rem;"><label class="flabel">Bio / Description</label><textarea id="p-bio" rows="3"></textarea></div>
+                    <!-- Subscription Tier Display -->
+                    <div style="margin-bottom:1.5rem;">
+                        <label class="flabel">Subscription Tier</label>
+                        <div id="subscription-tier-display" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+                        <p style="font-size:0.78rem;color:#888;margin-top:6px;">Your tier is managed by the admin. Higher tiers get more visibility.</p>
+                    </div>
+                    <button class="save-btn" onclick="saveProfessional()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-lock"></i> Change Password</div>
+                    <div class="profile-grid">
+                        <div><label class="flabel">Current Password</label><input type="password" id="p-old-pw"></div>
+                        <div></div>
+                        <div><label class="flabel">New Password (min 8)</label><input type="password" id="p-new-pw"></div>
+                        <div><label class="flabel">Confirm New Password</label><input type="password" id="p-conf-pw"></div>
+                    </div>
+                    <br>
+                    <button class="save-btn" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
+                </div>
+            </div>
+
+            <!-- PORTFOLIO GALLERY -->
+            <div class="section-panel" id="sec-portfolio">
+                <div class="panel-title"><i class="fas fa-images"></i> Portfolio Gallery</div>
+                <p class="panel-sub">Showcase your best work — before & after photos, completed projects and customer testimonials</p>
+
+                <!-- Upload Work Photos -->
+                <div class="white-card" style="margin-bottom:1.5rem;">
+                    <div class="card-title"><i class="fas fa-upload"></i> Add Portfolio Item</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label class="flabel">Project Title</label>
+                            <input type="text" id="pf-title" placeholder="e.g. Complete Plumbing Installation, East Legon">
+                        </div>
+                        <div>
+                            <label class="flabel">Project Type</label>
+                            <select id="pf-type" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="before-after">Before & After</option>
+                                <option value="completed">Completed Project</option>
+                                <option value="in-progress">Work In Progress</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label class="flabel">Photo 1 (Before / Main)</label>
+                            <input type="file" id="pf-photo1" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev1')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev1" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                        <div>
+                            <label class="flabel">Photo 2 (After / Detail)</label>
+                            <input type="file" id="pf-photo2" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev2')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev2" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                        <div>
+                            <label class="flabel">Photo 3 (Optional)</label>
+                            <input type="file" id="pf-photo3" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev3')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev3" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                        <div>
+                            <label class="flabel">Photo 4 (Optional)</label>
+                            <input type="file" id="pf-photo4" accept="image/*,video/*" onchange="previewPortfolioPhoto(this,'pf-prev4')" style="width:100%;padding:8px;border:1.5px dashed #ddd;border-radius:8px;">
+                            <div id="pf-prev4" style="margin-top:6px;height:100px;background:#f9f9f9;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Description / Customer Testimonial</label>
+                        <textarea id="pf-desc" rows="3" placeholder="Describe the project or paste a customer testimonial..."></textarea>
+                    </div>
+                    <button class="save-btn" onclick="addPortfolioItem()"><i class="fas fa-plus-circle"></i> Add to Portfolio</button>
+                </div>
+
+                <!-- Portfolio Display -->
+                <div id="portfolio-gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;"></div>
+            </div>
+
+            <!-- CREDENTIALS -->
+            <div class="section-panel" id="sec-credentials">
+                <div class="panel-title"><i class="fas fa-certificate"></i> Credentials</div>
+                <p class="panel-sub">Upload your certificates, licences and qualifications</p>
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-plus-circle"></i> Add New Credential</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div><label class="flabel">Credential Name</label><input type="text" id="cred-name" placeholder="e.g. Plumbing Licence"></div>
+                        <div><label class="flabel">Type</label>
+                            <select id="cred-type">
+                                <option value="certificate">Certificate</option>
+                                <option value="licence">Licence / Permit</option>
+                                <option value="diploma">Diploma / Degree</option>
+                                <option value="training">Training Record</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label class="flabel">Upload File</label>
+                        <label for="cred-file" class="upload-cred-box">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p style="color:#888;font-size:0.88rem;">Click to select file (PDF, JPG, PNG)</p>
+                            <span id="cred-file-name" style="color:#006600;font-weight:600;font-size:0.84rem;"></span>
+                        </label>
+                        <input type="file" id="cred-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="document.getElementById('cred-file-name').textContent=this.files[0]?.name||''">
+                    </div>
+                    <button class="save-btn" onclick="uploadCredential()"><i class="fas fa-upload"></i> Upload Credential</button>
+                </div>
+                <div class="white-card">
+                    <div class="card-title"><i class="fas fa-folder-open"></i> My Credentials</div>
+                    <div id="creds-list"></div>
+                </div>
+            </div>
+
+            <!-- PAYMENTS -->
+            <div class="section-panel" id="sec-payments">
+                <div class="panel-title"><i class="fas fa-credit-card"></i> Payments</div>
+                <p class="panel-sub">View your monthly earnings summary and download your payslip</p>
+                <div class="payslip-header">
+                    <div>
+                        <label class="flabel">Filter by Month</label>
+                        <select class="month-select" id="pay-month-select" onchange="renderPayments()"></select>
+                    </div>
+                    <button class="download-btn" onclick="downloadPayslip()"><i class="fas fa-download"></i> Download Payslip</button>
+                </div>
+                <div class="stat-row" id="pay-stats"></div>
+                <div class="payslip-card">
+                    <div class="payslip-hdr">
+                        <h3><i class="fas fa-file-invoice-dollar"></i> Monthly Payslip</h3>
+                        <p id="payslip-month-label">Select a month to view payslip</p>
+                    </div>
+                    <div class="payslip-body" id="payslip-body"></div>
                 </div>
             </div>
 
         </div>
-
-        <!-- Map Section -->
-        <div class="map-section">
-            <h3><i class="fas fa-map"></i> Find Our Office</h3>
-            <div class="map-placeholder">
-                <i class="fas fa-map-marker-alt"></i>
-                <p>SkillBridge Africa HQ &mdash; Independence Avenue, Accra<br>Greater Accra Region, Ghana</p>
-                <a href="https://maps.google.com/?q=Independence+Avenue+Accra+Ghana" target="_blank" class="map-directions-btn">
-                    <i class="fas fa-directions"></i> Get Directions
-                </a>
-            </div>
-        </div>
-
-        <footer>
-            <p>&copy; 2024 SkillBridge Africa &mdash; Connecting Ghana's Skilled Workforce |
-               <a href="find-artisans.html">Book Verified Artisans</a> &middot;
-               <a href="how-it-works.html">How It Works</a> &middot;
-               <a href="login.html">Get Started</a> &middot;
-               <a href="contact.html">Contact</a>
-            </p>
-        </footer>
-
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <!-- Client Contact Modal -->
+    <div class="info-overlay" id="info-overlay" onclick="if(event.target===this)closeInfo()">
+        <div class="info-modal">
+            <div class="info-modal-hdr">
+                <h3>Client Contact Details</h3>
+                <p id="info-modal-sub"></p>
+                <button class="modal-close-x" onclick="closeInfo()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="info-modal-body" id="info-modal-body"></div>
+        </div>
+    </div>
+
+    <script>
         document.getElementById('shared-css').innerHTML = sharedCSS;
-        document.getElementById('navbar-mount').innerHTML = renderNavbar('contact');
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('artisan-portal');
 
-        function selectChip(el) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
+        // Global variables — accessible by all functions
+        let user    = loadUser();
+        let artisan = null;
+
+        (async () => {
+        // Auth guard
+        if (!user || user.role !== 'artisan') {
+            showNotification('Please login as an artisan', 'error');
+            setTimeout(() => { window.location.href = 'login-artisan.html'; }, 1200);
         }
 
-        function sendMessage() {
-            const name    = document.getElementById('cf-name').value.trim();
-            const email   = document.getElementById('cf-email').value.trim();
-            const phone   = document.getElementById('cf-phone').value.trim();
-            const message = document.getElementById('cf-message').value.trim();
+        // Merge all registered artisans from Firebase into sampleArtisans
+        await initAppData();
 
-            if (!name)    { showNotification('Please enter your name', 'error'); return; }
-            if (!email && !phone) { showNotification('Please enter your email or phone number', 'error'); return; }
-            if (!message) { showNotification('Please enter your message', 'error'); return; }
+        // Look up artisan record:
+        // 1. Check sampleArtisans (loaded from Firebase)
+        // 2. Fall back to session profile directly
+        // 3. Create a minimal stub from session so the page never shows "Loading..."
+        artisan = sampleArtisans.find(a => a.email === user?.email)
+               || loadArtisanProfile()
+               || {
+                    id: 0, name: user?.name || 'Artisan', email: user?.email || '',
+                    phone: user?.phone || '', verified: false, category: '',
+                    skills: [], region: '', district: '', address: '',
+                    experience: 0, price: '', bio: '', rating: 0, completedJobs: 0,
+                    credentials: [], jobRequests: [], payments: [], workUpdates: [],
+                    profilePic: null, idType: '', idNumber: ''
+                };
 
-            // In production this would POST to a backend / email service
-            document.getElementById('form-wrap').style.display    = 'none';
-            document.getElementById('form-success').style.display = 'block';
+        // If not yet in Firestore, push to memory so the page works immediately
+        if (artisan && !sampleArtisans.find(a => a.email === artisan.email)) {
+            sampleArtisans.push(artisan);
         }
 
-        function resetForm() {
-            document.getElementById('cf-name').value    = '';
-            document.getElementById('cf-email').value   = '';
-            document.getElementById('cf-phone').value   = '';
-             document.getElementById('cf-message').value = '';
-            document.getElementById('form-success').style.display = 'none';
-            document.getElementById('form-wrap').style.display    = 'block';
+        setupSidebar();
+        updateBadge();
+        ensurePlatformId(); // auto-generate ID number if missing
+        showSection('overview');
+
+        // Render subscription tier
+        const tierEl = document.getElementById('subscription-tier-display');
+        if (tierEl) {
+            const tiers = ['Bronze','Silver','Gold','Platinum','Diamond'];
+            const tierColors = { Bronze:'#cd7f32', Silver:'#c0c0c0', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+            const currentTier = artisan?.subscriptionTier || 'Bronze';
+            tierEl.innerHTML = tiers.map(t => `
+                <span style="padding:6px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;
+                    background:${t===currentTier?tierColors[t]:'#f0f0f0'};
+                    color:${t===currentTier?'white':'#aaa'};
+                    border:2px solid ${t===currentTier?tierColors[t]:'#ddd'};">
+                    ${t==='Diamond'?'💎':t==='Platinum'?'🏆':t==='Gold'?'🥇':t==='Silver'?'🥈':'🥉'} ${t}
+                </span>`).join('');
         }
+
+        // Populate customer dropdown from artisan's job requests
+        const cusSel = document.getElementById('wu-customer');
+        const jobCustomers = [...new Set((artisan.jobRequests || []).map(r => r.clientName).filter(Boolean))];
+        jobCustomers.forEach(name => {
+            const o = document.createElement('option');
+            o.value = name; o.textContent = name;
+            cusSel.appendChild(o);
+        });
+
+        })(); // end async IIFE — all functions below are global
+
+        // Setup sidebar — always runs, never shows "Loading..."
+        function setupSidebar() {
+            const displayName = artisan?.name || user?.name || 'Artisan';
+            document.getElementById('sb-name').textContent = displayName;
+
+            const dot = document.getElementById('sb-dot');
+            const txt = document.getElementById('sb-status-text');
+            const verified = artisan?.verified || false;
+            dot.className = 'status-dot ' + (verified ? 'dot-verified' : 'dot-pending');
+            txt.textContent = verified ? 'Verified ✅' : 'Pending Verification ⏳';
+
+            // Show ID Card button only when verified
+            const idBtnWrap = document.getElementById('id-card-btn-wrap');
+            if (idBtnWrap) idBtnWrap.style.display = verified ? 'block' : 'none';
+
+            const photo = artisan?.profilePhoto || artisan?.profilePic;
+            if (photo) {
+                document.getElementById('sb-avatar').innerHTML = `<img src="${photo}" alt="${displayName}" style="width:100%;height:100%;object-fit:cover;">`;
+            }
+        }
+
+        function updateBadge() {
+            if (!artisan) return;
+            const count = serviceRequests.filter(r => r.artisanId === artisan.id && r.status === 'pending_admin').length;
+            const b = document.getElementById('pending-badge');
+            b.textContent = count;
+            b.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+
+        async function showSection(id) {
+            // Reload fresh data from Firebase on job requests tab
+            if (id === 'job-requests' || id === 'overview') {
+                await initAppData();
+                const fresh = sampleArtisans.find(a => a.email === artisan?.email);
+                if (fresh) Object.assign(artisan, fresh);
+            }
+            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('sec-' + id).classList.add('active');
+            document.querySelectorAll('.snav-btn[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === id));
+            if (id === 'overview')     renderOverview();
+            if (id === 'job-requests') renderJobs();
+            if (id === 'work-updates') renderWorkUpdates();
+            if (id === 'portfolio')    renderPortfolio();
+            if (id === 'profile')      renderProfile();
+            if (id === 'credentials')  renderCredentials();
+            if (id === 'payments')     { buildMonthSelect(); renderPayments(); }
+            updateBadge();
+            document.getElementById('portal-sidebar').classList.remove('open');
+        }
+
+        // OVERVIEW
+        function renderOverview() {
+            const name = artisan?.name || user?.name || 'Artisan';
+            document.getElementById('overview-sub').textContent = `Welcome, ${name}!`;
+
+            const verified = artisan?.verified || false;
+            document.getElementById('verify-banner-area').innerHTML = verified
+                ? `<div class="status-banner verified">
+                       <i class="fas fa-check-circle" style="font-size:2.5rem;"></i>
+                       <div>
+                           <h4 style="font-size:1.1rem;">✅ Profile Verified</h4>
+                           <p>Your Ghana ID has been approved by admin. Your profile is now visible to clients across all 16 regions.</p>
+                       </div>
+                   </div>`
+                : `<div class="status-banner pending" style="border-width:2px;border-style:solid;">
+                       <i class="fas fa-clock" style="font-size:2.5rem;"></i>
+                       <div>
+                           <h4 style="font-size:1.1rem;">⏳ Pending Admin Approval</h4>
+                           <p>Your account has been created successfully. Admin is reviewing your Ghana ID — you'll be fully visible to clients once approved (usually within 24–48 hrs).</p>
+                       </div>
+                   </div>`;
+
+            const myReqs = artisan?.id ? serviceRequests.filter(r => r.artisanId === artisan.id) : [];
+            document.getElementById('overview-stats').innerHTML = `
+                <div class="stat-mini"><div class="sv" style="color:#FF9900;">${myReqs.filter(r=>r.status==='pending_admin').length}</div><div class="sl">Awaiting Admin</div></div>
+                <div class="stat-mini"><div class="sv" style="color:#25D366;">${myReqs.filter(r=>r.status==='approved'||r.status==='reassigned').length}</div><div class="sl">Approved</div></div>
+                <div class="stat-mini"><div class="sv" style="color:#006600;">${myReqs.filter(r=>r.status==='completed').length}</div><div class="sl">Completed</div></div>`;
+
+            const recent = myReqs.slice(-3).reverse();
+            document.getElementById('overview-jobs').innerHTML = recent.length === 0
+                ? `<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No requests yet. Once admin approves your profile and clients find you, requests will appear here.</p></div>`
+                : recent.map(r => jobCardHTML(r, false)).join('');
+        }
+
+        // JOB REQUESTS
+        function renderJobs() {
+            if (!artisan) return;
+            // Match from global serviceRequests by artisanId, email, or name
+            const fromService = serviceRequests.filter(r =>
+                String(r.artisanId) === String(artisan.id) ||
+                r.artisanEmail === artisan.email ||
+                r.artisanName  === artisan.name
+            );
+
+            // Also include jobs from artisan.jobRequests (stored on profile)
+            const fromProfile = (artisan.jobRequests || []).map(j => ({
+                id:          j.id,
+                clientName:  j.clientName,
+                clientPhone: j.clientPhone || '',
+                clientEmail: j.clientEmail || '',
+                description: j.description || j.jobDesc || '',
+                date:        j.date || '',
+                district:    artisan.district || '',
+                region:      artisan.region || '',
+                address:     j.address || '',
+                urgency:     j.urgency || 'normal',
+                status:      j.status === 'pending' ? 'pending_admin' : (j.status || 'pending_admin'),
+                artisanName: artisan.name,
+                artisanId:   artisan.id
+            }));
+
+            // Merge, deduplicate by id
+            const seen = new Set();
+            const myReqs = [...fromService, ...fromProfile].filter(r => {
+                const key = String(r.id);
+                if (seen.has(key)) return false;
+                seen.add(key); return true;
+            }).sort((a,b) => {
+                const order = {approved:0, reassigned:0, pending_admin:1, completed:2, rejected:3};
+                return (order[a.status]||1) - (order[b.status]||1);
+            });
+
+            const approvedCount = myReqs.filter(r => r.status === 'approved' || r.status === 'reassigned').length;
+
+            document.getElementById('jobs-list').innerHTML =
+                (approvedCount > 0 ? `
+                <div style="background:linear-gradient(135deg,#e6fff0,#ccffdd);border:2px solid #25D366;border-radius:14px;padding:1rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:12px;">
+                    <i class="fas fa-check-circle" style="color:#25D366;font-size:1.5rem;flex-shrink:0;"></i>
+                    <div>
+                        <strong style="color:#1a9e4e;">🎉 ${approvedCount} job${approvedCount>1?'s':''} approved!</strong>
+                        <p style="margin:2px 0 0;font-size:0.83rem;color:#555;">Admin has approved your assignment. Contact the client to schedule the work.</p>
+                    </div>
+                </div>` : '') +
+                (myReqs.length === 0
+                ? `<div class="empty-state"><i class="fas fa-inbox"></i><p>No job requests assigned to you yet.</p></div>`
+                : myReqs.map(r => jobCardHTML(r, true)).join(''));
+
+            document.getElementById('jobs-list').innerHTML = myReqs.length === 0
+                ? `<div class="empty-state"><i class="fas fa-inbox"></i><p>No job requests assigned to you yet.</p></div>`
+                : myReqs.map(r => jobCardHTML(r, true)).join('');
+        }
+
+        const STATUS_LABELS = { pending_admin:'Awaiting Admin Approval', approved:'Approved by Admin', reassigned:'Reassigned by Admin', rejected:'Rejected by Admin', completed:'Completed' };
+
+        function jobCardHTML(r, showDetail) {
+            return `
+            <div class="job-card">
+                <div class="job-card-top">
+                    <div style="flex:1;min-width:0;">
+                        <div class="job-client"><i class="fas fa-user"></i> ${r.clientName}</div>
+                        <div class="job-desc">${r.description}</div>
+                        <div class="job-meta"><i class="fas fa-calendar-alt"></i> ${r.date} &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> ${r.district||r.region}</div>
+                    </div>
+                    <span class="pill ${r.status}">${STATUS_LABELS[r.status]||r.status}</span>
+                </div>
+                
+                ${showDetail ? `<div class="job-footer">
+                    <span class="info-note"><i class="fas fa-lock"></i> Only admin can approve or reassign</span>
+                    ${(r.status==='approved'||r.status==='reassigned') ? `<button class="act-btn blue" onclick="viewClient(${r.id})" style="margin-left:auto;"><i class="fas fa-address-card"></i> View Client Contact</button>` : ''}
+                </div>` : ''}
+            </div>`;
+        }
+
+        function viewClient(reqId) {
+            const r = serviceRequests.find(x => x.id === reqId);
+            if (!r) return;
+            // Build Google Maps link from address
+            const mapsLink = r.address
+                ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`
+                : null;
+            document.getElementById('info-modal-sub').textContent = r.description.substring(0,50);
+            document.getElementById('info-modal-body').innerHTML = `
+                <div class="info-row"><i class="fas fa-user"></i><span>${r.clientName}</span></div>
+                <div class="info-row"><i class="fas fa-phone"></i><a href="tel:${r.clientPhone}">${r.clientPhone || '—'}</a></div>
+                <div class="info-row"><i class="fas fa-envelope"></i><a href="mailto:${r.clientEmail}">${r.clientEmail || '—'}</a></div>
+                <div class="info-row">
+                    <i class="fas fa-map-marker-alt" style="color:#CE1126;"></i>
+                    <span style="flex:1;">${r.address || '—'}</span>
+                    ${mapsLink ? `<a href="${mapsLink}" target="_blank" style="background:#006600;color:white;padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-directions"></i> Get Directions</a>` : ''}
+                </div>
+                ${r.urgency ? `<div class="info-row"><i class="fas fa-bolt" style="color:#FF9900;"></i><span>Urgency: <strong>${r.urgency}</strong></span></div>` : ''}
+                <div class="info-row"><i class="fas fa-calendar-alt"></i><span>Requested: ${r.date}</span></div>
+                <button class="close-modal-btn" onclick="closeInfo()">Close</button>`;
+            document.getElementById('info-overlay').classList.add('active');
+        }
+
+        function closeInfo() { document.getElementById('info-overlay').classList.remove('active'); }
+
+        // WORK UPDATES
+        function previewWU(input, wrapId, hiddenId) {
+            if (!input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById(wrapId).innerHTML = `<img src="${e.target.result}" style="width:100%;height:130px;object-fit:cover;display:block;">`;
+                document.getElementById(hiddenId).value = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        async function postWorkUpdate() {
+            if (!artisan) return;
+            const customerName = document.getElementById('wu-customer').value.trim();
+            const title      = document.getElementById('wu-title').value.trim();
+            const beforeNote = document.getElementById('wu-before-note').value.trim();
+            const afterNote  = document.getElementById('wu-after-note').value.trim();
+            const beforeData = document.getElementById('wu-before-data').value;
+            const afterData  = document.getElementById('wu-after-data').value;
+            const status     = document.getElementById('wu-status').value;
+            if (!customerName) { showNotification('Please select the customer name', 'error'); return; }
+            if (!title)        { showNotification('Please enter a job description', 'error'); return; }
+            if (!beforeData)   { showNotification('Please upload a Before photo', 'error'); return; }
+
+            const update = {
+                id: Date.now(), artisanId: artisan.id, artisanName: artisan.name,
+                customerName, jobDesc: title, beforeNote, afterNote,
+                beforePhoto: beforeData, afterPhoto: afterData, status,
+                date: new Date().toISOString().split('T')[0], adminStatus: 'pending'
+            };
+            if (!artisan.workUpdates) artisan.workUpdates = [];
+            artisan.workUpdates.unshift(update);
+            await saveArtisanProfile(artisan);
+            await addDoc_('workUpdates', update);
+
+            // Reset form
+            document.getElementById('wu-customer').value = '';
+            document.getElementById('wu-title').value = '';
+            document.getElementById('wu-before-note').value = '';
+            document.getElementById('wu-after-note').value = '';
+            document.getElementById('wu-before-data').value = '';
+            document.getElementById('wu-after-data').value = '';
+            document.getElementById('wu-before-preview-wrap').innerHTML = `<i class="fas fa-image" style="font-size:2rem;color:#ccc;"></i>`;
+            document.getElementById('wu-after-preview-wrap').innerHTML  = `<i class="fas fa-image" style="font-size:2rem;color:#ccc;"></i>`;
+            document.getElementById('wu-before-file').value = '';
+            document.getElementById('wu-after-file').value = '';
+            showNotification('Work update posted! Admin can now view and update the status.', 'success');
+            renderWorkUpdates();
+        }
+
+        function renderWorkUpdates() {
+            if (!artisan) return;
+            const list = artisan.workUpdates || [];
+            const el   = document.getElementById('work-updates-list');
+            if (list.length === 0) { el.innerHTML = `<div class="empty-state"><i class="fas fa-camera"></i><p>No work updates yet. Post your first before & after above.</p></div>`; return; }
+            el.innerHTML = list.map((w,i) => `
+                <div class="work-update-card">
+                    <div class="work-update-hdr">
+                        <div><strong style="color:#006600;">${w.jobDesc}</strong><div style="color:#aaa;font-size:0.78rem;margin-top:2px;"><i class="fas fa-calendar-alt"></i> ${w.date}</div></div>
+                        <span class="pill ${w.status==='completed'?'completed':'pending_admin'}">${w.status==='completed'?'✅ Completed':'🔄 In Progress'}</span>
+                    </div>
+                    <div class="work-update-body">
+                        <div class="before-after-grid">
+                            <div class="ba-box">
+                                <div class="ba-label before"><i class="fas fa-times-circle"></i> Before</div>
+                                ${w.beforePhoto?`<img src="${w.beforePhoto}" class="ba-photo" alt="Before">`:`<div class="ba-photo" style="display:flex;align-items:center;justify-content:center;background:#f5f5f5;"><i class="fas fa-image" style="color:#ccc;font-size:1.5rem;"></i></div>`}
+                                ${w.beforeNote?`<div class="ba-note">${w.beforeNote}</div>`:''}
+                            </div>
+                            <div class="ba-box">
+                                <div class="ba-label after"><i class="fas fa-check-circle"></i> After</div>
+                                ${w.afterPhoto?`<img src="${w.afterPhoto}" class="ba-photo" alt="After">`:`<div class="ba-photo" style="display:flex;align-items:center;justify-content:center;background:#f5f5f5;"><i class="fas fa-image" style="color:#ccc;font-size:1.5rem;"></i></div>`}
+                                ${w.afterNote?`<div class="ba-note">${w.afterNote}</div>`:''}
+                            </div>
+                        </div>
+                        <div style="margin-top:0.8rem;text-align:right;">
+                            <button class="act-btn red" onclick="deleteWorkUpdate(${i})"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        // PROFILE
+        let profileInit = false;
+        function renderProfile() {
+            if (profileInit) return;
+            profileInit = true;
+            loadRegionsIntoSelect(document.getElementById('p-region'));
+            loadCategoriesIntoSelect(document.getElementById('p-category'));
+            if (!artisan) return;
+            if (artisan.profilePhoto) {
+                document.getElementById('profile-photo-img').src = artisan.profilePhoto;
+                document.getElementById('profile-photo-img').style.display = 'block';
+                document.getElementById('profile-photo-icon').style.display = 'none';
+            }
+            document.getElementById('p-name').value       = artisan.name || '';
+            document.getElementById('p-email').value      = artisan.email || '';
+            document.getElementById('p-phone').value      = artisan.phone || '';
+            document.getElementById('p-whatsapp').value   = artisan.whatsapp || '';
+            document.getElementById('p-address').value    = artisan.address || '';
+            document.getElementById('p-region').value     = artisan.region || '';
+            if (artisan.region) { loadDistrictsIntoSelect(document.getElementById('p-district'), artisan.region); setTimeout(()=>document.getElementById('p-district').value=artisan.district||'',50); }
+            document.getElementById('p-category').value   = artisan.category || '';
+            document.getElementById('p-experience').value = artisan.experience || '';
+            document.getElementById('p-price').value      = artisan.price || '';
+            document.getElementById('p-skills').value     = (artisan.skills||[]).join(', ');
+            document.getElementById('p-bio').value        = artisan.bio || '';
+        }
+
+        async function updateProfilePhoto(input) {
+            if (!input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = async e => {
+                const dataUrl = e.target.result;
+                if (artisan) {
+                    artisan.profilePhoto = dataUrl;
+                    artisan.profilePic   = dataUrl;
+                }
+                // Update all photo elements that exist
+                const imgEl  = document.getElementById('profile-photo-img');
+                const iconEl = document.getElementById('profile-photo-icon');
+                const sbEl   = document.getElementById('sb-avatar');
+                if (imgEl)  { imgEl.src = dataUrl; imgEl.style.display = 'block'; }
+                if (iconEl) iconEl.style.display = 'none';
+                if (sbEl)   sbEl.innerHTML = `<img src="${dataUrl}" alt="${artisan?.name||''}" style="width:100%;height:100%;object-fit:cover;">`;
+                // Save to Firebase immediately
+                if (artisan) {
+                    await saveArtisanProfile(artisan);
+                    showNotification('✅ Profile photo saved!', 'success');
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function profileRegionChange() { loadDistrictsIntoSelect(document.getElementById('p-district'), document.getElementById('p-region').value); }
+
+        async function saveProfile() {
+            if (!artisan) return;
+            artisan.name=document.getElementById('p-name').value.trim();
+            artisan.email=document.getElementById('p-email').value.trim();
+            artisan.phone=document.getElementById('p-phone').value.trim();
+            artisan.whatsapp=document.getElementById('p-whatsapp').value.trim();
+            artisan.address=document.getElementById('p-address').value.trim();
+            artisan.region=document.getElementById('p-region').value;
+            artisan.district=document.getElementById('p-district').value;
+            const u=loadUser(); u.name=artisan.name; saveUser(u);
+            await saveArtisanProfile(artisan);
+            document.getElementById('sb-name').textContent=artisan.name;
+            showNotification('Personal details saved!','success');
+        }
+
+        async function saveProfessional() {
+            if (!artisan) return;
+            artisan.category=document.getElementById('p-category').value;
+            artisan.experience=parseInt(document.getElementById('p-experience').value)||0;
+            artisan.skills=document.getElementById('p-skills').value.split(',').map(s=>s.trim()).filter(Boolean);
+            artisan.bio=document.getElementById('p-bio').value.trim();
+            await saveArtisanProfile(artisan);
+            showNotification('Professional details saved!','success');
+        }
+
+        async function changePassword() {
+            const op=document.getElementById('p-old-pw').value, np=document.getElementById('p-new-pw').value, cp=document.getElementById('p-conf-pw').value;
+            if (!op){showNotification('Enter current password','error');return;}
+            if (np.length<8){showNotification('New password needs 8+ characters','error');return;}
+            if (np!==cp){showNotification('Passwords do not match','error');return;}
+            if (artisan?.password && artisan.password!==op){showNotification('Current password incorrect','error');return;}
+            if (artisan) artisan.password=np;
+            await saveArtisanProfile(artisan);
+            ['p-old-pw','p-new-pw','p-conf-pw'].forEach(id=>document.getElementById(id).value='');
+            showNotification('Password updated!','success');
+        }
+
+        // CREDENTIALS
+        async function uploadCredential() {
+            const name=document.getElementById('cred-name').value.trim(), type=document.getElementById('cred-type').value, file=document.getElementById('cred-file').files[0];
+            if (!name){showNotification('Enter credential name','error');return;}
+            if (!file){showNotification('Select a file','error');return;}
+            if (!artisan.credentials) artisan.credentials=[];
+            artisan.credentials.push({name,type,file:file.name,date:new Date().toISOString().split('T')[0]});
+            await saveArtisanProfile(artisan);
+            document.getElementById('cred-name').value=''; document.getElementById('cred-file').value=''; document.getElementById('cred-file-name').textContent='';
+            showNotification(`"${name}" uploaded!`,'success'); renderCredentials();
+        }
+
+        function renderCredentials() {
+            if (!artisan) return;
+            const creds=artisan.credentials||[];
+            const iconMap={certificate:'fa-award',licence:'fa-id-card',diploma:'fa-graduation-cap',training:'fa-chalkboard-teacher',other:'fa-file'};
+            document.getElementById('creds-list').innerHTML = creds.length===0
+                ? `<div class="empty-state"><i class="fas fa-folder-open"></i><p>No credentials yet.</p></div>`
+                : creds.map((c,i)=>`<div class="cred-card"><div class="cred-info"><div class="cred-icon"><i class="fas ${iconMap[c.type]||'fa-file'}"></i></div><div><div class="cred-name">${c.name}</div><div class="cred-type">${c.type} · ${c.file} · ${c.date}</div></div></div><button class="act-btn red" onclick="deleteCredential(${i})"><i class="fas fa-trash"></i></button></div>`).join('');
+        }
+
+        async function deleteWorkUpdate(i) {
+            if (!confirm('Delete this update?')) return;
+            artisan.workUpdates.splice(i, 1);
+            await saveArtisanProfile(artisan);
+            renderWorkUpdates();
+        }
+
+        async function deleteCredential(i) {
+            if (!confirm('Remove this credential?')) return;
+            artisan.credentials.splice(i, 1);
+            await saveArtisanProfile(artisan);
+            renderCredentials();
+        }
+
+        // PAYMENTS
+        function buildMonthSelect() {
+            const sel = document.getElementById('pay-month-select');
+            sel.innerHTML = ''; // always rebuild so it reflects current payments
+
+            // Collect months from existing payments
+            const fromPayments = (artisan?.payments || [])
+                .map(p => p.month).filter(Boolean);
+
+            // Generate the last 12 calendar months as options
+            const last12 = [];
+            const now = new Date();
+            for (let i = 0; i < 12; i++) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                last12.push(d.toLocaleDateString('en-GH', { month: 'long', year: 'numeric' }));
+            }
+
+            // Merge, deduplicate, keep order (most recent first)
+            const allMonths = [...new Set([...fromPayments, ...last12])];
+            sel.innerHTML = allMonths.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+
+        function renderPayments() {
+            if (!artisan) return;
+            const month = document.getElementById('pay-month-select').value;
+            const allPays = artisan.payments || [];
+
+            // Filter by selected month — if payment has no month tag, match it to current month label
+            const currentMonthLabel = new Date().toLocaleDateString('en-GH', { month: 'long', year: 'numeric' });
+            const pays = allPays.filter(p => {
+                const m = p.month || currentMonthLabel;
+                return m === month;
+            });
+
+            const total      = pays.reduce((s,p) => s + (parseFloat(p.amount?.replace('₵','')) || 0), 0);
+            const paid       = pays.filter(p => p.status === 'completed');
+            const pending    = pays.filter(p => p.status !== 'completed');
+            const paidTotal  = paid.reduce((s,p) => s + (parseFloat(p.amount?.replace('₵','')) || 0), 0);
+
+            document.getElementById('pay-stats').innerHTML = `
+                <div class="stat-mini"><div class="sv">₵${total.toFixed(0)}</div><div class="sl">Total This Month</div></div>
+                <div class="stat-mini"><div class="sv" style="color:#25D366;">₵${paidTotal.toFixed(0)}</div><div class="sl">Received</div></div>
+                <div class="stat-mini"><div class="sv" style="color:#FF9900;">${pending.length}</div><div class="sl">Pending</div></div>`;
+
+            document.getElementById('payslip-month-label').textContent = `Payslip for ${month}`;
+
+            document.getElementById('payslip-body').innerHTML = pays.length === 0
+                ? `<p style="color:#aaa;text-align:center;padding:2rem 0;font-size:0.9rem;"><i class="fas fa-info-circle"></i> No payments recorded for ${month}.</p>`
+                : pays.map(p => `
+                    <div class="payslip-row">
+                        <span>${p.client}</span>
+                        <span><strong>${p.amount}</strong> &nbsp;
+                        <span class="pill ${p.status==='completed'?'approved':'pending_admin'}" style="font-size:0.7rem;">
+                            ${p.status==='completed'?'Paid':'Pending'}
+                        </span></span>
+                    </div>`).join('')
+                + `<div class="payslip-total"><span>Total Payable — ${month}</span><span>₵${total.toFixed(2)}</span></div>`;
+        }
+
+        async function downloadPayslip() {
+            if (!artisan) return;
+            // Load jsPDF if not already loaded
+            if (!window.jspdf) {
+                await new Promise((resolve, reject) => {
+                    const s1 = document.createElement('script');
+                    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    s1.onload = () => {
+                        const s2 = document.createElement('script');
+                        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
+                        s2.onload = resolve; s2.onerror = reject;
+                        document.head.appendChild(s2);
+                    };
+                    s1.onerror = reject;
+                    document.head.appendChild(s1);
+                });
+            }
+            const { jsPDF } = window.jspdf;
+            const doc   = new jsPDF();
+            const month = document.getElementById('pay-month-select').value || 'This Month';
+            const pays  = (artisan.payments || []).filter(p => (p.month || '') === month);
+            const total = pays.reduce((s, p) => s + (parseFloat((p.amount || '0').replace('₵', '')) || 0), 0);
+            const today = new Date().toLocaleDateString('en-GH');
+
+            // Header
+            doc.setFillColor(0, 102, 0);
+            doc.rect(0, 0, 210, 32, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+            doc.text('SkillBridge Africa', 14, 13);
+            doc.setFontSize(11); doc.setFont('helvetica', 'normal');
+            doc.text('Monthly Payslip', 14, 22);
+            doc.text(`Generated: ${today}`, 196, 22, { align: 'right' });
+            doc.setTextColor(0, 0, 0);
+
+            // Artisan info box
+            doc.setFillColor(240, 249, 240);
+            doc.rect(14, 38, 182, 38, 'F');
+            doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+            doc.text('Artisan Details', 18, 47);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+            doc.text(`Name:     ${artisan.name}`,     18, 55);
+            doc.text(`Category: ${artisan.category || '—'}`, 18, 62);
+            doc.text(`Region:   ${artisan.region || '—'}`,   18, 69);
+            doc.text(`Month:    ${month}`,             110, 55);
+            doc.text(`Phone:    ${artisan.phone || '—'}`,    110, 62);
+            doc.text(`Status:   ${artisan.verified ? 'Verified ✓' : 'Pending'}`, 110, 69);
+
+            // Payments table
+            doc.autoTable({
+                startY: 84,
+                head: [['Client', 'Amount', 'Month', 'Status', 'Date']],
+                body: pays.length > 0
+                    ? pays.map(p => [p.client || '—', p.amount || '—', p.month || '—', p.status || '—', p.date || '—'])
+                    : [['No payments recorded for this month', '', '', '', '']],
+                headStyles: { fillColor: [0, 102, 0] },
+                alternateRowStyles: { fillColor: [240, 249, 240] },
+                foot: [['', '', '', 'TOTAL PAYABLE', `₵${total.toFixed(2)}`]],
+                footStyles: { fillColor: [255, 245, 200], fontStyle: 'bold', textColor: [0, 0, 0] }
+            });
+
+            // Footer
+            doc.setFontSize(8); doc.setTextColor(150, 150, 150);
+            doc.text('SkillBridge Africa Platform — Connecting Clients with Verified Artisans across Ghana', 105, 287, { align: 'center' });
+
+            doc.save(`SkillBridge Africa_Payslip_${artisan.name.replace(/\s/g,'_')}_${month.replace(/\s/g,'_')}.pdf`);
+            showNotification('Payslip downloaded as PDF!', 'success');
+        }
+
+        // ---- ID Card ----
+        function showIDCard() {
+            if (!artisan?.verified) { showNotification('ID Card is only available after admin verification', 'error'); return; }
+            document.getElementById('id-card-overlay').style.display = 'flex';
+            renderIDCard();
+        }
+
+        function generatePlatformId(artisan) {
+            if (!artisan) return '—';
+            // Initials from name + first 6 digits of ID number
+            const initials = (artisan.name||'').trim().split(' ').filter(Boolean).map(w=>w[0].toUpperCase()).join('');
+            const digits   = (artisan.idNumber||'').replace(/\D/g,'').substring(0,6);
+            return digits ? `${initials}${digits}` : '—';
+        }
+
+        // Auto-generate and save platformId if missing
+        async function ensurePlatformId() {
+            if (!artisan) return;
+            const pid = generatePlatformId(artisan);
+            if (pid !== '—' && !artisan.platformId) {
+                artisan.platformId     = pid;
+                artisan.idIssueDate    = artisan.idIssueDate  || new Date().toISOString().split('T')[0];
+                artisan.idExpiryDate   = artisan.idExpiryDate || new Date(Date.now() + 3*365*24*60*60*1000).toISOString().split('T')[0];
+                await saveArtisanProfile(artisan);
+            }
+        }
+
+        function renderIDCard() {
+            const el = document.getElementById('id-card-content');
+            const tierColors = { Bronze:'#cd7f32', Silver:'#c0c0c0', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+            const tier = artisan.subscriptionTier || 'Bronze';
+            el.innerHTML = `
+                <div style="background:linear-gradient(135deg,#006600 0%,#004d00 60%,#FFD700 100%);border-radius:16px;padding:1.5rem;color:white;max-width:340px;margin:0 auto;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:rgba(255,215,0,0.08);border-radius:50%;transform:translate(30px,-30px);"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
+                        <div>
+                            <div style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;margin-bottom:2px;">SKILLBRIDGE AFRICA</div>
+                            <div style="font-size:0.72rem;opacity:0.75;">Verified Artisan ID Card</div>
+                        </div>
+                        <span style="background:${tierColors[tier]};color:${tier==='Gold'||tier==='Bronze'?'#333':'white'};padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;">${tier}</span>
+                    </div>
+                    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
+                        <div style="width:70px;height:70px;border-radius:50%;border:3px solid #FFD700;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            ${artisan.profilePic ? `<img src="${artisan.profilePic}" style="width:100%;height:100%;object-fit:cover;">` : `<i class="fas fa-user" style="font-size:2rem;color:rgba(255,255,255,0.7);"></i>`}
+                        </div>
+                        <div>
+                            <div style="font-size:1.1rem;font-weight:700;font-family:'Poppins',sans-serif;">${artisan.name}</div>
+                            <div style="font-size:0.78rem;opacity:0.85;margin-top:2px;">${artisan.category || '—'}</div>
+                            <div style="font-size:0.78rem;opacity:0.75;">${artisan.region || '—'}</div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:0.8rem;margin-bottom:0.8rem;">
+                        <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:6px;opacity:0.8;">
+                            <span>ID NUMBER</span><span>ID TYPE</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.9rem;font-weight:700;">
+                            <span style="letter-spacing:2px;">${artisan.platformId || generatePlatformId(artisan)}</span>
+                            <span style="font-size:0.78rem;">${artisan.idType?.toUpperCase() || '—'}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.7rem;opacity:0.75;">
+                        <span>ISSUED: ${artisan.idIssueDate || '—'}</span>
+                        <span>EXPIRES: ${artisan.idExpiryDate || '—'}</span>
+                    </div>
+                    <div style="margin-top:0.8rem;text-align:center;">
+                        <i class="fas fa-check-circle" style="color:#FFD700;"></i>
+                        <span style="font-size:0.72rem;margin-left:4px;">Verified & Approved by SkillBridge Africa</span>
+                    </div>
+                </div>`;
+        }
+
+        async function downloadIDCard() {
+            if (!artisan?.verified) return;
+            if (!window.jspdf) {
+                await new Promise((resolve, reject) => {
+                    const s1 = document.createElement('script');
+                    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    s1.onload = resolve; s1.onerror = reject;
+                    document.head.appendChild(s1);
+                });
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85, 54] }); // Credit card size
+
+            // Background
+            doc.setFillColor(0, 77, 0);
+            doc.rect(0, 0, 85, 54, 'F');
+            doc.setFillColor(0, 102, 0);
+            doc.rect(0, 0, 85, 16, 'F');
+
+            // Header
+            doc.setTextColor(255, 215, 0);
+            doc.setFontSize(7); doc.setFont('helvetica','bold');
+            doc.text('SKILLBRIDGE AFRICA', 5, 6);
+            doc.setTextColor(255,255,255);
+            doc.setFontSize(5); doc.setFont('helvetica','normal');
+            doc.text('Verified Artisan ID Card', 5, 11);
+
+            // Photo placeholder
+            doc.setFillColor(255,255,255);
+            doc.rect(5, 19, 18, 22, 'F');
+            if (artisan.profilePic && artisan.profilePic.startsWith('data:image')) {
+                try { doc.addImage(artisan.profilePic, 'JPEG', 5, 19, 18, 22); } catch(e) {}
+            }
+
+            // Name & details
+            doc.setTextColor(255,255,255);
+            doc.setFontSize(9); doc.setFont('helvetica','bold');
+            doc.text(artisan.name, 27, 24);
+            doc.setFontSize(6); doc.setFont('helvetica','normal');
+            doc.text(artisan.category || '—', 27, 29);
+            doc.text(artisan.region || '—', 27, 33);
+
+            // ID info
+            doc.setFillColor(0,0,0,0.3);
+            doc.setFontSize(5);
+            doc.text('ID NUMBER', 27, 40);
+            doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(255,215,0);
+            doc.text(artisan.platformId || generatePlatformId(artisan), 27, 45);
+
+            doc.setFontSize(4); doc.setFont('helvetica','normal'); doc.setTextColor(200,200,200);
+            const issDate = artisan.idIssueDate || new Date().toISOString().split('T')[0];
+            const expDate = artisan.idExpiryDate || new Date(Date.now()+3*365*24*60*60*1000).toISOString().split('T')[0];
+            doc.text(`Issued: ${issDate}   Expires: ${expDate}`, 5, 51);
+
+            doc.save(`SkillBridge_ID_${artisan.name.replace(/\s/g,'_')}.pdf`);
+            showNotification('ID Card downloaded as PDF!', 'success');
+        }
+
+        // ---- Portfolio ----
+        function previewPortfolioPhoto(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+            const el = document.getElementById(previewId);
+            const reader = new FileReader();
+            reader.onload = e => {
+                if (file.type.startsWith('video/')) {
+                    el.innerHTML = `<video src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" controls></video>`;
+                } else {
+                    el.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function addPortfolioItem() {
+            if (!artisan) return;
+            const title = document.getElementById('pf-title').value.trim();
+            const type  = document.getElementById('pf-type').value;
+            const desc  = document.getElementById('pf-desc').value.trim();
+            if (!title) { showNotification('Please enter a project title', 'error'); return; }
+
+            const getPhotoData = async (id) => {
+                const file = document.getElementById(id).files[0];
+                if (!file) return null;
+                return new Promise(res => {
+                    const r = new FileReader();
+                    r.onload = e => res(e.target.result);
+                    r.readAsDataURL(file);
+                });
+            };
+
+            showNotification('Uploading portfolio item...', 'info');
+            const [p1, p2, p3, p4] = await Promise.all([
+                getPhotoData('pf-photo1'), getPhotoData('pf-photo2'),
+                getPhotoData('pf-photo3'), getPhotoData('pf-photo4')
+            ]);
+
+            const item = {
+                id: Date.now(), title, type, desc,
+                photos: [p1, p2, p3, p4].filter(Boolean),
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            if (!artisan.portfolio) artisan.portfolio = [];
+            artisan.portfolio.unshift(item);
+            await saveArtisanProfile(artisan);
+
+            // Clear form
+            ['pf-title','pf-desc'].forEach(id => document.getElementById(id).value = '');
+            ['pf-photo1','pf-photo2','pf-photo3','pf-photo4'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            ['pf-prev1','pf-prev2','pf-prev3','pf-prev4'].forEach(id => {
+                document.getElementById(id).innerHTML = '<i class="fas fa-image" style="color:#ddd;font-size:2rem;"></i>';
+            });
+
+            showNotification('Portfolio item added!', 'success');
+            renderPortfolio();
+        }
+
+        function renderPortfolio() {
+            const el = document.getElementById('portfolio-gallery');
+            if (!el) return;
+            const items = artisan?.portfolio || [];
+            if (items.length === 0) {
+                el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-images" style="font-size:3rem;margin-bottom:1rem;display:block;"></i><p>No portfolio items yet. Add your first project above!</p></div>`;
+                return;
+            }
+            el.innerHTML = items.map(item => `
+                <div style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #eee;">
+                    <div style="display:grid;grid-template-columns:${item.photos.length>1?'1fr 1fr':'1fr'};gap:2px;height:160px;overflow:hidden;">
+                        ${item.photos.slice(0,4).map(p => p.startsWith('data:video') ?
+                            `<video src="${p}" style="width:100%;height:100%;object-fit:cover;"></video>` :
+                            `<img src="${p}" style="width:100%;height:100%;object-fit:cover;">`
+                        ).join('')}
+                    </div>
+                    <div style="padding:1rem;">
+                        <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;font-size:0.9rem;">${item.title}</div>
+                        <div style="font-size:0.75rem;color:#888;margin-top:3px;">${item.type} · ${item.date}</div>
+                        ${item.desc ? `<p style="font-size:0.82rem;color:#666;margin-top:6px;font-style:italic;">"${item.desc}"</p>` : ''}
+                        <button onclick="deletePortfolioItem(${item.id})" style="margin-top:8px;padding:4px 12px;background:#fff0f0;color:#CE1126;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:0.75rem;font-family:inherit;">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function deletePortfolioItem(id) {
+            if (!confirm('Remove this portfolio item?')) return;
+            artisan.portfolio = (artisan.portfolio || []).filter(p => p.id !== id);
+            await saveArtisanProfile(artisan);
+            renderPortfolio();
+        }
+
+        function doLogout() {
+            clearUser();
+            clearArtisanProfile();
+            showNotification('Logged out','info');
+            setTimeout(()=>{ window.location.href='index.html'; },700);
+        }
+
+        // Only clear session on pagehide — keep the artisan profile so login works
+        window.addEventListener('pagehide',()=>{ clearUser(); });
+        document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeInfo(); });
     </script>
+    <!-- ID Card Modal -->
+    <div id="id-card-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:5000;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)this.style.display='none'">
+        <div style="background:white;border-radius:20px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+                <h3 style="font-family:'Poppins',sans-serif;color:#006600;margin:0;">🪪 Artisan ID Card</h3>
+                <button onclick="document.getElementById('id-card-overlay').style.display='none'" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
+            </div>
+            <div id="id-card-content"></div>
+            <div style="display:flex;gap:10px;margin-top:1.2rem;">
+                <button onclick="downloadIDCard()" style="flex:1;padding:12px;background:linear-gradient(135deg,#006600,#009900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <button onclick="window.print()" style="flex:1;padding:12px;background:#f0f0f0;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;color:#333;">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
