@@ -346,9 +346,11 @@
                     <div style="margin-bottom:1.5rem;"><label class="flabel">Bio / Description</label><textarea id="p-bio" rows="3"></textarea></div>
                     <!-- Subscription Tier Display -->
                     <div style="margin-bottom:1.5rem;">
-                        <label class="flabel">Subscription Tier</label>
-                        <div id="subscription-tier-display" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
-                        <p style="font-size:0.78rem;color:#888;margin-top:6px;">Your tier is managed by the admin. Higher tiers get more visibility.</p>
+                        <label class="flabel">Subscription Plan</label>
+                        <p style="font-size:0.78rem;color:#888;margin:4px 0 10px;">
+                            🌿 <strong>SkillBridge (Free)</strong> is the default plan. Upgrade to a paid tier to get more visibility, priority placement, and more job requests. Payment is processed via Paystack and requires admin approval.
+                        </p>
+                        <div id="subscription-tier-display"></div>
                     </div>
                     <button class="save-btn" onclick="saveProfessional()"><i class="fas fa-save"></i> Save Changes</button>
                 </div>
@@ -535,20 +537,9 @@
         ensurePlatformId(); // auto-generate ID number if missing
         showSection('overview');
 
-        // Render subscription tier
+        // Render subscription tier with payment system
         const tierEl = document.getElementById('subscription-tier-display');
-        if (tierEl) {
-            const tiers = ['Bronze','Silver','Gold','Platinum','Diamond'];
-            const tierColors = { Bronze:'#cd7f32', Silver:'#c0c0c0', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
-            const currentTier = artisan?.subscriptionTier || 'Bronze';
-            tierEl.innerHTML = tiers.map(t => `
-                <span style="padding:6px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;
-                    background:${t===currentTier?tierColors[t]:'#f0f0f0'};
-                    color:${t===currentTier?'white':'#aaa'};
-                    border:2px solid ${t===currentTier?tierColors[t]:'#ddd'};">
-                    ${t==='Diamond'?'💎':t==='Platinum'?'🏆':t==='Gold'?'🥇':t==='Silver'?'🥈':'🥉'} ${t}
-                </span>`).join('');
-        }
+        if (tierEl) { renderSubscriptionTiers(); }
 
         // Populate customer dropdown from artisan's job requests
         const cusSel = document.getElementById('wu-customer');
@@ -1307,6 +1298,119 @@
             artisan.portfolio = (artisan.portfolio || []).filter(p => p.id !== id);
             await saveArtisanProfile(artisan);
             renderPortfolio();
+        }
+
+        // ---- Subscription Tier System ----
+        const TIER_CONFIG = {
+            'SkillBridge': { price: 0,    color: '#006600', icon: '🌿', label: 'Free', features: ['Listed on platform','Basic profile','Up to 5 job requests/month'] },
+            'Bronze':      { price: 50,   color: '#cd7f32', icon: '🥉', label: 'GHS 50/month', features: ['All Free features','Priority in search results','Up to 20 jobs/month','Verified badge'] },
+            'Silver':      { price: 100,  color: '#808080', icon: '🥈', label: 'GHS 100/month', features: ['All Bronze features','Featured in region','Unlimited job requests','Portfolio gallery'] },
+            'Gold':        { price: 200,  color: '#FFD700', icon: '🥇', label: 'GHS 200/month', features: ['All Silver features','Top search placement','Dedicated support','Monthly performance report'] },
+            'Platinum':    { price: 350,  color: '#1e90ff', icon: '🏆', label: 'GHS 350/month', features: ['All Gold features','Homepage featured listing','Priority admin support','Customer analytics'] },
+            'Diamond':     { price: 500,  color: '#9b59b6', icon: '💎', label: 'GHS 500/month', features: ['All Platinum features','Exclusive Diamond badge','Personal account manager','Maximum visibility'] }
+        };
+
+        function renderSubscriptionTiers() {
+            const el = document.getElementById('subscription-tier-display');
+            if (!el) return;
+            const current = artisan?.subscriptionTier || 'SkillBridge';
+            const pending  = artisan?.pendingTier;
+
+            el.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:8px;';
+            el.innerHTML = Object.entries(TIER_CONFIG).map(([name, cfg]) => {
+                const isActive  = current === name;
+                const isPending = pending  === name;
+                const isFree    = cfg.price === 0;
+                return `
+                <div style="border:2px solid ${isActive?cfg.color:'#e0e0e0'};border-radius:14px;padding:12px;background:${isActive?`${cfg.color}18`:'white'};position:relative;transition:all 0.2s;">
+                    ${isActive ? `<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:${cfg.color};color:white;font-size:0.65rem;font-weight:800;padding:2px 10px;border-radius:10px;white-space:nowrap;">✓ CURRENT</div>` : ''}
+                    ${isPending ? `<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#FF9900;color:white;font-size:0.65rem;font-weight:800;padding:2px 10px;border-radius:10px;white-space:nowrap;">⏳ PENDING</div>` : ''}
+                    <div style="text-align:center;margin-bottom:8px;">
+                        <div style="font-size:1.6rem;">${cfg.icon}</div>
+                        <div style="font-weight:800;color:${cfg.color};font-family:'Poppins',sans-serif;font-size:0.9rem;">${name}</div>
+                        <div style="font-size:0.72rem;font-weight:700;color:${isFree?'#25D366':'#333'};margin-top:2px;">${cfg.label}</div>
+                    </div>
+                    <ul style="list-style:none;padding:0;margin:0 0 10px;font-size:0.72rem;color:#555;">
+                        ${cfg.features.map(f => `<li style="padding:2px 0;"><i class="fas fa-check" style="color:${cfg.color};margin-right:4px;font-size:0.65rem;"></i>${f}</li>`).join('')}
+                    </ul>
+                    ${isActive
+                        ? `<div style="text-align:center;padding:6px;background:${cfg.color}22;border-radius:8px;font-size:0.72rem;font-weight:700;color:${cfg.color};">Active Plan</div>`
+                        : isPending
+                        ? `<div style="text-align:center;padding:6px;background:#fff8e6;border-radius:8px;font-size:0.72rem;font-weight:700;color:#FF9900;">Awaiting Admin Approval</div>`
+                        : isFree
+                        ? `<button onclick="subscribeToTier('SkillBridge',0)" style="width:100%;padding:7px;background:#006600;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.75rem;font-family:inherit;">Downgrade to Free</button>`
+                        : `<button onclick="subscribeToTier('${name}',${cfg.price})" style="width:100%;padding:7px;background:linear-gradient(135deg,${cfg.color},${cfg.color}cc);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.75rem;font-family:inherit;">Subscribe — GHS ${cfg.price}</button>`
+                    }
+                </div>`;
+            }).join('');
+        }
+
+        function subscribeToTier(tierName, amount) {
+            if (amount === 0) {
+                // Free downgrade — just save
+                if (confirm('Downgrade to the free SkillBridge plan?')) {
+                    artisan.subscriptionTier = 'SkillBridge';
+                    artisan.pendingTier = null;
+                    saveArtisanProfile(artisan).then(() => {
+                        showNotification('Downgraded to free SkillBridge plan.', 'info');
+                        renderSubscriptionTiers();
+                    });
+                }
+                return;
+            }
+
+            // Load Paystack and open payment
+            const doPaystack = () => {
+                const handler = PaystackPop.setup({
+                    key:      'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack key
+                    email:    artisan?.email || 'artisan@example.com',
+                    amount:   amount * 100, // pesewas
+                    currency: 'GHS',
+                    ref:      `TIER-${tierName}-${Date.now()}`,
+                    metadata: {
+                        custom_fields: [
+                            { display_name:'Artisan',         variable_name:'artisan',   value: artisan?.name },
+                            { display_name:'Requested Tier',  variable_name:'tier',      value: tierName },
+                            { display_name:'Platform ID',     variable_name:'platformId', value: artisan?.platformId }
+                        ]
+                    },
+                    callback: async function(response) {
+                        // Payment successful — save pending tier for admin approval
+                        artisan.pendingTier      = tierName;
+                        artisan.pendingTierRef   = response.reference;
+                        artisan.pendingTierPaid  = true;
+                        artisan.pendingTierDate  = new Date().toISOString();
+                        await saveArtisanProfile(artisan);
+
+                        // Notify admin
+                        await addDoc_('tierRequests', {
+                            artisanId:    artisan.id,
+                            artisanName:  artisan.name,
+                            artisanEmail: artisan.email,
+                            platformId:   artisan.platformId || '',
+                            requestedTier: tierName,
+                            amount,
+                            paystackRef:  response.reference,
+                            status:       'pending',
+                            submittedAt:  new Date().toISOString()
+                        });
+
+                        showNotification(`✅ Payment GHS ${amount} received! Your ${tierName} tier request is pending admin approval.`, 'success');
+                        renderSubscriptionTiers();
+                    },
+                    onClose: () => showNotification('Payment cancelled.', 'info')
+                });
+                handler.openIframe();
+            };
+
+            if (!window.PaystackPop) {
+                const s = document.createElement('script');
+                s.src = 'https://js.paystack.co/v1/inline.js';
+                s.onload = doPaystack;
+                document.head.appendChild(s);
+            } else {
+                doPaystack();
+            }
         }
 
         function doLogout() {
