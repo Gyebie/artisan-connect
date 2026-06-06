@@ -1,5 +1,5 @@
 // =============================================
-//  GhanaArtisan - Firebase Firestore Backend
+//  SkillBridge Africa - Firebase Firestore Backend
 //  Replace your old data.js with this file.
 //  Follow FIREBASE_SETUP_GUIDE.md to configure.
 // =============================================
@@ -24,21 +24,21 @@ const ghanaData = {
     country: "Ghana",
     regions: [
         { name: "Ahafo Region", capital: "Goaso", districts: ["Asunafo North Municipal","Asunafo South","Asutifi North","Asutifi South","Tano North Municipal","Tano South Municipal"] },
-        { name: "Ashanti Region", capital: "Kumasi", districts: ["Adansi North","Adansi South","Ahafo Ano North Municipal","Kumasi Metropolitan","Ahafo Ano South","Amansie Central","Amansie West","Asante Akim Central Municipal","Asante Akim North","Asante Akim South Municipal","Asokore Mampong Municipal","Asokwa Municipal","Atwima Kwanwoma","Atwima Mponua","Atwima Nwabiagya Municipal","Bekwai Municipal","Bosome Freho","Bosomtwe","Ejisu Municipal","Ejura/Sekyedumase Municipal","Juaben Municipal","Kwabre East Municipal","Kwadaso Municipal","Mampong Municipal","Obuasi East Municipal","Obuasi Municipal","Offinso Municipal","Offinso North","Oforikrom Municipal","Old Tafo Municipal","Sekyere Afram Plains","Sekyere Central","Sekyere East","Sekyere Kumawu","Sekyere South","Suame Municipal"] },
-        { name: "Bono Region", capital: "Sunyani", districts: ["Banda","Berekum East Municipal","Berekum West","Dormaa Central Municipal","Dormaa East","Dormaa West","Jaman North","Jaman South Municipal","Tain","Wenchi Municipal"] },
+        { name: "Ashanti Region", capital: "Kumasi", districts: ["Adansi Asokwa","Adansi North","Adansi South","Afigya-Kwabre South","Ahafo Ano North Municipal","Ahafo Ano South East","Ahafo Ano South West","Amansie Central","Amansie South","Amansie West","Asante Akim Central Municipal","Asante Akim North","Asante Akim South Municipal","Asokore Mampong Municipal","Asokwa Municipal","Atwima Kwanwoma","Atwima Mponua","Atwima Nwabiagya Municipal","Atwima Nwabiagya North","Bekwai Municipal","Bosome Freho","Bosomtwe","Ejisu Municipal","Ejura Sekyedumase Municipal","Juaben Municipal","Kumasi Metropolitan","Kwabre East Municipal","Kwadaso Municipal","Mampong Municipal","Obuasi East Municipal","Obuasi Municipal","Offinso Municipal","Offinso North","Oforikrom Municipal","Old Tafo Municipal","Sekyere Afram Plains","Sekyere Central","Sekyere East","Sekyere Kumawu","Sekyere South","Suame Municipal"] },
+        { name: "Bono Region", capital: "Sunyani", districts: ["Banda","Berekum East Municipal","Berekum West","Dormaa Central Municipal","Dormaa East","Dormaa West","Jaman North","Jaman South Municipal","Sunyani Municipal","Sunyani West","Tain","Wenchi Municipal"] },
         { name: "Bono East Region", capital: "Techiman", districts: ["Atebubu-Amantin Municipal","Kintampo North Municipal","Kintampo South","Nkoranza North","Nkoranza South Municipal","Pru East","Pru West","Sene East","Sene West","Techiman Municipal","Techiman North"] },
-        { name: "Central Region", capital: "Cape Coast", districts: ["Abura/Asebu/Kwamankese","Agona East","Agona West Municipal","Ajumako/Enyan/Essiam","Asikuma Odoben Brakwa","Assin Central Municipal","Assin North","Assin South","Awutu Senya East Municipal","Awutu Senya West","Cape Coast Metropolitan","Effutu Municipal","Ekumfi","Gomoa Central","Gomoa East","Gomoa West","Komenda/Edina/Eguafo/Abirem Municipal","Mfantsiman Municipal","Twifo Atti Morkwa","Twifo/Hemang/Lower Denkyira","Upper Denkyira East Municipal","Upper Denkyira West"] },
-        { name: "Eastern Region", capital: "Koforidua", districts: ["Abuakwa North Municipal","Abuakwa South Municipal","Achiase","Akuapim North Municipal","Akuapim South","Akyemansa","Asene Manso Akroso","Asuogyaman","Atiwa East","Atiwa West","Ayensuano","Birim Central Municipal","Birim North","Birim South","Denkyembour","Fanteakwa North","Fanteakwa South","Kwaebibirem Municipal","Kwahu Afram Plains North","Kwahu Afram Plains South","Kwahu East","Kwahu South","Kwahu West Municipal","Lower Manya Krobo Municipal","New Juaben North Municipal","New Juaben South Municipal","Nsawam Adoagyire Municipal","Okere","Suhum Municipal","Upper Manya Krobo"] },
-        { name: "Greater Accra Region", capital: "Accra", districts: ["Ablekuma Central Municipal","Ablekuma North Municipal","Ablekuma West Municipal","Accra Metropolitan","Adenta Municipal","Ashaiman Municipal","Ayawaso Central Municipal","Ayawaso East Municipal","Ayawaso North Municipal","Ayawaso West Municipal","Ga Central Municipal","Ga East Municipal","Ga North Municipal","Ga South Municipal","Ga West Municipal","Korle-Klottey Municipal","Kpone-Katamanso","La-Dade-Kotopon Municipal","Ledzokuku Municipal","Ningo-Prampram","Okaikwei North Municipal","Shai-Osudoku","Tema Metropolitan"] },
-        { name: "Northern Region", capital: "Tamale", districts: ["Gushegu Municipal","Karaga","Kpandai","Kumbungu","Mion","Nanton","Nanumba North Municipal","Nanumba South","Saboba","Sagnarigu Municipal","Savelugu Municipal","Tamale Metropolitan","Tatale Sanguli","Tolon"] },
-        { name: "North East Region", capital: "Nalerigu", districts: ["Bunkpurugu Nyankpanduri","Chereponi","East Mamprusi Municipal","Mamprugu Moagduri","West Mamprusi Municipal","Yunyoo-Nasuan"] },
+        { name: "Central Region", capital: "Cape Coast", districts: ["Abura Asebu Kwamankese","Agona East","Agona West Municipal","Ajumako Enyan Essiam","Asikuma Odoben Brakwa","Assin Fosu Municipal","Assin North","Assin South","Awutu Senya East Municipal","Awutu Senya West","Cape Coast Metropolitan","Effutu Municipal","Ekumfi","Gomoa Central","Gomoa East","Gomoa West","Komenda Edina Eguafo Abirem Municipal","Mfantsiman Municipal","Twifo Atti Morkwa","Twifo Hemang Lower Denkyira","Upper Denkyira East Municipal","Upper Denkyira West"] },
+        { name: "Eastern Region", capital: "Koforidua", districts: ["Abuakwa North Municipal","Abuakwa South Municipal","Achiase","Akuapim North Municipal","Akuapim South","Akyemansa","Asene Manso Akroso","Asuogyaman","Atiwa East","Atiwa West","Ayensuano","Birim Central Municipal","Birim North","Birim South","Denkyembour","Fanteakwa North","Fanteakwa South","Kwaebibirem Municipal","Kwahu Afram Plains North","Kwahu Afram Plains South","Kwahu East","Kwahu South","Kwahu West Municipal","Lower Manya Krobo Municipal","New Juaben North Municipal","New Juaben South Municipal","Nsawam Adoagyiri Municipal","Okere","Suhum Municipal","Upper Manya Krobo","Upper West Akim Municipal","Yilo Krobo Municipal"] },
+        { name: "Greater Accra Region", capital: "Accra", districts: ["Ablekuma Central Municipal","Ablekuma North Municipal","Ablekuma West Municipal","Accra Metropolitan","Ada East","Ada West","Adenta Municipal","Ashaiman Municipal","Ayawaso Central Municipal","Ayawaso East Municipal","Ayawaso North Municipal","Ayawaso West Municipal","Ga Central Municipal","Ga East Municipal","Ga North Municipal","Ga South Municipal","Ga West Municipal","Korle Klottey Municipal","Kpone Katamanso Municipal","La Dade Kotopon Municipal","La Nkwantanang Madina Municipal","Ledzokuku Municipal","Ningo Prampram","Okaikwei North Municipal","Shai Osudoku","Tema Metropolitan","Tema West Municipal","Weija Gbawe Municipal"] },
+        { name: "Northern Region", capital: "Tamale", districts: ["Gushegu Municipal","Karaga","Kpandai","Kumbungu","Mion","Nanton","Nanumba North Municipal","Nanumba South","Saboba","Sagnarigu Municipal","Savelugu Municipal","Tamale Metropolitan","Tatale Sanguli","Tolon","Yendi Municipal","Zabzugu"] },
+        { name: "North East Region", capital: "Nalerigu", districts: ["Bunkpurugu Nakpayili","Chereponi","East Mamprusi Municipal","Mamprugu Moagduri","West Mamprusi Municipal","Yunyoo Nasuan"] },
         { name: "Oti Region", capital: "Dambai", districts: ["Biakoye","Guan","Jasikan Municipal","Kadjebi","Krachi East Municipal","Krachi Nchumuru","Krachi West Municipal","Nkwanta North","Nkwanta South Municipal"] },
-        { name: "Savannah Region", capital: "Damongo", districts: ["Bole","Central Gonja","East Gonja Municipal","North Gonja","North East Gonja","Sawla-Tuna-Kalba","West Gonja Municipal"] },
-        { name: "Upper East Region", capital: "Bolgatanga", districts: ["Bawku Municipal","Bawku West","Binduri","Bolgatanga East","Bolgatanga Municipal","Bongo","Builsa North Municipal","Builsa South","Garu","Kassena-Nankana Municipal","Kassena-Nankana West","Nabdam","Pusiga","Talensi","Tempane"] },
-        { name: "Upper West Region", capital: "Wa", districts: ["Daffiama Bussie Issa","Jirapa Municipal","Lambussie Karni","Lawra Municipal","Nadowli-Kaleo","Nandom Municipal","Sissala East Municipal","Sissala West","Wa East","Wa Municipal","Wa West"] },
+        { name: "Savannah Region", capital: "Damongo", districts: ["Bole","Central Gonja","East Gonja Municipal","North East Gonja","North Gonja","Sawla Tuna Kalba","West Gonja Municipal"] },
+        { name: "Upper East Region", capital: "Bolgatanga", districts: ["Bawku Municipal","Bawku West","Binduri","Bolgatanga East","Bolgatanga Municipal","Bongo","Builsa North Municipal","Builsa South","Garu","Kassena Nankana Municipal","Kassena Nankana West","Nabdam","Pusiga","Talensi","Tempane"] },
+        { name: "Upper West Region", capital: "Wa", districts: ["Daffiama Bussie Issa","Jirapa Municipal","Lambussie Karni","Lawra Municipal","Nadowli Kaleo","Nandom Municipal","Sissala East Municipal","Sissala West","Wa East","Wa Municipal","Wa West"] },
         { name: "Volta Region", capital: "Ho", districts: ["Adaklu","Afadzato South","Agotime Ziope","Akatsi North","Akatsi South","Anloga","Central Tongu","Ho Municipal","Ho West","Hohoe Municipal","Keta Municipal","Ketu North Municipal","Ketu South Municipal","Kpando Municipal","North Dayi","North Tongu","South Dayi","South Tongu"] },
-        { name: "Western Region", capital: "Sekondi-Takoradi", districts: ["Ahanta West Municipal","Amenfi Central","Amenfi West Municipal","Effia Kwesimintsim Municipal","Ellembelle","Jomoro Municipal","Mpohor","Nzema East Municipal","Prestea-Huni Valley Municipal","Sekondi Takoradi Metropolitan","Shama","Tarkwa-Nsuaem Municipal","Wassa Amenfi East Municipal","Wassa East"] },
-        { name: "Western North Region", capital: "Sefwi Wiawso", districts: ["Aowin Municipal","Bia East","Bia West","Bibiani Anhwiaso Bekwai Municipal","Bodi","Juaboso","Sefwi Akontombra","Sefwi-Wiawso Municipal","Suaman"] }
+        { name: "Western Region", capital: "Sekondi-Takoradi", districts: ["Ahanta West Municipal","Amenfi Central","Amenfi East Municipal","Amenfi West Municipal","Effia Kwesimintsim Municipal","Ellembelle","Jomoro Municipal","Mpohor","Nzema East Municipal","Prestea Huni Valley Municipal","Sekondi Takoradi Metropolitan","Shama","Tarkwa Nsuaem Municipal","Wassa Amenfi East Municipal","Wassa East"] },
+        { name: "Western North Region", capital: "Sefwi Wiawso", districts: ["Aowin Municipal","Bia East","Bia West","Bibiani Anhwiaso Bekwai Municipal","Bodi","Juaboso","Sefwi Akontombra","Sefwi Wiawso Municipal","Suaman"] }
     ]
 };
 
@@ -154,7 +154,7 @@ async function saveArtisanProfile(profile) {
         const merged = { _docId: docId, ...profile };
         if (idx >= 0) sampleArtisans[idx] = merged; else sampleArtisans.push(merged);
         // Keep session storage for current-user quick access
-        sessionStorage.setItem("ghanaArtisanProfile", JSON.stringify(profile));
+        sessionStorage.setItem("skillBridgeAfricaProfile", JSON.stringify(profile));
     } catch (err) {
         console.error("[Firebase] saveArtisanProfile failed:", err);
         showNotification("Error saving profile. Please try again.", "error");
@@ -163,12 +163,12 @@ async function saveArtisanProfile(profile) {
 
 function loadArtisanProfile() {
     // Returns the currently logged-in artisan from session storage
-    const p = sessionStorage.getItem("ghanaArtisanProfile");
+    const p = sessionStorage.getItem("skillBridgeAfricaProfile");
     return p ? JSON.parse(p) : null;
 }
 
 function clearArtisanProfile() {
-    sessionStorage.removeItem("ghanaArtisanProfile");
+    sessionStorage.removeItem("skillBridgeAfricaProfile");
 }
 
 function loadArtisanPool() {
@@ -255,14 +255,14 @@ async function updateServiceRequest(docId, changes) {
 // ── 10. Session helpers (use sessionStorage so session ends on tab close) ─────
 
 function saveUser(user) {
-    sessionStorage.setItem("ghanaArtisanUser", JSON.stringify(user));
+    sessionStorage.setItem("skillBridgeAfricaUser", JSON.stringify(user));
 }
 function loadUser() {
-    const u = sessionStorage.getItem("ghanaArtisanUser");
+    const u = sessionStorage.getItem("skillBridgeAfricaUser");
     return u ? JSON.parse(u) : null;
 }
 function clearUser() {
-    sessionStorage.removeItem("ghanaArtisanUser");
+    sessionStorage.removeItem("skillBridgeAfricaUser");
 }
 
 // ── 11. Shared UI helpers (unchanged) ─────────────────────────────────────────
