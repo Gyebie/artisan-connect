@@ -724,6 +724,16 @@
         document.getElementById('shared-css').innerHTML = sharedCSS;
         document.getElementById('navbar-mount').innerHTML = renderNavbar('portal');
 
+        // Pre-load Paystack so payment buttons work immediately without delay
+        (function() {
+            if (!document.querySelector('script[src*="paystack"]')) {
+                const ps = document.createElement('script');
+                ps.src = 'https://js.paystack.co/v1/inline.js';
+                ps.async = true;
+                document.head.appendChild(ps);
+            }
+        })();
+
         // Global variables — accessible by all functions
         let user   = loadUser();
         let client = null;
@@ -1192,48 +1202,52 @@
             }
         }
 
-        // ---- Make Payment via Paystack ----
-        function makePayment(reqDocId, clientName, artisanName, amount) {
-            if (!amount || amount <= 0) {
-                showNotification('Payment amount not set yet. Please wait for admin to set the amount.', 'error');
-                return;
-            }
-            // Load Paystack inline script if not already loaded
-            if (!window.PaystackPop) {
-                const script = document.createElement('script');
-                script.src = 'https://js.paystack.co/v1/inline.js';
-                script.onload = () => initPaystack(reqDocId, clientName, artisanName, amount);
-                document.head.appendChild(script);
+        // ---- Unified Paystack helper ----
+        function openPaystack({ email, amount, ref, meta, onSuccess }) {
+            const PAYSTACK_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Replace with your key
+            const launchPaystack = () => {
+                const handler = PaystackPop.setup({
+                    key:      PAYSTACK_KEY,
+                    email:    email || user?.email || client?.email || 'customer@skillbridge.africa',
+                    amount:   Math.round(parseFloat(amount) * 100),
+                    currency: 'GHS',
+                    ref:      ref || `SBA-${Date.now()}`,
+                    metadata: { custom_fields: meta ? Object.entries(meta).map(([k,v]) => ({ display_name: k, variable_name: k.toLowerCase(), value: v })) : [] },
+                    callback: resp => onSuccess(resp.reference),
+                    onClose:  () => showNotification('Payment cancelled.', 'info')
+                });
+                handler.openIframe();
+            };
+            if (window.PaystackPop) {
+                launchPaystack();
             } else {
-                initPaystack(reqDocId, clientName, artisanName, amount);
+                showNotification('Loading payment gateway...', 'info');
+                const s = document.createElement('script');
+                s.src = 'https://js.paystack.co/v1/inline.js';
+                s.onload = launchPaystack;
+                s.onerror = () => showNotification('Could not load payment gateway. Check your internet.', 'error');
+                document.head.appendChild(s);
             }
         }
 
-        function initPaystack(reqDocId, clientName, artisanName, amount) {
-            const handler = PaystackPop.setup({
-                key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack public key
-                email: user?.email || client?.email || 'customer@example.com',
-                amount: Math.round(amount * 100), // Paystack uses pesewas (kobo)
-                currency: 'GHS',
-                ref: `ARTISAN-${Date.now()}`,
-                metadata: {
-                    custom_fields: [
-                        { display_name: 'Client',  variable_name: 'client',   value: clientName },
-                        { display_name: 'Artisan', variable_name: 'artisan',  value: artisanName },
-                        { display_name: 'Service', variable_name: 'service',  value: reqDocId }
-                    ]
-                },
-                callback: async function(response) {
-                    // Payment successful — update Firebase
-                    await updateServiceRequest(reqDocId, { paymentStatus: 'paid', paystackRef: response.reference });
-                    showNotification(`Payment of ₵${amount.toFixed(2)} successful! Reference: ${response.reference}`, 'success');
-                    await showSection('payments');
-                },
-                onClose: function() {
-                    showNotification('Payment cancelled.', 'info');
+        // ---- Make Payment via Paystack (Payment Enquiries) ----
+        function makePayment(reqDocId, clientName, artisanName, amount) {
+            const amt = parseFloat(String(amount).replace(/[^0-9.]/g, '')) || 0;
+            if (!amt || amt <= 0) {
+                showNotification('Payment amount not set. Please wait for admin to send a quotation.', 'error');
+                return;
+            }
+            openPaystack({
+                email:    user?.email || client?.email,
+                amount:   amt,
+                ref:      `PAY-${Date.now()}`,
+                meta:     { Client: clientName, Artisan: artisanName },
+                onSuccess: async (ref) => {
+                    await updateServiceRequest(reqDocId, { paymentStatus: 'paid', paystackRef: ref });
+                    showNotification(`✅ Payment GHS ${amt.toFixed(2)} successful! Ref: ${ref}`, 'success');
+                    showSection('payments');
                 }
             });
-            handler.openIframe();
         }
 
         async function renderPayments() {
@@ -1281,10 +1295,11 @@
             const payPillCls = ps =>
                 ps === 'paid'    ? 'approved' :
                 ps === 'pending' ? 'pending'  : 'pending';
-            const payPillTxt = ps =>
-                ps === 'paid'    ? '<i class="fas fa-check-circle"></i> Paid' :
-                ps === 'pending' ? '<i class="fas fa-clock"></i> Pending Payment' :
-                                   '<i class="fas fa-clock"></i> Not Yet Billed';
+            const payPillTxt = (ps, r) =>
+                ps === 'paid'           ? '<i class="fas fa-check-circle"></i> Paid' :
+                r?.quotationSent        ? '<i class="fas fa-file-invoice-dollar"></i> Quotation Sent' :
+                r?.amount               ? '<i class="fas fa-clock"></i> Pending Payment' :
+                                          '<i class="fas fa-clock"></i> Not Yet Billed';
 
             container.innerHTML = receiptsHTML + reqs.slice().reverse().map(r => `
                 <div class="pay-card">
@@ -1305,7 +1320,7 @@
                         <div style="text-align:right;flex-shrink:0;">
                             <div style="font-size:1.2rem;font-weight:700;color:#006600;">${r.amount || '—'}</div>
                             <span class="pill ${payPillCls(r.paymentStatus)}" style="font-size:0.72rem;margin-top:6px;display:inline-flex;">
-                                ${payPillTxt(r.paymentStatus)}
+                                ${payPillTxt(r.paymentStatus, r)}
                             </span>
                         </div>
                     </div>
@@ -1313,14 +1328,16 @@
                         <button class="pay-enq-btn" onclick="openEnqModal(${r.id})">
                             <i class="fas fa-question-circle"></i> Raise Enquiry
                         </button>
-                        <button class="pay-enq-btn orange" onclick="requestReceipt('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', '${r.description.replace(/'/g,"\\'")}', '${r.amount || '—'}', '${r.date}')">
+                        <button class="pay-enq-btn orange" onclick="requestReceipt('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', '${(r.description||'').replace(/'/g,"\\'")}', '${r.amount || '—'}', '${r.date}')">
                             <i class="fas fa-receipt"></i> Request Receipt
                         </button>
-                        ${(r.status === 'approved' || r.status === 'reassigned' || r.status === 'completed') && r.paymentStatus !== 'paid' ? `
-                        <button class="pay-enq-btn" style="background:rgba(37,211,102,0.1);color:#1a9e4e;border:1.5px solid rgba(37,211,102,0.3);" onclick="makePayment('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', ${r.amount ? parseFloat((r.amount+'').replace('₵',''))||0 : 0})">
-                            <i class="fas fa-credit-card"></i> Make Payment
-                        </button>` : r.paymentStatus === 'paid' ? `
-                        <span style="color:#25D366;font-size:0.82rem;font-weight:600;padding:7px 14px;"><i class="fas fa-check-circle"></i> Payment Confirmed</span>` : ''}
+                        ${r.paymentStatus === 'paid' ? `
+                        <span style="color:#25D366;font-size:0.82rem;font-weight:600;padding:7px 14px;"><i class="fas fa-check-circle"></i> Payment Confirmed</span>`
+                        : (r.amount && r.amount !== '—') ? `
+                        <button class="pay-enq-btn" style="background:linear-gradient(135deg,#FF9900,#cc7700);color:white;border:none;font-weight:700;"
+                            onclick="makePayment('${r._docId || r.id}', '${r.clientName}', '${r.artisanName}', ${parseFloat((r.amount+'').replace(/[^0-9.]/g,''))||0})">
+                            <i class="fas fa-credit-card"></i> Pay ${r.amount}
+                        </button>` : ''}
                     </div>
                 </div>`).join('');
         }
@@ -1517,34 +1534,21 @@
         }
 
         function makePaymentForQuotation(docId, clientName, artisanName, amount) {
-            if (!amount || amount <= 0) { showNotification('Invalid amount', 'error'); return; }
-            const doPaystack = () => {
-                const handler = PaystackPop.setup({
-                    key:      'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack public key
-                    email:    user?.email || client?.email || 'customer@example.com',
-                    amount:   Math.round(parseFloat(amount) * 100),
-                    currency: 'GHS',
-                    ref:      `QUOT-${Date.now()}`,
-                    metadata: { custom_fields: [
-                        { display_name: 'Client',  variable_name: 'client',  value: clientName },
-                        { display_name: 'Artisan', variable_name: 'artisan', value: artisanName }
-                    ]},
-                    callback: async function(response) {
-                        await saveDoc('quotations', docId, { status: 'paid', paystackRef: response.reference, paidAt: new Date().toISOString() });
-                        await updateServiceRequest(docId, { paymentStatus: 'paid' });
-                        showNotification(`✅ Payment of ₵${parseFloat(amount).toFixed(2)} successful!`, 'success');
-                        renderQuotations();
-                    },
-                    onClose: () => showNotification('Payment cancelled.', 'info')
-                });
-                handler.openIframe();
-            };
-            if (!window.PaystackPop) {
-                const s = document.createElement('script');
-                s.src = 'https://js.paystack.co/v1/inline.js';
-                s.onload = doPaystack;
-                document.head.appendChild(s);
-            } else doPaystack();
+            const amt = parseFloat(String(amount).replace(/[^0-9.]/g, '')) || 0;
+            if (!amt || amt <= 0) { showNotification('Invalid amount', 'error'); return; }
+            openPaystack({
+                email:    user?.email || client?.email,
+                amount:   amt,
+                ref:      `QUOT-${Date.now()}`,
+                meta:     { Client: clientName, Artisan: artisanName },
+                onSuccess: async (ref) => {
+                    await saveDoc('quotations', docId, { status: 'paid', paystackRef: ref, paidAt: new Date().toISOString() });
+                    await updateServiceRequest(docId, { paymentStatus: 'paid', paystackRef: ref });
+                    showNotification(`✅ Payment GHS ${amt.toFixed(2)} successful! Ref: ${ref}`, 'success');
+                    renderQuotations();
+                    showSection('payments');
+                }
+            });
         }
 
         // ---- Notifications (from admin approvals) ----
