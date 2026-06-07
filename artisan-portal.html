@@ -498,6 +498,16 @@
         document.getElementById('shared-css').innerHTML = sharedCSS;
         document.getElementById('navbar-mount').innerHTML = renderNavbar('artisan-portal');
 
+        // Pre-load Paystack so Subscribe buttons work immediately
+        (function() {
+            if (!document.querySelector('script[src*="paystack"]')) {
+                const ps = document.createElement('script');
+                ps.src = 'https://js.paystack.co/v1/inline.js';
+                ps.async = true;
+                document.head.appendChild(ps);
+            }
+        })();
+
         // Global variables — accessible by all functions
         let user    = loadUser();
         let artisan = null;
@@ -1347,7 +1357,6 @@
 
         function subscribeToTier(tierName, amount) {
             if (amount === 0) {
-                // Free downgrade — just save
                 if (confirm('Downgrade to the free SkillBridge plan?')) {
                     artisan.subscriptionTier = 'SkillBridge';
                     artisan.pendingTier = null;
@@ -1359,30 +1368,34 @@
                 return;
             }
 
-            // Load Paystack and open payment
-            const doPaystack = () => {
+            const PAYSTACK_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Replace with your Paystack key
+
+            const launchPaystack = () => {
+                if (!window.PaystackPop) {
+                    showNotification('Payment gateway still loading, please try again in 2 seconds.', 'info');
+                    setTimeout(() => launchPaystack(), 2000);
+                    return;
+                }
                 const handler = PaystackPop.setup({
-                    key:      'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // ← Replace with your Paystack key
-                    email:    artisan?.email || 'artisan@example.com',
-                    amount:   amount * 100, // pesewas
+                    key:      PAYSTACK_KEY,
+                    email:    artisan?.email || 'artisan@skillbridge.africa',
+                    amount:   Math.round(amount * 100),
                     currency: 'GHS',
                     ref:      `TIER-${tierName}-${Date.now()}`,
                     metadata: {
                         custom_fields: [
-                            { display_name:'Artisan',         variable_name:'artisan',   value: artisan?.name },
-                            { display_name:'Requested Tier',  variable_name:'tier',      value: tierName },
-                            { display_name:'Platform ID',     variable_name:'platformId', value: artisan?.platformId }
+                            { display_name: 'Artisan',        variable_name: 'artisan',    value: artisan?.name        },
+                            { display_name: 'Requested Tier', variable_name: 'tier',       value: tierName             },
+                            { display_name: 'ID Number',      variable_name: 'platform_id', value: artisan?.platformId || '' }
                         ]
                     },
                     callback: async function(response) {
-                        // Payment successful — save pending tier for admin approval
-                        artisan.pendingTier      = tierName;
-                        artisan.pendingTierRef   = response.reference;
-                        artisan.pendingTierPaid  = true;
-                        artisan.pendingTierDate  = new Date().toISOString();
+                        artisan.pendingTier     = tierName;
+                        artisan.pendingTierRef  = response.reference;
+                        artisan.pendingTierPaid = true;
+                        artisan.pendingTierDate = new Date().toISOString();
                         await saveArtisanProfile(artisan);
 
-                        // Notify admin
                         await addDoc_('tierRequests', {
                             artisanId:    artisan.id,
                             artisanName:  artisan.name,
@@ -1395,7 +1408,7 @@
                             submittedAt:  new Date().toISOString()
                         });
 
-                        showNotification(`✅ Payment GHS ${amount} received! Your ${tierName} tier request is pending admin approval.`, 'success');
+                        showNotification(`✅ Payment GHS ${amount} received! ${tierName} tier pending admin approval.`, 'success');
                         renderSubscriptionTiers();
                     },
                     onClose: () => showNotification('Payment cancelled.', 'info')
@@ -1403,13 +1416,21 @@
                 handler.openIframe();
             };
 
-            if (!window.PaystackPop) {
-                const s = document.createElement('script');
-                s.src = 'https://js.paystack.co/v1/inline.js';
-                s.onload = doPaystack;
-                document.head.appendChild(s);
+            if (window.PaystackPop) {
+                launchPaystack();
             } else {
-                doPaystack();
+                const existing = document.querySelector('script[src*="paystack"]');
+                if (existing) {
+                    existing.addEventListener('load', launchPaystack);
+                    showNotification('Loading payment gateway...', 'info');
+                } else {
+                    showNotification('Loading payment gateway...', 'info');
+                    const s = document.createElement('script');
+                    s.src = 'https://js.paystack.co/v1/inline.js';
+                    s.onload  = launchPaystack;
+                    s.onerror = () => showNotification('Could not load payment gateway. Check internet connection.', 'error');
+                    document.head.appendChild(s);
+                }
             }
         }
 
