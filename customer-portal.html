@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="paystack-config.js"></script>
     <script src="firebase-init.js"></script>
     <script src="data.js"></script>
     <script src="nav.js"></script>
@@ -1204,7 +1205,11 @@
 
         // ---- Unified Paystack helper ----
         function openPaystack({ email, amount, ref, meta, onSuccess }) {
-            const PAYSTACK_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Replace with your key
+            const PAYSTACK_KEY = window.SKILLBRIDGE_PAYSTACK_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Set via window.SKILLBRIDGE_PAYSTACK_KEY
+            if (PAYSTACK_KEY === 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') {
+                showNotification('⚠️ Payment key not configured yet. Please contact admin.', 'error');
+                return;
+            }
             const launchPaystack = () => {
                 const handler = PaystackPop.setup({
                     key:      PAYSTACK_KEY,
