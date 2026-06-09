@@ -1157,8 +1157,8 @@
                         <div>
                             <label class="elabel">Subscription Tier</label>
                             <select id="ea-tier" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
-                                ${['Bronze','Silver','Gold','Platinum','Diamond'].map(t =>
-                                    `<option value="${t}" ${(a.subscriptionTier||'Bronze')===t?'selected':''}>${t==='Diamond'?'💎':t==='Platinum'?'🏆':t==='Gold'?'🥇':t==='Silver'?'🥈':'🥉'} ${t}</option>`
+                                ${['SkillBridge','Bronze','Silver','Gold','Platinum','Diamond'].map(t =>
+                                    `<option value="${t}" ${(a.subscriptionTier||'SkillBridge')===t?'selected':''}>${t==='Diamond'?'💎 Diamond':t==='Platinum'?'🏆 Platinum':t==='Gold'?'🥇 Gold':t==='Silver'?'🥈 Silver':t==='Bronze'?'🥉 Bronze':'🌿 SkillBridge (Free)'}</option>`
                                 ).join('')}
                             </select>
                         </div>
@@ -1195,7 +1195,7 @@
                 skills: g('ea-skills').split(',').map(s => s.trim()).filter(Boolean),
                 bio: g('ea-bio'), address: g('ea-address'),
                 verified: document.getElementById('ea-verified').checked,
-                subscriptionTier: g('ea-tier') || 'Bronze',
+                subscriptionTier: g('ea-tier') || 'SkillBridge',
             };
             await saveArtisanProfile(sampleArtisans[idx]);
             showNotification('Artisan updated successfully!', 'success');
@@ -1933,7 +1933,7 @@ Please verify this ID before allowing access to your premises.` : '';
                 <div style="background:#fffbf0;border:1.5px solid #FFD580;border-radius:10px;padding:1rem;margin-bottom:1.5rem;">
                     <h4 style="color:#cc7700;margin:0 0 8px;font-size:0.88rem;"><i class="fas fa-lock"></i> Private Info (Admin Only)</h4>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>Daily Rate:</strong> ₵${a.dailyRate || 0} per day</p>
-                    <p style="margin:4px 0;font-size:0.85rem;"><strong>ID Type:</strong> ${a.idType || '—'}</p>
+                    <p style="margin:4px 0;font-size:0.85rem;"><strong>ID Type:</strong> ${'ARTISAN CARD'}</p>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>ID Number:</strong> ${a.idNumber || '—'}</p>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>ID Number:</strong> <span style="font-weight:700;letter-spacing:2px;color:#006600;">${a.platformId || '—'}</span></p>
                     <p style="margin:4px 0;font-size:0.85rem;"><strong>Issued:</strong> ${a.idIssueDate || '—'} &nbsp;|&nbsp; <strong>Expires:</strong> ${a.idExpiryDate || '—'}</p>
@@ -1999,7 +1999,7 @@ Please verify this ID before allowing access to your premises.` : '';
             doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(255,215,0);
             doc.text(a.platformId || '—', 27, 44);
             doc.setFontSize(4); doc.setFont('helvetica','normal'); doc.setTextColor(200,200,200);
-            doc.text(`ID: ${a.idNumber||'—'}  |  Issued: ${a.idIssueDate||'—'}  |  Expires: ${a.idExpiryDate||'—'}`, 5, 51);
+            doc.text(`ID No.: ${a.idNumber||'—'}  |  Issued: ${a.idIssueDate||'—'}  |  Expires: ${a.idExpiryDate||'—'}`, 5, 51);
 
             doc.save(`SkillBridge_ID_${a.name.replace(/\s/g,'_')}.pdf`);
             showNotification(`ID Card PDF for ${a.name} downloaded!`, 'success');
