@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="paystack-config.js"></script>
     <script src="firebase-init.js"></script>
     <script src="data.js"></script>
     <script src="nav.js"></script>
@@ -1103,19 +1104,31 @@
         // Auto-generate and save platformId if missing
         async function ensurePlatformId() {
             if (!artisan) return;
+            let changed = false;
+            // Generate platform ID if missing
             const pid = generatePlatformId(artisan);
             if (pid !== '—' && !artisan.platformId) {
-                artisan.platformId     = pid;
-                artisan.idIssueDate    = artisan.idIssueDate  || new Date().toISOString().split('T')[0];
-                artisan.idExpiryDate   = artisan.idExpiryDate || new Date(Date.now() + 3*365*24*60*60*1000).toISOString().split('T')[0];
-                await saveArtisanProfile(artisan);
+                artisan.platformId   = pid;
+                artisan.idIssueDate  = artisan.idIssueDate  || new Date().toISOString().split('T')[0];
+                artisan.idExpiryDate = artisan.idExpiryDate || new Date(Date.now() + 3*365*24*60*60*1000).toISOString().split('T')[0];
+                changed = true;
             }
+            // Fix old accounts that defaulted to Bronze — should be SkillBridge (free)
+            if (!artisan.subscriptionTier || artisan.subscriptionTier === 'Bronze') {
+                // Only reset to SkillBridge if no payment was ever made
+                if (!artisan.pendingTierRef && !artisan.pendingTierPaid) {
+                    artisan.subscriptionTier = 'SkillBridge';
+                    changed = true;
+                }
+            }
+            if (changed) await saveArtisanProfile(artisan);
         }
 
         function renderIDCard() {
             const el = document.getElementById('id-card-content');
-            const tierColors = { Bronze:'#cd7f32', Silver:'#c0c0c0', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
-            const tier = artisan.subscriptionTier || 'Bronze';
+            const tierColors = { SkillBridge:'#006600', Bronze:'#cd7f32', Silver:'#808080', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+            const tierLabel = tier === 'SkillBridge' ? '🌿 Free' : tier;
+            const tier = artisan.subscriptionTier || 'SkillBridge';
             el.innerHTML = `
                 <div style="background:linear-gradient(135deg,#006600 0%,#004d00 60%,#FFD700 100%);border-radius:16px;padding:1.5rem;color:white;max-width:340px;margin:0 auto;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
                     <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:rgba(255,215,0,0.08);border-radius:50%;transform:translate(30px,-30px);"></div>
@@ -1124,7 +1137,7 @@
                             <div style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;margin-bottom:2px;">SKILLBRIDGE AFRICA</div>
                             <div style="font-size:0.72rem;opacity:0.75;">Verified Artisan ID Card</div>
                         </div>
-                        <span style="background:${tierColors[tier]};color:${tier==='Gold'||tier==='Bronze'?'#333':'white'};padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;">${tier}</span>
+                        <span style="background:${tierColors[tier]||'#006600'};color:${(tier==='Gold'||tier==='Bronze')?'#333':'white'};padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;">${tier}</span>
                     </div>
                     <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
                         <div style="width:70px;height:70px;border-radius:50%;border:3px solid #FFD700;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
@@ -1142,7 +1155,7 @@
                         </div>
                         <div style="display:flex;justify-content:space-between;font-size:0.9rem;font-weight:700;">
                             <span style="letter-spacing:2px;">${artisan.platformId || generatePlatformId(artisan)}</span>
-                            <span style="font-size:0.78rem;">${artisan.idType?.toUpperCase() || '—'}</span>
+                            <span style="font-size:0.78rem;">${'ARTISAN CARD'}</span>
                         </div>
                     </div>
                     <div style="display:flex;justify-content:space-between;font-size:0.7rem;opacity:0.75;">
@@ -1323,7 +1336,9 @@
         function renderSubscriptionTiers() {
             const el = document.getElementById('subscription-tier-display');
             if (!el) return;
-            const current = artisan?.subscriptionTier || 'SkillBridge';
+            // Normalize: if tier is Bronze but no payment ref, treat as SkillBridge
+        const rawTier = artisan?.subscriptionTier;
+        const current = (!rawTier || rawTier === 'SkillBridge') ? 'SkillBridge' : rawTier;
             const pending  = artisan?.pendingTier;
 
             el.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:8px;';
@@ -1368,7 +1383,13 @@
                 return;
             }
 
-            const PAYSTACK_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Replace with your Paystack key
+            const PAYSTACK_KEY = window.SKILLBRIDGE_PAYSTACK_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Set via window.SKILLBRIDGE_PAYSTACK_KEY or replace directly
+
+            // Check if key is still placeholder
+            if (PAYSTACK_KEY === 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') {
+                showNotification('⚠️ Paystack key not configured. Please ask admin to set the payment key.', 'error');
+                return;
+            }
 
             const launchPaystack = () => {
                 if (!window.PaystackPop) {
