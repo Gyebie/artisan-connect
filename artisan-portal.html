@@ -203,6 +203,7 @@
             </div>
             <div class="sidebar-nav">
                 <button class="snav-btn active" data-section="overview"     onclick="showSection('overview')">    <i class="fas fa-th-large"></i>Overview</button>
+                <button class="snav-btn"         data-section="notifications" onclick="showSection('notifications')"><i class="fas fa-bell"></i>Notifications<span class="nbadge" id="artisan-notif-badge" style="display:none;background:#CE1126;">0</span></button>
                 <button class="snav-btn"         data-section="job-requests" onclick="showSection('job-requests')"><i class="fas fa-clipboard-list"></i>Job Requests<span class="nbadge" id="pending-badge" style="display:none">0</span></button>
                 <button class="snav-btn"         data-section="work-updates" onclick="showSection('work-updates')"><i class="fas fa-camera"></i>Work Updates</button>
                 <button class="snav-btn"         data-section="portfolio"    onclick="showSection('portfolio')">   <i class="fas fa-images"></i>My Portfolio</button>
@@ -234,6 +235,13 @@
             </div>
 
             <!-- JOB REQUESTS -->
+            <!-- NOTIFICATIONS -->
+            <div class="section-panel" id="sec-notifications">
+                <div class="panel-title"><i class="fas fa-bell"></i> Notifications</div>
+                <p class="panel-sub">Job approvals, tier upgrades, and messages from admin</p>
+                <div id="artisan-notif-list"><div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i></div></div>
+            </div>
+
             <div class="section-panel" id="sec-job-requests">
                 <div class="panel-title"><i class="fas fa-clipboard-list"></i> Job Requests</div>
                 <p class="panel-sub">All service requests assigned to you. Only the admin can approve or reassign.</p>
@@ -602,13 +610,14 @@
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
             document.querySelectorAll('.snav-btn[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === id));
-            if (id === 'overview')     renderOverview();
-            if (id === 'job-requests') renderJobs();
-            if (id === 'work-updates') renderWorkUpdates();
-            if (id === 'portfolio')    renderPortfolio();
-            if (id === 'profile')      renderProfile();
-            if (id === 'credentials')  renderCredentials();
-            if (id === 'payments')     { buildMonthSelect(); renderPayments(); }
+            if (id === 'overview')       renderOverview();
+            if (id === 'notifications')  renderArtisanNotifications();
+            if (id === 'job-requests')   renderJobs();
+            if (id === 'work-updates')   renderWorkUpdates();
+            if (id === 'portfolio')      renderPortfolio();
+            if (id === 'profile')        renderProfile();
+            if (id === 'credentials')    renderCredentials();
+            if (id === 'payments')       { buildMonthSelect(); renderPayments(); }
             updateBadge();
             document.getElementById('portal-sidebar').classList.remove('open');
         }
@@ -1086,6 +1095,40 @@
             showNotification('Payslip downloaded as PDF!', 'success');
         }
 
+        // ---- Artisan Notifications ----
+        async function renderArtisanNotifications() {
+            const el = document.getElementById('artisan-notif-list');
+            try {
+                const all   = await fetchCollection('notifications');
+                const mine  = all.filter(n => n.clientEmail === artisan?.email || n.artisanEmail === artisan?.email)
+                                 .sort((a,b) => new Date(b.date) - new Date(a.date));
+                const unread = mine.filter(n => !n.read).length;
+                const badge  = document.getElementById('artisan-notif-badge');
+                if (badge) { badge.style.display = unread > 0 ? '' : 'none'; badge.textContent = unread; }
+
+                if (mine.length === 0) {
+                    el.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;"><i class="fas fa-bell" style="font-size:3rem;margin-bottom:1rem;display:block;"></i><p>No notifications yet.</p></div>`;
+                    return;
+                }
+                el.innerHTML = mine.map(n => `
+                    <div style="background:${n.read?'white':'#f0fff4'};border:1.5px solid ${n.read?'#eee':'#b3e0b3'};border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                            <div style="flex:1;">
+                                <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;">${n.title || 'Notification'}</div>
+                                <div style="font-size:0.78rem;color:#888;margin:3px 0 8px;">${new Date(n.date).toLocaleString('en-GH')}</div>
+                                <p style="font-size:0.85rem;color:#555;margin:0;white-space:pre-wrap;">${(n.message||'').substring(0,300)}</p>
+                            </div>
+                            ${!n.read ? '<span style="width:10px;height:10px;background:#25D366;border-radius:50%;flex-shrink:0;margin-top:4px;"></span>' : ''}
+                        </div>
+                    </div>`).join('');
+                // Mark all as read
+                mine.filter(n => !n.read && n._docId).forEach(n => saveDoc('notifications', n._docId, { read: true }).catch(()=>{}));
+                if (badge) { badge.style.display = 'none'; }
+            } catch(e) {
+                el.innerHTML = `<p style="color:#CE1126;padding:1rem;">Error loading notifications.</p>`;
+            }
+        }
+
         // ---- ID Card ----
         function showIDCard() {
             if (!artisan?.verified) { showNotification('ID Card is only available after admin verification', 'error'); return; }
@@ -1126,9 +1169,11 @@
 
         function renderIDCard() {
             const el = document.getElementById('id-card-content');
+            if (!artisan) { el.innerHTML = '<p style="color:#CE1126;text-align:center;padding:2rem;">Please reload the page and try again.</p>'; return; }
+            const tier       = artisan.subscriptionTier || 'SkillBridge';
             const tierColors = { SkillBridge:'#006600', Bronze:'#cd7f32', Silver:'#808080', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
-            const tierLabel = tier === 'SkillBridge' ? '🌿 Free' : tier;
-            const tier = artisan.subscriptionTier || 'SkillBridge';
+            const tierLabel  = tier === 'SkillBridge' ? '🌿 Free' : tier;
+            const platformId = artisan.platformId || generatePlatformId(artisan) || '—';
             el.innerHTML = `
                 <div style="background:linear-gradient(135deg,#006600 0%,#004d00 60%,#FFD700 100%);border-radius:16px;padding:1.5rem;color:white;max-width:340px;margin:0 auto;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
                     <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:rgba(255,215,0,0.08);border-radius:50%;transform:translate(30px,-30px);"></div>
@@ -1137,7 +1182,7 @@
                             <div style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;margin-bottom:2px;">SKILLBRIDGE AFRICA</div>
                             <div style="font-size:0.72rem;opacity:0.75;">Verified Artisan ID Card</div>
                         </div>
-                        <span style="background:${tierColors[tier]||'#006600'};color:${(tier==='Gold'||tier==='Bronze')?'#333':'white'};padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;">${tier}</span>
+                        <span style="background:${tierColors[tier]||'#006600'};color:${(tier==='Gold'||tier==='Bronze')?'#333':'white'};padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;">${tierLabel}</span>
                     </div>
                     <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
                         <div style="width:70px;height:70px;border-radius:50%;border:3px solid #FFD700;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
@@ -1154,8 +1199,8 @@
                             <span>ID NUMBER</span><span>ID TYPE</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;font-size:0.9rem;font-weight:700;">
-                            <span style="letter-spacing:2px;">${artisan.platformId || generatePlatformId(artisan)}</span>
-                            <span style="font-size:0.78rem;">${'ARTISAN CARD'}</span>
+                            <span style="letter-spacing:2px;">${platformId}</span>
+                            <span style="font-size:0.78rem;">ARTISAN CARD</span>
                         </div>
                     </div>
                     <div style="display:flex;justify-content:space-between;font-size:0.7rem;opacity:0.75;">
