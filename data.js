@@ -43,21 +43,26 @@ const ghanaData = {
 };
 
 const categories = [
-    { id: "plumbing",     name: "Plumbing",           icon: "fa-faucet" },
-    { id: "electrical",   name: "Electrical",          icon: "fa-bolt" },
-    { id: "carpentry",    name: "Carpentry",           icon: "fa-hammer" },
-    { id: "masonry",      name: "Masonry",             icon: "fa-home" },
-    { id: "welding",      name: "Welding",             icon: "fa-fire" },
-    { id: "painting",     name: "Painting",            icon: "fa-paint-roller" },
-    { id: "tailoring",    name: "Tailoring",           icon: "fa-tshirt" },
-    { id: "hairdressing", name: "Hairdressing",        icon: "fa-cut" },
-    { id: "catering",     name: "Catering",            icon: "fa-utensils" },
-    { id: "electronics",  name: "Electronics Repair",  icon: "fa-tools" },
-    { id: "automobile",   name: "Automobile Repair",   icon: "fa-car" },
-    { id: "construction", name: "Construction",        icon: "fa-hard-hat" },
-    { id: "cleaning",     name: "Cleaning Services",   icon: "fa-broom" },
-    { id: "gardening",    name: "Gardening",           icon: "fa-leaf" },
-    { id: "tech",         name: "Technology",          icon: "fa-laptop" }
+    { id: "plumbing",     name: "Plumbing",                      icon: "fa-faucet" },
+    { id: "electrical",   name: "Electrical",                    icon: "fa-bolt" },
+    { id: "carpentry",    name: "Carpentry",                     icon: "fa-hammer" },
+    { id: "masonry",      name: "Masonry",                       icon: "fa-home" },
+    { id: "welding",      name: "Welding",                       icon: "fa-fire" },
+    { id: "painting",     name: "Painting",                      icon: "fa-paint-roller" },
+    { id: "tailoring",    name: "Tailoring",                     icon: "fa-tshirt" },
+    { id: "hairdressing", name: "Hairdressing",                  icon: "fa-cut" },
+    { id: "catering",     name: "Catering",                      icon: "fa-utensils" },
+    { id: "electronics",  name: "Electronics Repair",            icon: "fa-tools" },
+    { id: "automobile",   name: "Automobile Repair",             icon: "fa-car" },
+    { id: "construction", name: "Construction",                  icon: "fa-hard-hat" },
+    { id: "cleaning",     name: "Cleaning Services",             icon: "fa-broom" },
+    { id: "gardening",    name: "Gardening",                     icon: "fa-leaf" },
+    { id: "tech",         name: "Technology",                    icon: "fa-laptop" },
+    { id: "decoration",   name: "Interior/General Decoration",   icon: "fa-couch" },
+    { id: "events",       name: "Event Planning",                icon: "fa-calendar-star" },
+    { id: "makeup",       name: "Make-up Artist",                icon: "fa-spa" },
+    { id: "cakedesign",   name: "Wedding Cake Designer",         icon: "fa-birthday-cake" },
+    { id: "bartender",    name: "Local Bar Vendor/Bartender",    icon: "fa-glass-martini-alt" }
 ];
 
 const adminCredentials = { username: "ARTISANCONNECT", password: "3767 ARTISANCONNECT" };
