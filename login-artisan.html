@@ -309,16 +309,16 @@
                                 <div class="form-stack">
                                     <div>
                                         <label class="flabel">ID Card Type</label>
-                                        <select id="r-id-type" onchange="onIdTypeChange()">
-                                            <option value="">Select ID Type</option>
-                                            <option value="ecowascard" selected>ECOWAS Card</option>
-                                            <option value="voters_id">Voter's ID Card</option>
-                                            <option value="drivers_license">Driver's License</option>
-                                            <option value="passport">Ghana Passport</option>
-                                            <option value="nhis">NHIS Card</option>
-                                            <option value="ssnit">SSNIT Card</option>
-                                            <option value="birth_certificate">Birth Certificate</option>
-                                        </select>
+                                        <div style="background:#fffbf0;border:1.5px solid #FFD580;border-radius:10px;padding:10px 14px;">
+                                            <div style="display:flex;align-items:center;gap:10px;">
+                                                <i class="fas fa-id-card" style="color:#FFD700;font-size:1.5rem;flex-shrink:0;"></i>
+                                                <div>
+                                                    <div style="font-weight:700;color:#333;font-size:0.9rem;">ECOWAS Card Only</div>
+                                                    <div style="font-size:0.75rem;color:#888;margin-top:2px;">For authentication and verification purposes, only the <strong>ECOWAS Card</strong> is accepted for artisan registration on SkillBridge Africa.</div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="r-id-type" value="ecowascard">
+                                        </div>
                                     </div>
                                     <div class="fg2">
                                         <div>
@@ -750,7 +750,17 @@
             if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
             if (password !== confirm)  { showNotification('Passwords do not match!', 'error'); return; }
             if (!document.getElementById('r-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
-            if (sampleArtisans.find(a => a.email === email)) { showNotification('An account with this email already exists', 'error'); return; }
+
+            // Duplicate checks — email, phone, AND ID number used once only
+            if (sampleArtisans.find(a => a.email === email)) {
+                showNotification('❌ An account with this email already exists. Each email can only register once.', 'error'); return;
+            }
+            if (phone && sampleArtisans.find(a => a.phone === phone)) {
+                showNotification('❌ An account with this phone number already exists. Each phone number can only register once.', 'error'); return;
+            }
+            if (idNumber && sampleArtisans.find(a => a.idNumber === idNumber)) {
+                showNotification('❌ This ECOWAS Card has already been used to register. Each ID card can only be used once.', 'error'); return;
+            }
 
             // Capture profile pic as base64
             let profilePicData = null;
