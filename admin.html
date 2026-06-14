@@ -1002,16 +1002,16 @@
                                     <div><label class="elabel">Region</label><select id="ar-region" onchange="arRegionChange()"></select></div>
                                     <div><label class="elabel">District</label><select id="ar-district"></select></div>
                                     <div><label class="elabel">Experience (years)</label><input type="number" id="ar-exp" min="0"></div>
-                                    <div><label class="elabel">Hourly Rate</label><input type="text" id="ar-price" placeholder="₵100/hour"></div>
-                                    <div><label class="elabel">ID Type</label>
-                                        <select id="ar-id-type" onchange="adminIdTypeChange('ar')">
-                                            <option value="ecowascard">ECOWAS Card</option>
-                                            <option value="voters_id">Voter's ID</option>
-                                            <option value="drivers_license">Driver's License</option>
-                                            <option value="passport">Passport</option>
-                                            <option value="nhis">NHIS Card</option>
-                                            <option value="ssnit">SSNIT Card</option>
-                                        </select>
+                                    <div style="background:#fffbf0;border:1.5px solid #FFD580;border-radius:8px;padding:0.7rem;">
+                                        <label class="elabel" style="color:#cc7700;"><i class="fas fa-lock" style="font-size:0.7rem;"></i> Daily Rate (₵) — Private</label>
+                                        <input type="number" id="ar-daily-rate" placeholder="e.g. 150" min="0" style="width:100%;padding:8px;border:1.5px solid #FFD580;border-radius:6px;font-family:inherit;box-sizing:border-box;">
+                                    </div>
+                                    <div>
+                                        <label class="elabel">ID Card Type</label>
+                                        <div style="background:#f0f9f0;border:1.5px solid #b3e0b3;border-radius:8px;padding:9px 12px;font-size:0.85rem;color:#333;font-weight:600;">
+                                            <i class="fas fa-id-card" style="color:#006600;"></i> ECOWAS Card (only accepted type)
+                                        </div>
+                                        <input type="hidden" id="ar-id-type" value="ecowascard">
                                     </div>
                                     <div>
                                         <label class="elabel">ID Number</label>
@@ -1130,16 +1130,11 @@
                                 <input type="number" id="ea-daily-rate" value="${a.dailyRate||0}" min="0" style="width:100%;padding:8px;border:1.5px solid #FFD580;border-radius:6px;font-family:inherit;box-sizing:border-box;">
                                 <small style="color:#aaa;font-size:0.72rem;">Based on economic activity in ${a.district||'their district'}, ${a.region||'their region'}. NOT shown publicly.</small>
                             </div>
-                            <div><label class="elabel">ID Type</label>
-                                <select id="ea-id-type" onchange="adminIdTypeChange('ea')">
-                                    <option value="ecowascard" ${(a.idType==='ecowascard'||a.idType==='ghanacard')?'selected':''}>ECOWAS Card</option>
-                                    <option value="voters_id"         ${a.idType==='voters_id'?'selected':''}>Voter's ID</option>
-                                    <option value="drivers_license"   ${a.idType==='drivers_license'?'selected':''}>Driver's License</option>
-                                    <option value="passport"          ${a.idType==='passport'?'selected':''}>Passport</option>
-                                    <option value="nhis"              ${a.idType==='nhis'?'selected':''}>NHIS Card</option>
-                                    <option value="ssnit"             ${a.idType==='ssnit'?'selected':''}>SSNIT Card</option>
-                                    <option value="birth_certificate" ${a.idType==='birth_certificate'?'selected':''}>Birth Certificate</option>
-                                </select>
+                            <div><label class="elabel">ID Card Type</label>
+                                <div style="background:#f0f9f0;border:1.5px solid #b3e0b3;border-radius:8px;padding:9px 12px;font-size:0.85rem;color:#333;font-weight:600;">
+                                    <i class="fas fa-id-card" style="color:#006600;"></i> ECOWAS Card
+                                </div>
+                                <input type="hidden" id="ea-id-type" value="ecowascard">
                             </div>
                             <div>
                                 <label class="elabel">ID Number</label>
@@ -1314,22 +1309,36 @@
             const idType   = g('ar-id-type');
             const idNumber = g('ar-id-number').trim();
 
+            const phone    = g('ar-phone').trim();
+
             if (sampleArtisans.find(a => a.email === email)) { showNotification('Artisan with this email already exists', 'error'); return; }
+            if (phone && sampleArtisans.find(a => a.phone === phone)) { showNotification('Artisan with this phone number already exists', 'error'); return; }
             if (!idNumber) { showNotification('Please enter the ID Number', 'error'); return; }
+            if (sampleArtisans.find(a => a.idNumber === idNumber)) { showNotification('This ECOWAS Card has already been registered', 'error'); return; }
             if (idType === 'ecowascard' && !validateEcowasCard(idNumber)) {
                 showNotification('ECOWAS Card must be in format: GHA-721233479-8', 'error'); return;
             }
+
+            // Generate Platform ID (ID Number) and dates
+            const initials   = name.trim().split(' ').filter(Boolean).map(w=>w[0].toUpperCase()).join('');
+            const idDigits   = (idNumber||'').replace(/\D/g,'').substring(0,6);
+            const platformId = idDigits ? `${initials}${idDigits}` : '';
+            const issueDate  = new Date().toISOString().split('T')[0];
+            const expiryDate = new Date(Date.now() + 3*365*24*60*60*1000).toISOString().split('T')[0];
 
             const newArtisan = {
                 id: Date.now(), name, email, phone: g('ar-phone'),
                 password: 'changeme123', category: g('ar-category'),
                 skills: g('ar-skills').split(',').map(s=>s.trim()).filter(Boolean),
                 region: g('ar-region'), district: g('ar-district'), address: g('ar-address'),
-                experience: parseInt(g('ar-exp')) || 0, price: g('ar-price') || '₵100/hour',
+                experience: parseInt(g('ar-exp')) || 0,
+                dailyRate: parseFloat(g('ar-daily-rate')) || 0,
                 bio: g('ar-bio'), idType, idNumber,
+                platformId, idIssueDate: issueDate, idExpiryDate: expiryDate,
+                subscriptionTier: 'SkillBridge',
                 rating: 0, completedJobs: 0,
                 verified: document.getElementById('ar-verified').checked,
-                credentials: [], jobRequests: [], payments: [], workUpdates: [],
+                credentials: [], jobRequests: [], payments: [], workUpdates: [], portfolio: [],
                 registeredAt: new Date().toISOString()
             };
             sampleArtisans.push(newArtisan);
@@ -1364,6 +1373,10 @@
                         <strong style="color:#555;">Job Description:</strong><br>${r.description}
                     </div>
                     <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+                        <button onclick="openQuotationModal('${r._docId||r.id}','${r.clientName}','${r.clientEmail||''}','${r.artisanName}',\`${(r.description||'').replace(/`/g,"'")}\`)"
+                            style="padding:9px 20px;background:linear-gradient(135deg,#FF9900,#cc7700);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;font-size:0.88rem;">
+                            <i class="fas fa-file-invoice-dollar"></i> Send Quotation
+                        </button>
                         <button onclick="approveRequest(${r.id})" style="padding:9px 20px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;font-size:0.88rem;">
                             <i class="fas fa-check"></i> Approve & Assign
                         </button>
