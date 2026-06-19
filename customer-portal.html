@@ -496,8 +496,14 @@
                         </div>
                         <div>
                             <label class="flabel">Region / Location</label>
-                            <select id="bh-region" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                            <select id="bh-region" onchange="loadDistrictsIntoSelect(document.getElementById('bh-district'), this.value)" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
                                 <option value="">Select Region</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">District</label>
+                            <select id="bh-district" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="">Select Region First</option>
                             </select>
                         </div>
                         <div>
@@ -1519,11 +1525,6 @@
                                 <div style="color:#666;font-size:0.85rem;margin-top:4px;">${q.description || '—'}</div>
                                 <div style="color:#888;font-size:0.78rem;margin-top:4px;"><i class="fas fa-calendar-alt"></i> ${q.date || '—'}</div>
                                 ${q.notes ? `<div style="background:#fffbf0;border:1px solid #FFD580;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:0.82rem;color:#cc7700;"><i class="fas fa-info-circle"></i> Admin note: ${q.notes}</div>` : ''}
-                                ${q.pdfData ? `
-                                <a href="${q.pdfData}" download="Quotation_${(q.quotRef||q._docId||'SBA')}.pdf"
-                                    style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 14px;background:#f0f0f0;color:#333;border-radius:8px;font-size:0.78rem;font-weight:600;text-decoration:none;">
-                                    <i class="fas fa-file-pdf" style="color:#CE1126;"></i> Download Quotation PDF
-                                </a>` : ''}
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:1.8rem;font-weight:700;color:#006600;">₵${parseFloat(q.amount||0).toFixed(2)}</div>
@@ -1631,18 +1632,19 @@
         }
 
         async function submitBuildHouseRequest() {
-            const type    = document.getElementById('bh-type').value;
-            const rooms   = document.getElementById('bh-bedrooms').value;
-            const region  = document.getElementById('bh-region').value;
-            const budget  = document.getElementById('bh-budget').value;
-            const address = document.getElementById('bh-address').value.trim();
-            const desc    = document.getElementById('bh-desc').value.trim();
+            const type     = document.getElementById('bh-type').value;
+            const rooms    = document.getElementById('bh-bedrooms').value;
+            const region   = document.getElementById('bh-region').value;
+            const district = document.getElementById('bh-district').value;
+            const budget   = document.getElementById('bh-budget').value;
+            const address  = document.getElementById('bh-address').value.trim();
+            const desc     = document.getElementById('bh-desc').value.trim();
             if (!address) { showNotification('Please enter the land address', 'error'); return; }
             if (!desc)    { showNotification('Please describe your project', 'error'); return; }
 
             await addDoc_('buildHouseRequests', {
                 clientName:  user?.name, clientEmail: user?.email, clientPhone: client?.phone || '',
-                projectType: type, bedrooms: rooms, region, budget: parseFloat(budget)||0,
+                projectType: type, bedrooms: rooms, region, district, budget: parseFloat(budget)||0,
                 address, description: desc,
                 status:      'submitted',
                 submittedAt: new Date().toISOString(),
@@ -1653,7 +1655,7 @@
             await addDoc_('adminNotifications', {
                 type:    'build-house',
                 title:   `🏠 New Build House Request from ${user?.name}`,
-                message: `${type} — ${rooms} — Budget: ₵${budget||'TBD'} — ${address}`,
+                message: `${type} — ${rooms} — ${district ? district + ', ' : ''}${region} — Budget: ₵${budget||'TBD'} — ${address}`,
                 date:    new Date().toISOString(),
                 read:    false
             });
@@ -1678,7 +1680,7 @@
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;">
                             <div>
                                 <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;">${r.projectType?.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase())}</div>
-                                <div style="font-size:0.82rem;color:#888;margin-top:3px;">${r.bedrooms} · ${r.region||'—'} · ₵${r.budget?.toLocaleString()||'TBD'} budget</div>
+                                <div style="font-size:0.82rem;color:#888;margin-top:3px;">${r.bedrooms} · ${r.district ? r.district + ', ' : ''}${r.region||'—'} · ₵${r.budget?.toLocaleString()||'TBD'} budget</div>
                                 <div style="font-size:0.78rem;color:#aaa;margin-top:2px;">${r.address?.substring(0,50)||'—'}</div>
                             </div>
                             <span style="background:${r.status==='completed'?'#e6fff0':r.status==='in-progress'?'#fff8e6':'#f0f0f0'};color:${r.status==='completed'?'#25D366':r.status==='in-progress'?'#FF9900':'#888'};padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;">
