@@ -6,7 +6,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Started - SkillBridge Africa</title>
+    <title>Get Started - GhanaArtisan</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,7 +40,7 @@
         }
         .login-brand-name {
             font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700;
-            background: var(--gradient-primary); -webkit-background-clip: text;
+            background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .login-heading {
@@ -236,7 +237,7 @@
         <div id="step-choose">
             <div class="login-brand">
                 <div class="login-brand-icon"><i class="fas fa-hands-helping"></i></div>
-                <div class="login-brand-name">SkillBridge Africa</div>
+                <div class="login-brand-name">GhanaArtisan</div>
             </div>
             <h1 class="login-heading">Who are you <span>logging in</span> as?</h1>
             <p class="login-sub">Choose your account type. Each portal is tailored just for you.</p>
@@ -731,7 +732,7 @@
             sampleClients.push(newClient);
             await saveClientProfile(newClient);
             saveUser({ email, name, phone, role: 'client' });
-            showNotification('Account created! Welcome to SkillBridge Africa.', 'success');
+            showNotification('Account created! Welcome to GhanaArtisan.', 'success');
             setTimeout(() => { window.location.href = 'customer-portal.html'; }, 1000);
         }
 
