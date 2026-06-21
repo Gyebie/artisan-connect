@@ -849,8 +849,9 @@
             loadRegionsIntoSelect(document.getElementById('p-region'));
             loadCategoriesIntoSelect(document.getElementById('p-category'));
             if (!artisan) return;
-            if (artisan.profilePhoto) {
-                document.getElementById('profile-photo-img').src = artisan.profilePhoto;
+            const existingPhoto = artisan.profilePhoto || artisan.profilePic;
+            if (existingPhoto) {
+                document.getElementById('profile-photo-img').src = existingPhoto;
                 document.getElementById('profile-photo-img').style.display = 'block';
                 document.getElementById('profile-photo-icon').style.display = 'none';
             }
@@ -1194,7 +1195,7 @@
                     </div>
                     <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
                         <div style="width:70px;height:70px;border-radius:50%;border:3px solid #FFD700;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
-                            ${artisan.profilePic ? `<img src="${artisan.profilePic}" style="width:100%;height:100%;object-fit:cover;">` : `<i class="fas fa-user" style="font-size:2rem;color:rgba(255,255,255,0.7);"></i>`}
+                            ${(artisan.profilePic || artisan.profilePhoto) ? `<img src="${artisan.profilePic || artisan.profilePhoto}" style="width:100%;height:100%;object-fit:cover;">` : `<i class="fas fa-user" style="font-size:2rem;color:rgba(255,255,255,0.7);"></i>`}
                         </div>
                         <div>
                             <div style="font-size:1.1rem;font-weight:700;font-family:'Poppins',sans-serif;">${artisan.name}</div>
@@ -1252,8 +1253,9 @@
             // Photo placeholder
             doc.setFillColor(255,255,255);
             doc.rect(5, 19, 18, 22, 'F');
-            if (artisan.profilePic && artisan.profilePic.startsWith('data:image')) {
-                try { doc.addImage(artisan.profilePic, 'JPEG', 5, 19, 18, 22); } catch(e) {}
+            const idCardPhoto = artisan.profilePic || artisan.profilePhoto;
+            if (idCardPhoto && idCardPhoto.startsWith('data:image')) {
+                try { doc.addImage(idCardPhoto, 'JPEG', 5, 19, 18, 22); } catch(e) {}
             }
 
             // Name & details
