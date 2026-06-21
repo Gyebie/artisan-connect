@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Artisans - SkillBridge Africa</title>
+    <title>Find Artisans - GhanaArtisan</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -68,13 +69,13 @@
     <div class="page-wrapper">
         <!-- Page Hero -->
         <div class="page-hero">
-            <h1><i class="fas fa-search"></i> Book Verified Artisans</h1>
+            <h1><i class="fas fa-search"></i> Find Artisans</h1>
             <p>Discover skilled, verified artisans across all 16 regions of Ghana — ready to help you today.</p>
         </div>
 
         <section class="search-section">
-            <h2 class="section-title" style="font-size:1.6rem;">Book Verified Artisans Near You</h2>
-            <p class="section-sub">Ghana's most trusted artisan marketplace</p>
+            <h2 class="section-title" style="font-size:1.6rem;">Search by Region, Category or Skills</h2>
+            <p class="section-sub">Showing verified artisans near you</p>
 
             <div class="search-box">
                 <div class="search-form">
@@ -210,7 +211,7 @@
                             ${a.skills.length>3?`<span style="background:rgba(0,102,0,0.1);color:#006600;padding:4px 10px;border-radius:15px;font-size:0.85rem;">+${a.skills.length-3} more</span>`:''}
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-                            
+                            <span style="font-weight:700;color:#006600;font-size:1.15rem;">${a.price}</span>
                             <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                                 <button onclick="viewDetail(${a.id})" class="ghana-btn" style="padding:8px 16px;background:#006600;">
                                     <i class="fas fa-eye"></i> View Details
@@ -266,7 +267,7 @@
                         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
                             <div><div style="font-size:1.8rem;font-weight:700;color:#006600;">${a.rating}</div><div style="color:#888;font-size:0.85rem;">Rating</div></div>
                             <div><div style="font-size:1.8rem;font-weight:700;color:#006600;">${a.completedJobs}</div><div style="color:#888;font-size:0.85rem;">Jobs Done</div></div>
-                            
+                            <div><div style="font-size:1.4rem;font-weight:700;color:#006600;">${a.price}</div><div style="color:#888;font-size:0.85rem;">Rate</div></div>
                         </div>
                     </div>
                     <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;">
