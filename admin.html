@@ -1377,6 +1377,10 @@
                         <strong style="color:#555;">Job Description:</strong><br>${r.description}
                     </div>
                     <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+                        <button onclick="openQuotationModal('${r._docId||r.id}','${r.clientName}','${r.clientEmail||''}','${r.artisanName}',\`${(r.description||'').replace(/`/g,"'")}\`)"
+                            style="padding:9px 20px;background:linear-gradient(135deg,#FF9900,#cc7700);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;font-size:0.88rem;">
+                            <i class="fas fa-file-invoice-dollar"></i> Send Quotation
+                        </button>
                         <button onclick="approveRequest(${r.id})" style="padding:9px 20px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;font-size:0.88rem;">
                             <i class="fas fa-check"></i> Approve & Assign
                         </button>
@@ -1411,7 +1415,7 @@ Please verify this ID before allowing access to your premises.` : '';
             r.status = 'approved';
             r.adminNote = `Your request has been approved. ${artisan?.name || 'The artisan'} will contact you shortly.\n\n${artisanIdDetails}`;
             r.artisanPlatformId = artisan?.platformId || '';
-            r.artisanProfilePic = artisan?.profilePic || '';
+            r.artisanProfilePic = artisan?.profilePic || artisan?.profilePhoto || '';
             r.artisanIdType     = artisan?.idType || '';
             r.artisanTier       = artisan?.subscriptionTier || 'Bronze';
 
@@ -1433,7 +1437,7 @@ Please verify this ID before allowing access to your premises.` : '';
                 message:      r.adminNote,
                 artisanName:  r.artisanName,
                 artisanId:    artisan?.platformId || '',
-                artisanPhoto: artisan?.profilePic || '',
+                artisanPhoto: artisan?.profilePic || artisan?.profilePhoto || '',
                 date:         new Date().toISOString(),
                 read:         false
             });
@@ -1939,7 +1943,7 @@ Please contact the customer to schedule the work.`;
             document.getElementById('artisan-detail-content').innerHTML = `
                 <div style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:1.5rem;">
                     <div style="width:100px;height:100px;border-radius:50%;border:3px solid #006600;overflow:hidden;flex-shrink:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
-                        ${a.profilePic ? `<img src="${a.profilePic}" style="width:100%;height:100%;object-fit:cover;">` : `<i class="fas fa-user" style="font-size:2.5rem;color:#ccc;"></i>`}
+                        ${(a.profilePic || a.profilePhoto) ? `<img src="${a.profilePic || a.profilePhoto}" style="width:100%;height:100%;object-fit:cover;">` : `<i class="fas fa-user" style="font-size:2.5rem;color:#ccc;"></i>`}
                     </div>
                     <div>
                         <h2 style="color:#006600;font-family:'Poppins',sans-serif;margin:0 0 4px;">${a.name}</h2>
@@ -2024,8 +2028,9 @@ Please contact the customer to schedule the work.`;
             doc.text('Verified Artisan ID Card', 5, 11);
 
             doc.setFillColor(255,255,255); doc.rect(5, 19, 18, 22, 'F');
-            if (a.profilePic?.startsWith('data:image')) {
-                try { doc.addImage(a.profilePic, 'JPEG', 5, 19, 18, 22); } catch(e) {}
+            const adminIdPhoto = a.profilePic || a.profilePhoto;
+            if (adminIdPhoto?.startsWith('data:image')) {
+                try { doc.addImage(adminIdPhoto, 'JPEG', 5, 19, 18, 22); } catch(e) {}
             }
 
             doc.setTextColor(255,255,255);
