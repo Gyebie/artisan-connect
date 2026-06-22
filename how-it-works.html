@@ -127,8 +127,8 @@
     <div class="page-wrapper">
         <!-- Hero -->
         <div class="hero-how">
-            <h1>How SkillBridge Africa Works</h1>
-            <p>A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions.</p>
+            <h1 id="cms-hiw-title">How SkillBridge Africa Works</h1>
+            <p id="cms-hiw-sub">A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions.</p>
         </div>
 
         <div class="content-section">
@@ -138,23 +138,23 @@
             <div class="steps-grid">
                 <div class="step-card">
                     <div class="step-num">1</div>
-                    <h3>Register &amp; Verify</h3>
-                    <p>Create your account and upload a valid Ghana ID card. Our admin team verifies your identity within 24 hours.</p>
+                    <h3 id="cms-step1-title">Register &amp; Verify</h3>
+                    <p id="cms-step1-desc">Create your account and upload a valid Ghana ID card. Our admin team verifies your identity within 24 hours.</p>
                 </div>
                 <div class="step-card">
                     <div class="step-num">2</div>
-                    <h3>Build Your Profile</h3>
-                    <p>Add your skills, experience, service category, and set your rate. Upload credentials and certificates.</p>
+                    <h3 id="cms-step2-title">Build Your Profile</h3>
+                    <p id="cms-step2-desc">Add your skills, experience, service category, and set your rate. Upload credentials and certificates.</p>
                 </div>
                 <div class="step-card">
                     <div class="step-num">3</div>
-                    <h3>Get Hired</h3>
-                    <p>Clients search by region and skill. You receive job requests directly and can accept or decline.</p>
+                    <h3 id="cms-step3-title">Get Hired</h3>
+                    <p id="cms-step3-desc">Clients search by region and skill. You receive job requests directly and can accept or decline.</p>
                 </div>
                 <div class="step-card">
                     <div class="step-num">4</div>
-                    <h3>Get Paid</h3>
-                    <p>Receive secure payments via Paystack — Ghana's leading payment platform — directly to your account.</p>
+                    <h3 id="cms-step4-title">Get Paid</h3>
+                    <p id="cms-step4-desc">Receive secure payments via Paystack — Ghana's leading payment platform — directly to your account.</p>
                 </div>
             </div>
 
@@ -235,6 +235,21 @@
             a.innerHTML = `<i class="fas ${c.icon}"></i><span>${c.name}</span>`;
             grid.appendChild(a);
         });
+
+        // ---- Load editable content set by admin ----
+        (async function loadHowItWorksCMS() {
+            try {
+                await initAppData();
+                const docs = await fetchCollection('siteContent');
+                const cms  = docs.find(d => d._docId === 'how-it-works-page') || {};
+                if (cms.heroTitle) document.getElementById('cms-hiw-title').textContent = cms.heroTitle;
+                if (cms.heroSub)   document.getElementById('cms-hiw-sub').textContent   = cms.heroSub;
+                for (let i = 1; i <= 4; i++) {
+                    if (cms['step'+i+'Title']) document.getElementById(`cms-step${i}-title`).textContent = cms['step'+i+'Title'];
+                    if (cms['step'+i+'Desc'])  document.getElementById(`cms-step${i}-desc`).textContent  = cms['step'+i+'Desc'];
+                }
+            } catch(e) { /* fall back to default static content silently */ }
+        })();
     </script>
 </body>
 </html>
