@@ -935,23 +935,59 @@
 
         // CREDENTIALS
         async function uploadCredential() {
-            const name=document.getElementById('cred-name').value.trim(), type=document.getElementById('cred-type').value, file=document.getElementById('cred-file').files[0];
-            if (!name){showNotification('Enter credential name','error');return;}
-            if (!file){showNotification('Select a file','error');return;}
-            if (!artisan.credentials) artisan.credentials=[];
-            artisan.credentials.push({name,type,file:file.name,date:new Date().toISOString().split('T')[0]});
-            await saveArtisanProfile(artisan);
-            document.getElementById('cred-name').value=''; document.getElementById('cred-file').value=''; document.getElementById('cred-file-name').textContent='';
-            showNotification(`"${name}" uploaded!`,'success'); renderCredentials();
+            const name = document.getElementById('cred-name').value.trim();
+            const type = document.getElementById('cred-type').value;
+            const file = document.getElementById('cred-file').files[0];
+            if (!name) { showNotification('Enter credential name', 'error'); return; }
+            if (!file) { showNotification('Select a file', 'error'); return; }
+            if (file.size > 5 * 1024 * 1024) { showNotification('File too large. Maximum size is 5MB.', 'error'); return; }
+
+            showNotification('Uploading credential...', 'info');
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                if (!artisan.credentials) artisan.credentials = [];
+                artisan.credentials.push({
+                    name, type,
+                    file: file.name,
+                    fileData: e.target.result,   // base64 — actual file content
+                    fileType: file.type,
+                    date: new Date().toISOString().split('T')[0]
+                });
+                await saveArtisanProfile(artisan);
+                document.getElementById('cred-name').value = '';
+                document.getElementById('cred-file').value = '';
+                document.getElementById('cred-file-name').textContent = '';
+                showNotification(`"${name}" uploaded!`, 'success');
+                renderCredentials();
+            };
+            reader.onerror = () => showNotification('Failed to read file. Please try again.', 'error');
+            reader.readAsDataURL(file);
         }
 
         function renderCredentials() {
             if (!artisan) return;
-            const creds=artisan.credentials||[];
-            const iconMap={certificate:'fa-award',licence:'fa-id-card',diploma:'fa-graduation-cap',training:'fa-chalkboard-teacher',other:'fa-file'};
-            document.getElementById('creds-list').innerHTML = creds.length===0
+            const creds = artisan.credentials || [];
+            const iconMap = { certificate:'fa-award', licence:'fa-id-card', diploma:'fa-graduation-cap', training:'fa-chalkboard-teacher', other:'fa-file' };
+            document.getElementById('creds-list').innerHTML = creds.length === 0
                 ? `<div class="empty-state"><i class="fas fa-folder-open"></i><p>No credentials yet.</p></div>`
-                : creds.map((c,i)=>`<div class="cred-card"><div class="cred-info"><div class="cred-icon"><i class="fas ${iconMap[c.type]||'fa-file'}"></i></div><div><div class="cred-name">${c.name}</div><div class="cred-type">${c.type} · ${c.file} · ${c.date}</div></div></div><button class="act-btn red" onclick="deleteCredential(${i})"><i class="fas fa-trash"></i></button></div>`).join('');
+                : creds.map((c, i) => `
+                    <div class="cred-card">
+                        <div class="cred-info">
+                            <div class="cred-icon"><i class="fas ${iconMap[c.type]||'fa-file'}"></i></div>
+                            <div>
+                                <div class="cred-name">${c.name}</div>
+                                <div class="cred-type">${c.type} · ${c.file} · ${c.date}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            ${c.fileData ? `
+                            <a href="${c.fileData}" download="${c.file}" title="Download"
+                                style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;background:#f0f9f0;color:#006600;border-radius:8px;text-decoration:none;">
+                                <i class="fas fa-download"></i>
+                            </a>` : `<span title="Old upload — file not saved" style="color:#FF9900;font-size:0.75rem;"><i class="fas fa-exclamation-triangle"></i></span>`}
+                            <button class="act-btn red" onclick="deleteCredential(${i})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`).join('');
         }
 
         async function deleteWorkUpdate(i) {
