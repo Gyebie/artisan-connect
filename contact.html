@@ -193,8 +193,8 @@
 
         <!-- Hero -->
         <div class="contact-hero">
-            <h1><i class="fas fa-headset"></i> Contact Us</h1>
-            <p>Have a question or need help? We're always ready to assist you across Ghana.</p>
+            <h1><i class="fas fa-headset"></i> <span id="cms-hero-title">Contact Us</span></h1>
+            <p id="cms-hero-sub">Have a question or need help? We're always ready to assist you across Ghana.</p>
         </div>
 
         <!-- Main grid -->
@@ -208,8 +208,8 @@
                     <div class="info-icon green"><i class="fas fa-phone-alt"></i></div>
                     <div>
                         <div class="info-label">Phone</div>
-                        <a href="tel:+233240000000" class="info-value">+233 24 000 0000</a>
-                        <a href="tel:+233550000000" class="info-value">+233 55 000 0000</a>
+                        <a href="tel:+233240000000" class="info-value" id="cms-phone1">+233 24 000 0000</a>
+                        <a href="tel:+233550000000" class="info-value" id="cms-phone2">+233 55 000 0000</a>
                     </div>
                 </div>
 
@@ -218,8 +218,8 @@
                     <div class="info-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
                     <div>
                         <div class="info-label">WhatsApp</div>
-                        <a href="https://wa.me/233240000000" target="_blank" class="info-value">+233 24 000 0000</a>
-                        <a href="https://wa.me/233550000000" target="_blank" class="info-value">+233 55 000 0000</a>
+                        <a href="https://wa.me/233240000000" target="_blank" class="info-value" id="cms-whatsapp1">+233 24 000 0000</a>
+                        <a href="https://wa.me/233550000000" target="_blank" class="info-value" id="cms-whatsapp2">+233 55 000 0000</a>
                     </div>
                 </div>
 
@@ -238,7 +238,7 @@
                     <div class="info-icon red"><i class="fas fa-map-marker-alt"></i></div>
                     <div>
                         <div class="info-label">Office Address</div>
-                        <span class="info-value plain">
+                        <span class="info-value plain" id="cms-address">
                             SkillBridge Africa HQ<br>
                             Independence Avenue, Accra<br>
                             Greater Accra Region, Ghana
@@ -251,7 +251,7 @@
                     <div class="info-icon blue"><i class="fas fa-clock"></i></div>
                     <div style="width:100%;">
                         <div class="info-label">Working Hours</div>
-                        <table class="hours-table">
+                        <table class="hours-table" id="cms-hours-table">
                             <tr><td>Monday – Friday</td><td>8:00 AM – 6:00 PM</td></tr>
                             <tr><td>Saturday</td><td>9:00 AM – 3:00 PM</td></tr>
                             <tr class="closed"><td>Sunday</td><td>Closed</td></tr>
@@ -390,6 +390,22 @@
             document.getElementById('form-success').style.display = 'none';
             document.getElementById('form-wrap').style.display    = 'block';
         }
+
+        // ---- Load editable content set by admin ----
+        (async function loadContactCMS() {
+            try {
+                await initAppData();
+                const docs = await fetchCollection('siteContent');
+                const cms  = docs.find(d => d._docId === 'contact-page') || {};
+                if (cms.heroTitle)  document.getElementById('cms-hero-title').textContent = cms.heroTitle;
+                if (cms.heroSub)    document.getElementById('cms-hero-sub').textContent    = cms.heroSub;
+                if (cms.phone1)     { document.getElementById('cms-phone1').textContent = cms.phone1; document.getElementById('cms-phone1').href = 'tel:' + cms.phone1.replace(/\s/g,''); }
+                if (cms.phone2)     { document.getElementById('cms-phone2').textContent = cms.phone2; document.getElementById('cms-phone2').href = 'tel:' + cms.phone2.replace(/\s/g,''); }
+                if (cms.whatsapp1)  { document.getElementById('cms-whatsapp1').textContent = cms.whatsapp1; document.getElementById('cms-whatsapp1').href = 'https://wa.me/' + cms.whatsapp1.replace(/\D/g,''); }
+                if (cms.whatsapp2)  { document.getElementById('cms-whatsapp2').textContent = cms.whatsapp2; document.getElementById('cms-whatsapp2').href = 'https://wa.me/' + cms.whatsapp2.replace(/\D/g,''); }
+                if (cms.address)    document.getElementById('cms-address').innerHTML = cms.address.replace(/\n/g, '<br>');
+            } catch(e) { /* fall back to default static content silently */ }
+        })();
     </script>
 </body>
 </html>
