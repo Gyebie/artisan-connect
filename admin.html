@@ -181,6 +181,7 @@
             <button class="sbtn" onclick="showSection('work-updates')"><i class="fas fa-camera"></i> Work Updates <span id="wu-badge" style="background:#1e90ff;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
             <button class="sbtn" onclick="showSection('payments')"><i class="fas fa-credit-card"></i> Payments</button>
             <button class="sbtn" onclick="showSection('build-house')"><i class="fas fa-home"></i> Build House <span id="bh-badge" style="background:#9b59b6;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
+            <button class="sbtn" onclick="showSection('edit-content')"><i class="fas fa-edit"></i> Edit Content</button>
             <button class="sbtn" onclick="showSection('reports')"><i class="fas fa-file-alt"></i> Reports</button>
             <button class="sbtn" onclick="showSection('register-artisan')"><i class="fas fa-user-plus"></i> Register Artisan</button>
             <button class="sbtn logout" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -988,6 +989,80 @@
                         </div>`).join('')}`;
                     break;
                 } // end build-house block
+
+                case 'edit-content': {
+                    const contentDocs = await fetchCollection('siteContent');
+                    const contactCMS  = contentDocs.find(d => d._docId === 'contact-page') || {};
+                    const hiwCMS      = contentDocs.find(d => d._docId === 'how-it-works-page') || {};
+
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:0.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-edit"></i> Edit Website Content</h2>
+                        <p style="color:#888;font-size:0.88rem;margin-bottom:1.5rem;">Update the public Contact and How It Works pages. Changes go live immediately.</p>
+
+                        <!-- Tabs -->
+                        <div style="display:flex;gap:8px;background:#f0f0f0;padding:6px;border-radius:12px;margin-bottom:1.5rem;max-width:420px;">
+                            <button id="ec-tab-contact" onclick="showEcTab('contact')" style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);">Contact Page</button>
+                            <button id="ec-tab-hiw" onclick="showEcTab('hiw')" style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;">How It Works</button>
+                        </div>
+
+                        <!-- Contact Page Editor -->
+                        <div id="ec-panel-contact">
+                            <div class="edit-card">
+                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">Hero Section</h3>
+                                <div style="display:grid;gap:1rem;margin-bottom:1.5rem;">
+                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hero-title" value="${contactCMS.heroTitle || 'Contact Us'}"></div>
+                                    <div><label class="elabel">Hero Subtitle</label><textarea id="ec-hero-sub" rows="2">${contactCMS.heroSub || "Have a question or need help? We're always ready to assist you across Ghana."}</textarea></div>
+                                </div>
+                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">Contact Details</h3>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                                    <div><label class="elabel">Phone 1</label><input type="text" id="ec-phone1" value="${contactCMS.phone1 || '+233 24 000 0000'}"></div>
+                                    <div><label class="elabel">Phone 2</label><input type="text" id="ec-phone2" value="${contactCMS.phone2 || '+233 55 000 0000'}"></div>
+                                    <div><label class="elabel">WhatsApp 1</label><input type="text" id="ec-whatsapp1" value="${contactCMS.whatsapp1 || '+233 24 000 0000'}"></div>
+                                    <div><label class="elabel">WhatsApp 2</label><input type="text" id="ec-whatsapp2" value="${contactCMS.whatsapp2 || '+233 55 000 0000'}"></div>
+                                </div>
+                                <div style="margin-bottom:1.5rem;">
+                                    <label class="elabel">Office Address (use new line for each line)</label>
+                                    <textarea id="ec-address" rows="3">${contactCMS.address || 'SkillBridge Africa HQ\nIndependence Avenue, Accra\nGreater Accra Region, Ghana'}</textarea>
+                                </div>
+                                <button onclick="saveContactCMS()" style="padding:11px 26px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
+                                    <i class="fas fa-save"></i> Save Contact Page Changes
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- How It Works Editor -->
+                        <div id="ec-panel-hiw" style="display:none;">
+                            <div class="edit-card">
+                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">Hero Section</h3>
+                                <div style="display:grid;gap:1rem;margin-bottom:1.5rem;">
+                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hiw-title" value="${hiwCMS.heroTitle || 'How SkillBridge Africa Works'}"></div>
+                                    <div><label class="elabel">Hero Subtitle</label><textarea id="ec-hiw-sub" rows="2">${hiwCMS.heroSub || "A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions."}</textarea></div>
+                                </div>
+                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">4-Step Process</h3>
+                                ${[1,2,3,4].map(i => {
+                                    const defaults = {
+                                        1: ['Register & Verify', 'Create your account and upload a valid Ghana ID card. Our admin team verifies your identity within 24 hours.'],
+                                        2: ['Build Your Profile', 'Add your skills, experience, service category, and set your rate. Upload credentials and certificates.'],
+                                        3: ['Get Hired', 'Clients search by region and skill. You receive job requests directly and can accept or decline.'],
+                                        4: ['Get Paid', "Receive secure payments via Paystack — Ghana's leading payment platform — directly to your account."]
+                                    };
+                                    return `
+                                <div style="background:#f8f9fa;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+                                    <div style="font-weight:700;color:#888;font-size:0.8rem;margin-bottom:8px;">STEP ${i}</div>
+                                    <div style="display:grid;gap:0.8rem;">
+                                        <div><label class="elabel">Title</label><input type="text" id="ec-step${i}-title" value="${hiwCMS['step'+i+'Title'] || defaults[i][0]}"></div>
+                                        <div><label class="elabel">Description</label><textarea id="ec-step${i}-desc" rows="2">${hiwCMS['step'+i+'Desc'] || defaults[i][1]}</textarea></div>
+                                    </div>
+                                </div>`;
+                                }).join('')}
+                                <button onclick="saveHowItWorksCMS()" style="padding:11px 26px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
+                                    <i class="fas fa-save"></i> Save How It Works Changes
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                } // end edit-content block
 
                 case 'register-artisan': {
                     el.innerHTML = `
@@ -1900,6 +1975,48 @@ Please contact the customer to schedule the work.`;
             showSection('verifications');
         }
 
+        // ---- Edit Content (Contact / How It Works) ----
+        function showEcTab(tab) {
+            document.getElementById('ec-panel-contact').style.display = tab === 'contact' ? 'block' : 'none';
+            document.getElementById('ec-panel-hiw').style.display     = tab === 'hiw'     ? 'block' : 'none';
+            document.getElementById('ec-tab-contact').style.cssText = tab === 'contact'
+                ? 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);'
+                : 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;';
+            document.getElementById('ec-tab-hiw').style.cssText = tab === 'hiw'
+                ? 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);'
+                : 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;';
+        }
+
+        async function saveContactCMS() {
+            const g = id => document.getElementById(id).value;
+            await saveDoc('siteContent', 'contact-page', {
+                heroTitle: g('ec-hero-title'),
+                heroSub:   g('ec-hero-sub'),
+                phone1:    g('ec-phone1'),
+                phone2:    g('ec-phone2'),
+                whatsapp1: g('ec-whatsapp1'),
+                whatsapp2: g('ec-whatsapp2'),
+                address:   g('ec-address'),
+                updatedAt: new Date().toISOString()
+            });
+            showNotification('✅ Contact page updated! Changes are live now.', 'success');
+        }
+
+        async function saveHowItWorksCMS() {
+            const g = id => document.getElementById(id).value;
+            const data = {
+                heroTitle: g('ec-hiw-title'),
+                heroSub:   g('ec-hiw-sub'),
+                updatedAt: new Date().toISOString()
+            };
+            for (let i = 1; i <= 4; i++) {
+                data['step'+i+'Title'] = g(`ec-step${i}-title`);
+                data['step'+i+'Desc']  = g(`ec-step${i}-desc`);
+            }
+            await saveDoc('siteContent', 'how-it-works-page', data);
+            showNotification('✅ How It Works page updated! Changes are live now.', 'success');
+        }
+
         // ---- Build House Project Updates ----
         async function sendBHUpdate(docId, clientEmail, clientName) {
             const stage = document.getElementById(`bh-stage-${docId}`)?.value;
@@ -1989,6 +2106,24 @@ Please contact the customer to schedule the work.`;
                     <h4 style="color:#006600;margin:0 0 8px;font-size:0.88rem;">Portfolio (${a.portfolio.length} items)</h4>
                     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;">
                         ${a.portfolio.slice(0,6).map(p => p.photos?.[0] ? `<img src="${p.photos[0]}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;" title="${p.title}">` : '').join('')}
+                    </div>
+                </div>` : ''}
+
+                ${(a.credentials||[]).length ? `
+                <div style="margin-bottom:1.2rem;">
+                    <h4 style="color:#006600;margin:0 0 8px;font-size:0.88rem;"><i class="fas fa-certificate"></i> Credentials (${a.credentials.length})</h4>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        ${a.credentials.map(c => `
+                        <div style="display:flex;justify-content:space-between;align-items:center;background:#f8f9fa;border-radius:8px;padding:8px 12px;">
+                            <div>
+                                <div style="font-weight:600;font-size:0.85rem;color:#333;">${c.name}</div>
+                                <div style="font-size:0.75rem;color:#888;">${c.type} · ${c.file} · ${c.date}</div>
+                            </div>
+                            ${c.fileData ? `
+                            <a href="${c.fileData}" download="${c.file}" style="padding:5px 12px;background:#006600;color:white;border-radius:6px;font-size:0.75rem;font-weight:600;text-decoration:none;">
+                                <i class="fas fa-download"></i> Download
+                            </a>` : `<span style="color:#FF9900;font-size:0.72rem;"><i class="fas fa-exclamation-triangle"></i> No file</span>`}
+                        </div>`).join('')}
                     </div>
                 </div>` : ''}
 
