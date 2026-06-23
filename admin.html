@@ -994,6 +994,8 @@
                     const contentDocs = await fetchCollection('siteContent');
                     const contactCMS  = contentDocs.find(d => d._docId === 'contact-page') || {};
                     const hiwCMS      = contentDocs.find(d => d._docId === 'how-it-works-page') || {};
+                    const c = (k, def) => contactCMS[k] !== undefined ? contactCMS[k] : def;
+                    const h = (k, def) => hiwCMS[k]     !== undefined ? hiwCMS[k]     : def;
 
                     el.innerHTML = `
                         <h2 style="color:#006600;margin-bottom:0.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-edit"></i> Edit Website Content</h2>
@@ -1001,64 +1003,116 @@
 
                         <!-- Tabs -->
                         <div style="display:flex;gap:8px;background:#f0f0f0;padding:6px;border-radius:12px;margin-bottom:1.5rem;max-width:420px;">
-                            <button id="ec-tab-contact" onclick="showEcTab('contact')" style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);">Contact Page</button>
-                            <button id="ec-tab-hiw" onclick="showEcTab('hiw')" style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;">How It Works</button>
+                            <button id="ec-tab-contact" onclick="showEcTab('contact')" style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);">📞 Contact Page</button>
+                            <button id="ec-tab-hiw"     onclick="showEcTab('hiw')"     style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;">ℹ️ How It Works</button>
                         </div>
 
-                        <!-- Contact Page Editor -->
+                        <!-- ====== CONTACT PAGE EDITOR ====== -->
                         <div id="ec-panel-contact">
-                            <div class="edit-card">
-                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">Hero Section</h3>
-                                <div style="display:grid;gap:1rem;margin-bottom:1.5rem;">
-                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hero-title" value="${contactCMS.heroTitle || 'Contact Us'}"></div>
-                                    <div><label class="elabel">Hero Subtitle</label><textarea id="ec-hero-sub" rows="2">${contactCMS.heroSub || "Have a question or need help? We're always ready to assist you across Ghana."}</textarea></div>
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🎯 Hero Section</h3>
+                                <div style="display:grid;gap:1rem;">
+                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hero-title" value="${c('heroTitle','Contact Us')}"></div>
+                                    <div><label class="elabel">Hero Subtitle</label><textarea id="ec-hero-sub" rows="2">${c('heroSub',"Have a question or need help? We're always ready to assist you across Ghana.")}</textarea></div>
                                 </div>
-                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">Contact Details</h3>
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
-                                    <div><label class="elabel">Phone 1</label><input type="text" id="ec-phone1" value="${contactCMS.phone1 || '+233 24 000 0000'}"></div>
-                                    <div><label class="elabel">Phone 2</label><input type="text" id="ec-phone2" value="${contactCMS.phone2 || '+233 55 000 0000'}"></div>
-                                    <div><label class="elabel">WhatsApp 1</label><input type="text" id="ec-whatsapp1" value="${contactCMS.whatsapp1 || '+233 24 000 0000'}"></div>
-                                    <div><label class="elabel">WhatsApp 2</label><input type="text" id="ec-whatsapp2" value="${contactCMS.whatsapp2 || '+233 55 000 0000'}"></div>
-                                </div>
-                                <div style="margin-bottom:1.5rem;">
-                                    <label class="elabel">Office Address (use new line for each line)</label>
-                                    <textarea id="ec-address" rows="3">${contactCMS.address || 'SkillBridge Africa HQ\nIndependence Avenue, Accra\nGreater Accra Region, Ghana'}</textarea>
-                                </div>
-                                <button onclick="saveContactCMS()" style="padding:11px 26px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
-                                    <i class="fas fa-save"></i> Save Contact Page Changes
-                                </button>
                             </div>
+
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">📞 Phone Numbers</h3>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                    <div><label class="elabel">Phone 1</label><input type="text" id="ec-phone1" value="${c('phone1','+233 24 000 0000')}" placeholder="+233 24 000 0000"></div>
+                                    <div><label class="elabel">Phone 2</label><input type="text" id="ec-phone2" value="${c('phone2','+233 55 000 0000')}" placeholder="+233 55 000 0000"></div>
+                                </div>
+                            </div>
+
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">💬 WhatsApp Numbers</h3>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                    <div><label class="elabel">WhatsApp 1</label><input type="text" id="ec-whatsapp1" value="${c('whatsapp1','+233 24 000 0000')}" placeholder="+233 24 000 0000"></div>
+                                    <div><label class="elabel">WhatsApp 2</label><input type="text" id="ec-whatsapp2" value="${c('whatsapp2','+233 55 000 0000')}" placeholder="+233 55 000 0000"></div>
+                                </div>
+                            </div>
+
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">📧 Email Addresses</h3>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                    <div><label class="elabel">Email 1</label><input type="email" id="ec-email1" value="${c('email1','info@skillbridge.africa')}" placeholder="info@skillbridge.africa"></div>
+                                    <div><label class="elabel">Email 2</label><input type="email" id="ec-email2" value="${c('email2','support@skillbridge.africa')}" placeholder="support@skillbridge.africa"></div>
+                                </div>
+                            </div>
+
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">📍 Office Address</h3>
+                                <div><label class="elabel">Address (use new line for each line)</label>
+                                <textarea id="ec-address" rows="3">${c('address','SkillBridge Africa HQ\nIndependence Avenue, Accra\nGreater Accra Region, Ghana')}</textarea></div>
+                            </div>
+
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🕐 Working Hours</h3>
+                                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                                    <div><label class="elabel">Monday – Friday</label><input type="text" id="ec-hours-weekday"  value="${c('hoursWeekday','8:00 AM – 6:00 PM')}"></div>
+                                    <div><label class="elabel">Saturday</label><input type="text" id="ec-hours-saturday" value="${c('hoursSaturday','9:00 AM – 3:00 PM')}"></div>
+                                    <div><label class="elabel">Sunday</label><input type="text" id="ec-hours-sunday" value="${c('hoursSunday','Closed')}"></div>
+                                </div>
+                            </div>
+
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🌐 Social Media Links</h3>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                    <div><label class="elabel">Facebook URL</label><input type="url" id="ec-social-facebook"  value="${c('socialFacebook','https://facebook.com/skillbridgeafrica')}" placeholder="https://facebook.com/..."></div>
+                                    <div><label class="elabel">Twitter / X URL</label><input type="url" id="ec-social-twitter" value="${c('socialTwitter','https://twitter.com/skillbridgeafrica')}" placeholder="https://twitter.com/..."></div>
+                                    <div><label class="elabel">Instagram URL</label><input type="url" id="ec-social-instagram" value="${c('socialInstagram','https://instagram.com/skillbridgeafrica')}" placeholder="https://instagram.com/..."></div>
+                                    <div><label class="elabel">WhatsApp Number (digits only)</label><input type="text" id="ec-social-whatsapp" value="${c('socialWhatsApp','233240000000')}" placeholder="233241234567"></div>
+                                    <div><label class="elabel">TikTok URL</label><input type="url" id="ec-social-tiktok" value="${c('socialTikTok','https://tiktok.com/@skillbridgeafrica')}" placeholder="https://tiktok.com/..."></div>
+                                </div>
+                            </div>
+
+                            <div class="edit-card" style="margin-bottom:1.5rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🗺️ Map / Find Our Office</h3>
+                                <div style="display:grid;gap:1rem;">
+                                    <div><label class="elabel">Map Label (address shown under pin)</label>
+                                        <textarea id="ec-map-label" rows="2">${c('mapLabel','SkillBridge Africa HQ — Independence Avenue, Accra\nGreater Accra Region, Ghana')}</textarea></div>
+                                    <div><label class="elabel">Google Maps Link</label>
+                                        <input type="url" id="ec-map-link" value="${c('mapLink','https://maps.google.com/?q=Independence+Avenue+Accra+Ghana')}" placeholder="https://maps.google.com/?q=..."></div>
+                                </div>
+                            </div>
+
+                            <button onclick="saveContactCMS()" style="padding:12px 28px;background:linear-gradient(135deg,#006600,#009900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
+                                <i class="fas fa-save"></i> Save All Contact Page Changes
+                            </button>
                         </div>
 
-                        <!-- How It Works Editor -->
+                        <!-- ====== HOW IT WORKS EDITOR ====== -->
                         <div id="ec-panel-hiw" style="display:none;">
-                            <div class="edit-card">
-                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">Hero Section</h3>
-                                <div style="display:grid;gap:1rem;margin-bottom:1.5rem;">
-                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hiw-title" value="${hiwCMS.heroTitle || 'How SkillBridge Africa Works'}"></div>
-                                    <div><label class="elabel">Hero Subtitle</label><textarea id="ec-hiw-sub" rows="2">${hiwCMS.heroSub || "A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions."}</textarea></div>
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🎯 Hero Section</h3>
+                                <div style="display:grid;gap:1rem;">
+                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hiw-title" value="${h('heroTitle','How SkillBridge Africa Works')}"></div>
+                                    <div><label class="elabel">Hero Subtitle</label><textarea id="ec-hiw-sub" rows="2">${h('heroSub',"A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions.")}</textarea></div>
                                 </div>
-                                <h3 style="color:#006600;margin-bottom:1rem;font-family:'Poppins',sans-serif;font-size:1rem;">4-Step Process</h3>
+                            </div>
+                            <div class="edit-card" style="margin-bottom:1.5rem;">
+                                <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🔢 4-Step Process</h3>
                                 ${[1,2,3,4].map(i => {
-                                    const defaults = {
-                                        1: ['Register & Verify', 'Create your account and upload a valid Ghana ID card. Our admin team verifies your identity within 24 hours.'],
-                                        2: ['Build Your Profile', 'Add your skills, experience, service category, and set your rate. Upload credentials and certificates.'],
-                                        3: ['Get Hired', 'Clients search by region and skill. You receive job requests directly and can accept or decline.'],
-                                        4: ['Get Paid', "Receive secure payments via Paystack — Ghana's leading payment platform — directly to your account."]
+                                    const defs = {
+                                        1: ['Register & Verify','Create your account and upload a valid Ghana ID card. Our admin team verifies your identity within 24 hours.'],
+                                        2: ['Build Your Profile','Add your skills, experience, service category, and set your rate. Upload credentials and certificates.'],
+                                        3: ['Get Hired','Clients search by region and skill. You receive job requests directly and can accept or decline.'],
+                                        4: ['Get Paid',"Receive secure payments via Paystack — Ghana's leading payment platform — directly to your account."]
                                     };
                                     return `
-                                <div style="background:#f8f9fa;border-radius:10px;padding:1rem;margin-bottom:1rem;">
-                                    <div style="font-weight:700;color:#888;font-size:0.8rem;margin-bottom:8px;">STEP ${i}</div>
-                                    <div style="display:grid;gap:0.8rem;">
-                                        <div><label class="elabel">Title</label><input type="text" id="ec-step${i}-title" value="${hiwCMS['step'+i+'Title'] || defaults[i][0]}"></div>
-                                        <div><label class="elabel">Description</label><textarea id="ec-step${i}-desc" rows="2">${hiwCMS['step'+i+'Desc'] || defaults[i][1]}</textarea></div>
-                                    </div>
-                                </div>`;
+                                    <div style="background:#f8f9fa;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+                                        <div style="font-weight:700;color:#006600;font-size:0.8rem;margin-bottom:8px;">STEP ${i}</div>
+                                        <div style="display:grid;gap:0.8rem;">
+                                            <div><label class="elabel">Title</label><input type="text" id="ec-step${i}-title" value="${h('step'+i+'Title', defs[i][0])}"></div>
+                                            <div><label class="elabel">Description</label><textarea id="ec-step${i}-desc" rows="2">${h('step'+i+'Desc', defs[i][1])}</textarea></div>
+                                        </div>
+                                    </div>`;
                                 }).join('')}
-                                <button onclick="saveHowItWorksCMS()" style="padding:11px 26px;background:#006600;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
-                                    <i class="fas fa-save"></i> Save How It Works Changes
-                                </button>
                             </div>
+                            <button onclick="saveHowItWorksCMS()" style="padding:12px 28px;background:linear-gradient(135deg,#006600,#009900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
+                                <i class="fas fa-save"></i> Save How It Works Changes
+                            </button>
                         </div>
                     `;
                     break;
@@ -1988,18 +2042,30 @@ Please contact the customer to schedule the work.`;
         }
 
         async function saveContactCMS() {
-            const g = id => document.getElementById(id).value;
+            const g = id => (document.getElementById(id)?.value || '');
             await saveDoc('siteContent', 'contact-page', {
-                heroTitle: g('ec-hero-title'),
-                heroSub:   g('ec-hero-sub'),
-                phone1:    g('ec-phone1'),
-                phone2:    g('ec-phone2'),
-                whatsapp1: g('ec-whatsapp1'),
-                whatsapp2: g('ec-whatsapp2'),
-                address:   g('ec-address'),
-                updatedAt: new Date().toISOString()
+                heroTitle:       g('ec-hero-title'),
+                heroSub:         g('ec-hero-sub'),
+                phone1:          g('ec-phone1'),
+                phone2:          g('ec-phone2'),
+                whatsapp1:       g('ec-whatsapp1'),
+                whatsapp2:       g('ec-whatsapp2'),
+                email1:          g('ec-email1'),
+                email2:          g('ec-email2'),
+                address:         g('ec-address'),
+                hoursWeekday:    g('ec-hours-weekday'),
+                hoursSaturday:   g('ec-hours-saturday'),
+                hoursSunday:     g('ec-hours-sunday'),
+                socialFacebook:  g('ec-social-facebook'),
+                socialTwitter:   g('ec-social-twitter'),
+                socialInstagram: g('ec-social-instagram'),
+                socialWhatsApp:  g('ec-social-whatsapp'),
+                socialTikTok:    g('ec-social-tiktok'),
+                mapLabel:        g('ec-map-label'),
+                mapLink:         g('ec-map-link'),
+                updatedAt:       new Date().toISOString()
             });
-            showNotification('✅ Contact page updated! Changes are live now.', 'success');
+            showNotification('✅ Contact page updated! All changes are live now.', 'success');
         }
 
         async function saveHowItWorksCMS() {
