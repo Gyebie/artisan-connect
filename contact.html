@@ -233,6 +233,16 @@
                     </div>
                 </div>
 
+                <!-- Email -->
+                <div class="info-card">
+                    <div class="info-icon gold"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <div class="info-label">Email</div>
+                        <a id="cms-email1" href="mailto:info@skillbridge.africa" class="info-value">info@skillbridge.africa</a>
+                        <a id="cms-email2" href="mailto:support@skillbridge.africa" class="info-value">support@skillbridge.africa</a>
+                    </div>
+                </div>
+
                 <!-- Address -->
                 <div class="info-card">
                     <div class="info-icon red"><i class="fas fa-map-marker-alt"></i></div>
@@ -252,9 +262,9 @@
                     <div style="width:100%;">
                         <div class="info-label">Working Hours</div>
                         <table class="hours-table" id="cms-hours-table">
-                            <tr><td>Monday – Friday</td><td>8:00 AM – 6:00 PM</td></tr>
-                            <tr><td>Saturday</td><td>9:00 AM – 3:00 PM</td></tr>
-                            <tr class="closed"><td>Sunday</td><td>Closed</td></tr>
+                            <tr><td>Monday – Friday</td><td id="cms-hours-weekday">8:00 AM – 6:00 PM</td></tr>
+                            <tr><td>Saturday</td><td id="cms-hours-saturday">9:00 AM – 3:00 PM</td></tr>
+                            <tr class="closed"><td>Sunday</td><td id="cms-hours-sunday">Closed</td></tr>
                         </table>
                     </div>
                 </div>
@@ -263,11 +273,11 @@
                 <div class="socials-card">
                     <h4><i class="fas fa-share-alt"></i> Follow Us</h4>
                     <div class="socials-row">
-                        <a href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
-                        <a href="#" class="social-btn twitter"><i class="fab fa-twitter"></i> Twitter</a>
-                        <a href="#" class="social-btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
-                        <a href="https://wa.me/233240000000" target="_blank" class="social-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                        <a href="#" class="social-btn tiktok"><i class="fab fa-tiktok"></i> TikTok</a>
+                        <a id="cms-social-facebook" href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
+                        <a id="cms-social-twitter" href="#" class="social-btn twitter"><i class="fab fa-twitter"></i> Twitter</a>
+                        <a id="cms-social-instagram" href="#" class="social-btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
+                        <a id="cms-social-whatsapp" href="https://wa.me/233240000000" target="_blank" class="social-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                        <a id="cms-social-tiktok" href="#" class="social-btn tiktok"><i class="fab fa-tiktok"></i> TikTok</a>
                     </div>
                 </div>
 
@@ -340,8 +350,8 @@
             <h3><i class="fas fa-map"></i> Find Our Office</h3>
             <div class="map-placeholder">
                 <i class="fas fa-map-marker-alt"></i>
-                <p>SkillBridge Africa HQ &mdash; Independence Avenue, Accra<br>Greater Accra Region, Ghana</p>
-                <a href="https://maps.google.com/?q=Independence+Avenue+Accra+Ghana" target="_blank" class="map-directions-btn">
+                <p id="cms-map-label">SkillBridge Africa HQ &mdash; Independence Avenue, Accra<br>Greater Accra Region, Ghana</p>
+                <a id="cms-map-link" href="https://maps.google.com/?q=Independence+Avenue+Accra+Ghana" target="_blank" class="map-directions-btn">
                     <i class="fas fa-directions"></i> Get Directions
                 </a>
             </div>
@@ -397,13 +407,41 @@
                 await initAppData();
                 const docs = await fetchCollection('siteContent');
                 const cms  = docs.find(d => d._docId === 'contact-page') || {};
-                if (cms.heroTitle)  document.getElementById('cms-hero-title').textContent = cms.heroTitle;
-                if (cms.heroSub)    document.getElementById('cms-hero-sub').textContent    = cms.heroSub;
-                if (cms.phone1)     { document.getElementById('cms-phone1').textContent = cms.phone1; document.getElementById('cms-phone1').href = 'tel:' + cms.phone1.replace(/\s/g,''); }
-                if (cms.phone2)     { document.getElementById('cms-phone2').textContent = cms.phone2; document.getElementById('cms-phone2').href = 'tel:' + cms.phone2.replace(/\s/g,''); }
-                if (cms.whatsapp1)  { document.getElementById('cms-whatsapp1').textContent = cms.whatsapp1; document.getElementById('cms-whatsapp1').href = 'https://wa.me/' + cms.whatsapp1.replace(/\D/g,''); }
-                if (cms.whatsapp2)  { document.getElementById('cms-whatsapp2').textContent = cms.whatsapp2; document.getElementById('cms-whatsapp2').href = 'https://wa.me/' + cms.whatsapp2.replace(/\D/g,''); }
-                if (cms.address)    document.getElementById('cms-address').innerHTML = cms.address.replace(/\n/g, '<br>');
+                const set  = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+                const href = (id, val) => { const el = document.getElementById(id); if (el && val) el.href = val; };
+
+                if (cms.heroTitle) set('cms-hero-title', cms.heroTitle);
+                if (cms.heroSub)   set('cms-hero-sub',   cms.heroSub);
+
+                // Phone & WhatsApp
+                if (cms.phone1)    { set('cms-phone1', cms.phone1); href('cms-phone1', 'tel:' + cms.phone1.replace(/\s/g,'')); }
+                if (cms.phone2)    { set('cms-phone2', cms.phone2); href('cms-phone2', 'tel:' + cms.phone2.replace(/\s/g,'')); }
+                if (cms.whatsapp1) { set('cms-whatsapp1', cms.whatsapp1); href('cms-whatsapp1', 'https://wa.me/' + cms.whatsapp1.replace(/\D/g,'')); }
+                if (cms.whatsapp2) { set('cms-whatsapp2', cms.whatsapp2); href('cms-whatsapp2', 'https://wa.me/' + cms.whatsapp2.replace(/\D/g,'')); }
+
+                // Email
+                if (cms.email1) { set('cms-email1', cms.email1); href('cms-email1', 'mailto:' + cms.email1); }
+                if (cms.email2) { set('cms-email2', cms.email2); href('cms-email2', 'mailto:' + cms.email2); }
+
+                // Address
+                if (cms.address) { const el = document.getElementById('cms-address'); if (el) el.innerHTML = cms.address.replace(/\n/g, '<br>'); }
+
+                // Working Hours
+                if (cms.hoursWeekday)  set('cms-hours-weekday',  cms.hoursWeekday);
+                if (cms.hoursSaturday) set('cms-hours-saturday', cms.hoursSaturday);
+                if (cms.hoursSunday)   set('cms-hours-sunday',   cms.hoursSunday);
+
+                // Social Media links
+                if (cms.socialFacebook)  href('cms-social-facebook',  cms.socialFacebook);
+                if (cms.socialTwitter)   href('cms-social-twitter',   cms.socialTwitter);
+                if (cms.socialInstagram) href('cms-social-instagram',  cms.socialInstagram);
+                if (cms.socialWhatsApp)  { href('cms-social-whatsapp', 'https://wa.me/' + cms.socialWhatsApp.replace(/\D/g,'')); }
+                if (cms.socialTikTok)    href('cms-social-tiktok',    cms.socialTikTok);
+
+                // Map
+                if (cms.mapLabel)   { const el = document.getElementById('cms-map-label'); if (el) el.innerHTML = cms.mapLabel.replace(/\n/g,'<br>'); }
+                if (cms.mapLink)    href('cms-map-link', cms.mapLink);
+
             } catch(e) { /* fall back to default static content silently */ }
         })();
     </script>
