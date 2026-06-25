@@ -109,8 +109,8 @@
     <!-- Hero Banner -->
     <div class="hero-banner">
         <div style="font-size:2.5rem;margin-bottom:0.8rem;">📢</div>
-        <h1>Advertise on SkillBridge Africa</h1>
-        <p>Reach thousands of artisans, homeowners, and contractors across all 16 regions of Ghana.<br>
+        <h1 id="adv-hero-title">Advertise on SkillBridge Africa</h1>
+        <p id="adv-hero-subtitle">Reach thousands of artisans, homeowners, and contractors across all 16 regions of Ghana.<br>
         Get your business in front of the right audience today.</p>
     </div>
 
@@ -118,9 +118,9 @@
     <div class="pricing-row">
         <div class="pricing-card">
             <h3>🥉 Basic</h3>
-            <div class="price">GHS 100</div>
-            <div class="duration">per month</div>
-            <ul>
+            <div class="price" id="adv-pkg-basic-price">GHS 100</div>
+            <div class="duration" id="adv-pkg-basic-duration">per month</div>
+            <ul id="adv-pkg-basic-features">
                 <li>Homepage ad card</li>
                 <li>Ticker display</li>
                 <li>Logo + description</li>
@@ -129,9 +129,9 @@
         <div class="pricing-card" style="border-color:#FF9900;background:#fffbf0;">
             <div style="font-size:0.7rem;font-weight:800;color:#FF9900;letter-spacing:1px;margin-bottom:4px;">POPULAR</div>
             <h3>🥇 Premium</h3>
-            <div class="price">GHS 250</div>
-            <div class="duration">per month</div>
-            <ul>
+            <div class="price" id="adv-pkg-premium-price">GHS 250</div>
+            <div class="duration" id="adv-pkg-premium-duration">per month</div>
+            <ul id="adv-pkg-premium-features">
                 <li>Featured card position</li>
                 <li>Ticker + bold highlight</li>
                 <li>Logo + image banner</li>
@@ -140,9 +140,9 @@
         </div>
         <div class="pricing-card">
             <h3>💎 Diamond</h3>
-            <div class="price">GHS 500</div>
-            <div class="duration">per month</div>
-            <ul>
+            <div class="price" id="adv-pkg-diamond-price">GHS 500</div>
+            <div class="duration" id="adv-pkg-diamond-duration">per month</div>
+            <ul id="adv-pkg-diamond-features">
                 <li>Top-of-page placement</li>
                 <li>Ticker priority slot</li>
                 <li>Full banner image</li>
@@ -257,6 +257,51 @@
 <script>
     document.getElementById('shared-css').innerHTML = sharedCSS;
     document.getElementById('navbar-mount').innerHTML = renderNavbar('home');
+
+    // ---- Load CMS content set by admin ----
+    (async function loadAdvertCMS() {
+        try {
+            await initAppData();
+            const docs = await fetchCollection('siteContent');
+            const cms  = docs.find(d => d._docId === 'advert-page') || {};
+
+            // Hero
+            if (cms.title)    document.getElementById('adv-hero-title').textContent    = cms.title;
+            if (cms.subtitle) document.getElementById('adv-hero-subtitle').textContent = cms.subtitle;
+
+            // Pricing packages
+            for (const pkg of ['basic','premium','diamond']) {
+                const data = cms['pkg_'+pkg];
+                if (!data) continue;
+                const priceEl = document.getElementById(`adv-pkg-${pkg}-price`);
+                const durEl   = document.getElementById(`adv-pkg-${pkg}-duration`);
+                const featEl  = document.getElementById(`adv-pkg-${pkg}-features`);
+                if (priceEl) priceEl.textContent = `GHS ${data.price}`;
+                if (durEl)   durEl.textContent   = data.duration;
+                if (featEl && data.features) {
+                    featEl.innerHTML = data.features.split('\n').filter(Boolean)
+                        .map(f => `<li>${f}</li>`).join('');
+                }
+                // Update the radio button value with new price
+                const radio = document.querySelector(`input[value^="${pkg.charAt(0).toUpperCase()+pkg.slice(1)}|"]`);
+                if (radio && data.price) radio.value = `${pkg.charAt(0).toUpperCase()+pkg.slice(1)}|${data.price}`;
+            }
+
+            // Categories dropdown
+            if (cms.categories) {
+                const sel = document.getElementById('ad-category');
+                const cats = cms.categories.split('\n').filter(Boolean);
+                sel.innerHTML = '<option value="">Select Category</option>' +
+                    cats.map(c => `<option>${c.trim()}</option>`).join('');
+            }
+
+            // Terms checkbox label
+            if (cms.terms) {
+                const termsLabel = document.querySelector('label[for="ad-terms"]');
+                if (termsLabel) termsLabel.textContent = cms.terms;
+            }
+        } catch(e) { /* fall back to defaults silently */ }
+    })();
 
     function previewAdImage(input) {
         const file = input.files[0];
