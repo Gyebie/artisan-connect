@@ -108,6 +108,62 @@
             background: #333; color: #ccc; text-align: center; padding: 2rem 5%; font-size: 0.9rem;
         }
         footer a { color: #FF9900; text-decoration: none; }
+        /* ---- Advertisement Ticker ---- */
+        .ad-ticker-bar {
+            background: linear-gradient(135deg, #006600, #004d00);
+            color: white; padding: 10px 0; overflow: hidden;
+            position: relative; border-top: 3px solid #FFD700;
+            border-bottom: 3px solid #FFD700;
+        }
+        .ad-ticker-bar::before {
+            content: '📢 SPONSORED';
+            position: absolute; left: 0; top: 0; bottom: 0;
+            background: #FFD700; color: #333; font-weight: 800;
+            font-size: 0.75rem; padding: 0 14px;
+            display: flex; align-items: center; z-index: 2;
+            letter-spacing: 1px;
+        }
+        .ad-ticker-inner {
+            display: flex; gap: 0; animation: ticker-scroll 30s linear infinite;
+            padding-left: 120px; white-space: nowrap;
+        }
+        .ad-ticker-inner:hover { animation-play-state: paused; }
+        @keyframes ticker-scroll {
+            0%   { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+        .ad-ticker-item {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 0 32px; font-size: 0.88rem; font-weight: 600;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .ad-ticker-item .ad-cat-badge {
+            background: rgba(255,215,0,0.25); color: #FFD700;
+            padding: 2px 8px; border-radius: 10px; font-size: 0.72rem;
+            font-weight: 700; letter-spacing: 0.5px;
+        }
+        /* ---- Ad Cards Grid ---- */
+        .ads-section { padding: 3rem 5%; background: #f9f9f9; }
+        .ads-section h2 { text-align:center; color:#006600; font-family:'Poppins',sans-serif; margin-bottom:0.5rem; }
+        .ads-section p.sub { text-align:center; color:#888; margin-bottom:1.5rem; font-size:0.9rem; }
+        .ads-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.2rem;
+        }
+        .ad-card {
+            background: white; border-radius: 14px; overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+            border: 1px solid #eee; transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .ad-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .ad-card-img { width:100%; height:150px; object-fit:cover; background:#f0f0f0; display:flex; align-items:center; justify-content:center; }
+        .ad-card-img i { font-size:3rem; color:#ddd; }
+        .ad-card-body { padding: 1rem; }
+        .ad-card-badge { display:inline-block; background:#e6fff0; color:#006600; padding:3px 10px; border-radius:10px; font-size:0.72rem; font-weight:700; margin-bottom:6px; }
+        .ad-card-title { font-weight:700; color:#333; font-family:'Poppins',sans-serif; font-size:0.95rem; }
+        .ad-card-desc  { font-size:0.82rem; color:#666; margin-top:4px; }
+        .ad-card-contact { font-size:0.78rem; color:#006600; margin-top:8px; font-weight:600; }
     </style>
 </head>
 <body>
@@ -128,6 +184,9 @@
                 </a>
                 <a href="login.html" class="ghana-btn red">
                     <i class="fas fa-sign-in-alt"></i> Get Started
+                </a>
+                <a href="login-advert.html" class="ghana-btn" style="background:linear-gradient(135deg,#FF9900,#cc7700);border:none;">
+                    <i class="fas fa-bullhorn"></i> Advertise With Us
                 </a>
             </div>
         </section>
@@ -189,6 +248,23 @@
             </a>
         </section>
 
+        <!-- Sponsored Advertisements Ticker -->
+        <div class="ad-ticker-bar" id="ad-ticker-bar" style="display:none;">
+            <div class="ad-ticker-inner" id="ad-ticker-inner"></div>
+        </div>
+
+        <!-- Sponsored Ads Grid -->
+        <section class="ads-section" id="ads-section" style="display:none;">
+            <h2><i class="fas fa-bullhorn" style="color:#FF9900;"></i> Sponsored Ads</h2>
+            <p class="sub">Products & services from verified suppliers for artisans and homeowners</p>
+            <div class="ads-grid" id="ads-grid"></div>
+            <div style="text-align:center;margin-top:1.5rem;">
+                <a href="login-advert.html" style="padding:11px 26px;background:linear-gradient(135deg,#FF9900,#cc7700);color:white;border-radius:10px;font-weight:700;text-decoration:none;font-family:'Poppins',sans-serif;">
+                    <i class="fas fa-plus-circle"></i> Advertise Your Business Here
+                </a>
+            </div>
+        </section>
+
         <footer>
             <p>&copy; 2026 SkillBridge Africa &mdash; Connecting Ghana's Skilled Workforce |
                <a href="find-artisans.html">Book Verified Artisans</a> &middot;
@@ -220,6 +296,63 @@
         if (catStatEl && typeof categories !== 'undefined') {
             catStatEl.textContent = categories.length;
         }
+
+        // ---- Load approved advertisements from Firebase ----
+        (async function loadAds() {
+            try {
+                await initAppData();
+                const allAds = await fetchCollection('advertisements');
+                const approved = allAds.filter(a => a.status === 'approved');
+                if (approved.length === 0) return;
+
+                // Show sections
+                document.getElementById('ads-section').style.display = 'block';
+                document.getElementById('ad-ticker-bar').style.display = 'block';
+
+                const CAT_COLORS = {
+                    'Building Materials': '#CE1126', 'Paint & Coatings': '#9b59b6',
+                    'Electrical Supplies': '#FFD700', 'Plumbing': '#1e90ff',
+                    'Tools & Equipment': '#FF9900', 'Hardware': '#cd7f32',
+                    'Tiles & Flooring': '#25D366', 'Cement & Blocks': '#808080',
+                    'Other': '#006600'
+                };
+
+                // Render ad cards
+                const grid = document.getElementById('ads-grid');
+                grid.innerHTML = approved.map(ad => `
+                    <div class="ad-card" onclick="${ad.website ? `window.open('${ad.website}','_blank')` : ''}">
+                        <div class="ad-card-img">
+                            ${ad.imageData
+                                ? `<img src="${ad.imageData}" style="width:100%;height:150px;object-fit:cover;">`
+                                : `<i class="fas fa-store"></i>`}
+                        </div>
+                        <div class="ad-card-body">
+                            <span class="ad-card-badge" style="background:${CAT_COLORS[ad.category]||'#006600'}22;color:${CAT_COLORS[ad.category]||'#006600'};">${ad.category || 'Supplier'}</span>
+                            <div class="ad-card-title">${ad.businessName}</div>
+                            <div class="ad-card-desc">${(ad.description||'').substring(0,80)}${(ad.description||'').length>80?'...':''}</div>
+                            <div class="ad-card-contact">
+                                ${ad.phone ? `<i class="fas fa-phone" style="font-size:0.7rem;"></i> ${ad.phone}` : ''}
+                                ${ad.website ? `&nbsp;·&nbsp;<i class="fas fa-globe" style="font-size:0.7rem;"></i> Visit Website` : ''}
+                            </div>
+                        </div>
+                    </div>`).join('');
+
+                // Build ticker — duplicate for seamless loop
+                const ticker = document.getElementById('ad-ticker-inner');
+                const makeItems = () => approved.map(ad => `
+                    <span class="ad-ticker-item">
+                        <span class="ad-cat-badge">${ad.category || 'AD'}</span>
+                        <strong>${ad.businessName}</strong> — ${(ad.tagline || ad.description || '').substring(0,60)}
+                        ${ad.phone ? `&nbsp;📞 ${ad.phone}` : ''}
+                    </span>`).join('');
+                ticker.innerHTML = makeItems() + makeItems(); // duplicate for seamless scroll
+
+                // Adjust animation duration based on number of ads
+                const duration = Math.max(20, approved.length * 8);
+                ticker.style.animation = `ticker-scroll ${duration}s linear infinite`;
+
+            } catch(e) { /* ads are non-critical — fail silently */ }
+        })();
     </script>
 </body>
 </html>
