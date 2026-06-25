@@ -182,6 +182,7 @@
             <button class="sbtn" onclick="showSection('payments')"><i class="fas fa-credit-card"></i> Payments</button>
             <button class="sbtn" onclick="showSection('build-house')"><i class="fas fa-home"></i> Build House <span id="bh-badge" style="background:#9b59b6;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
             <button class="sbtn" onclick="showSection('edit-content')"><i class="fas fa-edit"></i> Edit Content</button>
+            <button class="sbtn" onclick="showSection('advertisements')"><i class="fas fa-bullhorn"></i> Advertisements <span id="ads-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
             <button class="sbtn" onclick="showSection('reports')"><i class="fas fa-file-alt"></i> Reports</button>
             <button class="sbtn" onclick="showSection('register-artisan')"><i class="fas fa-user-plus"></i> Register Artisan</button>
             <button class="sbtn logout" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -255,6 +256,12 @@
                 const vBadge = document.getElementById('verify-badge');
                 if (vBadge) vBadge.textContent = pendingVerify > 0 ? pendingVerify : '';
             });
+            // Update ads badge
+            fetchCollection('advertisements').then(ads => {
+                const pendingAds = ads.filter(a => a.status === 'pending').length;
+                const adsBadge = document.getElementById('ads-badge');
+                if (adsBadge) { adsBadge.style.display = pendingAds > 0 ? '' : 'none'; adsBadge.textContent = pendingAds; }
+            }).catch(() => {});
 
             // Update work updates badge
             const wuCount = sampleArtisans.reduce((s, a) => s + (a.workUpdates?.length || 0), 0);
@@ -1117,6 +1124,90 @@
                     `;
                     break;
                 } // end edit-content block
+
+                case 'advertisements': {
+                    const allAds = await fetchCollection('advertisements');
+                    const pending  = allAds.filter(a => a.status === 'pending');
+                    const approved = allAds.filter(a => a.status === 'approved');
+                    const rejected = allAds.filter(a => a.status === 'rejected');
+
+                    // Update badge
+                    const adsBadge = document.getElementById('ads-badge');
+                    if (adsBadge) { adsBadge.style.display = pending.length > 0 ? '' : 'none'; adsBadge.textContent = pending.length; }
+
+                    const PKG_COLORS = { Basic:'#cd7f32', Premium:'#FF9900', Diamond:'#9b59b6' };
+                    const adCardHTML = (a, showActions) => `
+                        <div class="edit-card" style="margin-bottom:1rem;padding:0;overflow:hidden;">
+                            <div style="display:grid;grid-template-columns:${a.imageData?'120px 1fr':'1fr'};gap:0;">
+                                ${a.imageData ? `<img src="${a.imageData}" style="width:120px;height:100%;min-height:100px;object-fit:cover;">` : ''}
+                                <div style="padding:1rem;">
+                                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+                                        <div>
+                                            <div style="font-weight:700;font-family:'Poppins',sans-serif;font-size:1rem;color:#333;">${a.businessName}</div>
+                                            <div style="font-size:0.78rem;color:#888;margin-top:3px;">
+                                                <span style="background:${PKG_COLORS[a.package]||'#888'}22;color:${PKG_COLORS[a.package]||'#888'};padding:2px 8px;border-radius:8px;font-weight:700;font-size:0.72rem;">${a.package} — GHS ${a.packagePrice}</span>
+                                                &nbsp;·&nbsp; ${a.category}
+                                            </div>
+                                        </div>
+                                        <span style="background:${a.status==='approved'?'#e6fff0':a.status==='rejected'?'#fff0f0':'#fffbf0'};color:${a.status==='approved'?'#25D366':a.status==='rejected'?'#CE1126':'#FF9900'};padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;">
+                                            ${a.status==='approved'?'✅ Approved':a.status==='rejected'?'❌ Rejected':'⏳ Pending'}
+                                        </span>
+                                    </div>
+                                    <p style="font-size:0.82rem;color:#555;margin:6px 0;font-style:italic;">"${a.tagline}"</p>
+                                    <p style="font-size:0.82rem;color:#666;margin-bottom:8px;">${(a.description||'').substring(0,120)}...</p>
+                                    <div style="font-size:0.78rem;color:#888;display:flex;gap:1rem;flex-wrap:wrap;">
+                                        <span><i class="fas fa-user"></i> ${a.contactName}</span>
+                                        <span><i class="fas fa-phone"></i> ${a.phone}</span>
+                                        <span><i class="fas fa-envelope"></i> ${a.email}</span>
+                                        ${a.website ? `<a href="${a.website}" target="_blank" style="color:#006600;"><i class="fas fa-globe"></i> Website</a>` : ''}
+                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(a.submittedAt).toLocaleDateString('en-GH')}</span>
+                                    </div>
+                                    ${showActions ? `
+                                    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+                                        ${a.status !== 'approved' ? `
+                                        <button onclick="approveAd('${a._docId}')" style="padding:7px 16px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;">
+                                            <i class="fas fa-check"></i> Approve & Go Live
+                                        </button>` : ''}
+                                        ${a.status !== 'rejected' ? `
+                                        <button onclick="rejectAd('${a._docId}')" style="padding:7px 16px;background:#CE1126;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>` : ''}
+                                        <button onclick="deleteAd('${a._docId}')" style="padding:7px 16px;background:#f0f0f0;color:#555;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>` : ''}
+                                </div>
+                            </div>
+                        </div>`;
+
+                    el.innerHTML = `
+                        <h2 style="color:#FF9900;margin-bottom:0.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-bullhorn"></i> Advertisement Management</h2>
+                        <p style="color:#888;font-size:0.88rem;margin-bottom:1.5rem;">Review, approve and manage supplier advertisements displayed on the homepage.</p>
+
+                        <div class="stat-grid" style="margin-bottom:1.5rem;">
+                            <div class="stat-card"><div class="stat-val" style="color:#FF9900;">${pending.length}</div><div class="stat-lbl">Pending</div></div>
+                            <div class="stat-card"><div class="stat-val" style="color:#25D366;">${approved.length}</div><div class="stat-lbl">Live on Site</div></div>
+                            <div class="stat-card"><div class="stat-val" style="color:#CE1126;">${rejected.length}</div><div class="stat-lbl">Rejected</div></div>
+                            <div class="stat-card"><div class="stat-val">${allAds.length}</div><div class="stat-lbl">Total</div></div>
+                        </div>
+
+                        <!-- Pending Section -->
+                        ${pending.length > 0 ? `
+                        <h3 style="color:#FF9900;font-family:'Poppins',sans-serif;margin-bottom:1rem;font-size:1rem;"><i class="fas fa-clock"></i> Pending Approval (${pending.length})</h3>
+                        ${pending.map(a => adCardHTML(a, true)).join('')}` : ''}
+
+                        <!-- Live Ads Section -->
+                        <h3 style="color:#25D366;font-family:'Poppins',sans-serif;margin:1.5rem 0 1rem;font-size:1rem;"><i class="fas fa-check-circle"></i> Live Advertisements (${approved.length})</h3>
+                        ${approved.length === 0
+                            ? `<div style="text-align:center;padding:2rem;color:#aaa;background:#f9f9f9;border-radius:12px;">No approved ads yet.</div>`
+                            : approved.map(a => adCardHTML(a, true)).join('')}
+
+                        <!-- Rejected Section -->
+                        ${rejected.length > 0 ? `
+                        <h3 style="color:#CE1126;font-family:'Poppins',sans-serif;margin:1.5rem 0 1rem;font-size:1rem;"><i class="fas fa-times-circle"></i> Rejected (${rejected.length})</h3>
+                        ${rejected.map(a => adCardHTML(a, true)).join('')}` : ''}`;
+                    break;
+                } // end advertisements block
 
                 case 'register-artisan': {
                     el.innerHTML = `
@@ -2027,6 +2118,32 @@ Please contact the customer to schedule the work.`;
             await saveDoc('tierRequests', reqDocId, { status: 'rejected', rejectedAt: new Date().toISOString() });
             showNotification(`Tier request from ${artisanName} rejected. Process refund manually.`, 'info');
             showSection('verifications');
+        }
+
+        // ---- Advertisement Management ----
+        async function approveAd(docId) {
+            const expiresAt = new Date(Date.now() + 30*24*60*60*1000).toISOString(); // 30 days
+            await saveDoc('advertisements', docId, {
+                status: 'approved',
+                approvedAt: new Date().toISOString(),
+                expiresAt
+            });
+            showNotification('✅ Ad approved! It is now live on the homepage.', 'success');
+            showSection('advertisements');
+        }
+
+        async function rejectAd(docId) {
+            if (!confirm('Reject this advertisement?')) return;
+            await saveDoc('advertisements', docId, { status: 'rejected', rejectedAt: new Date().toISOString() });
+            showNotification('Ad rejected.', 'info');
+            showSection('advertisements');
+        }
+
+        async function deleteAd(docId) {
+            if (!confirm('Permanently delete this advertisement?')) return;
+            await deleteDoc_('advertisements', docId);
+            showNotification('Ad deleted.', 'info');
+            showSection('advertisements');
         }
 
         // ---- Edit Content (Contact / How It Works) ----
