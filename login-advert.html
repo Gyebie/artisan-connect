@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advertise With Us - SkillBridge Africa</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="firebase-init.js"></script>
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        .page-wrap { max-width: 800px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #006600, #FF9900);
+            border-radius: 20px; padding: 2.5rem 2rem; text-align: center;
+            color: white; margin-bottom: 2rem;
+        }
+        .hero-banner h1 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .hero-banner p  { opacity: 0.9; font-size: 0.95rem; }
+
+        .pricing-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem; margin-bottom: 2rem;
+        }
+        .pricing-card {
+            background: white; border-radius: 14px; padding: 1.2rem; text-align: center;
+            border: 2px solid #eee; transition: border-color 0.2s;
+        }
+        .pricing-card:hover { border-color: #006600; }
+        .pricing-card h3 { font-family: 'Poppins', sans-serif; color: #333; margin-bottom: 4px; font-size: 0.95rem; }
+        .pricing-card .price { font-size: 1.5rem; font-weight: 800; color: #006600; }
+        .pricing-card .duration { font-size: 0.78rem; color: #888; }
+        .pricing-card ul { list-style: none; font-size: 0.78rem; color: #555; margin-top: 8px; text-align: left; }
+        .pricing-card ul li::before { content: '✓ '; color: #006600; font-weight: 700; }
+
+        .form-card {
+            background: white; border-radius: 20px; padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .form-card h2 { font-family: 'Poppins', sans-serif; color: #006600; margin-bottom: 1.5rem; font-size: 1.2rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .form-grid.full { grid-template-columns: 1fr; }
+        .flabel { display: block; font-size: 0.82rem; font-weight: 600; color: #333; margin-bottom: 4px; }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], select, textarea {
+            width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.88rem; transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #006600; outline: none; }
+        textarea { resize: vertical; }
+
+        .category-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px; margin-top: 8px;
+        }
+        .cat-option { display: none; }
+        .cat-option + label {
+            display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+            border: 1.5px solid #e0e0e0; border-radius: 8px; cursor: pointer;
+            font-size: 0.82rem; font-weight: 600; color: #555; transition: all 0.2s;
+        }
+        .cat-option:checked + label { border-color: #FF9900; background: #fffbf0; color: #cc7700; }
+
+        .photo-upload-box {
+            border: 2px dashed #ddd; border-radius: 12px; padding: 1.5rem;
+            text-align: center; cursor: pointer; transition: border-color 0.2s;
+        }
+        .photo-upload-box:hover { border-color: #FF9900; }
+        .photo-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; display: none; }
+
+        .package-select { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        .pkg-radio { display: none; }
+        .pkg-radio + label {
+            display: block; text-align: center; padding: 10px 8px;
+            border: 2px solid #ddd; border-radius: 10px; cursor: pointer; font-size: 0.82rem;
+        }
+        .pkg-radio:checked + label { border-color: #FF9900; background: #fffbf0; }
+        .pkg-price { font-size: 1rem; font-weight: 800; color: #006600; display: block; }
+        .pkg-name  { font-weight: 700; color: #333; }
+        .pkg-dur   { font-size: 0.72rem; color: #888; }
+
+        .terms-check { display: flex; align-items: flex-start; gap: 10px; margin: 1rem 0; }
+        .terms-check input { margin-top: 3px; width: auto; }
+
+        .submit-btn {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #FF9900, #cc7700);
+            color: white; border: none; border-radius: 12px; font-family: 'Poppins', sans-serif;
+            font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+        }
+        .submit-btn:hover { opacity: 0.9; }
+        .success-banner {
+            display: none; background: #e6fff0; border: 2px solid #25D366; border-radius: 14px;
+            padding: 2rem; text-align: center;
+        }
+        .success-banner i { font-size: 3rem; color: #25D366; margin-bottom: 1rem; display: block; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .package-select { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+<div id="navbar-mount"></div>
+
+<div class="page-wrap">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div style="font-size:2.5rem;margin-bottom:0.8rem;">📢</div>
+        <h1>Advertise on SkillBridge Africa</h1>
+        <p>Reach thousands of artisans, homeowners, and contractors across all 16 regions of Ghana.<br>
+        Get your business in front of the right audience today.</p>
+    </div>
+
+    <!-- Pricing Cards -->
+    <div class="pricing-row">
+        <div class="pricing-card">
+            <h3>🥉 Basic</h3>
+            <div class="price">GHS 100</div>
+            <div class="duration">per month</div>
+            <ul>
+                <li>Homepage ad card</li>
+                <li>Ticker display</li>
+                <li>Logo + description</li>
+            </ul>
+        </div>
+        <div class="pricing-card" style="border-color:#FF9900;background:#fffbf0;">
+            <div style="font-size:0.7rem;font-weight:800;color:#FF9900;letter-spacing:1px;margin-bottom:4px;">POPULAR</div>
+            <h3>🥇 Premium</h3>
+            <div class="price">GHS 250</div>
+            <div class="duration">per month</div>
+            <ul>
+                <li>Featured card position</li>
+                <li>Ticker + bold highlight</li>
+                <li>Logo + image banner</li>
+                <li>Direct website link</li>
+            </ul>
+        </div>
+        <div class="pricing-card">
+            <h3>💎 Diamond</h3>
+            <div class="price">GHS 500</div>
+            <div class="duration">per month</div>
+            <ul>
+                <li>Top-of-page placement</li>
+                <li>Ticker priority slot</li>
+                <li>Full banner image</li>
+                <li>All regions targeted</li>
+                <li>WhatsApp integration</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Application Form -->
+    <div class="form-card">
+        <h2><i class="fas fa-file-alt" style="color:#FF9900;"></i> Ad Application Form</h2>
+
+        <!-- Success state -->
+        <div id="success-banner" class="success-banner">
+            <i class="fas fa-check-circle"></i>
+            <h3 style="color:#006600;font-family:'Poppins',sans-serif;margin-bottom:0.5rem;">Application Submitted!</h3>
+            <p style="color:#555;">Your advertisement application has been received.<br>
+            Admin will review and contact you within 24 hours for payment confirmation.<br>
+            Once approved, your ad will go live on the SkillBridge Africa homepage.</p>
+            <a href="index.html" style="display:inline-block;margin-top:1.2rem;padding:11px 24px;background:#006600;color:white;border-radius:10px;text-decoration:none;font-weight:700;font-family:'Poppins',sans-serif;">
+                <i class="fas fa-home"></i> Back to Homepage
+            </a>
+        </div>
+
+        <form id="advert-form">
+            <!-- Business Info -->
+            <h3 style="color:#FF9900;font-size:0.95rem;font-family:'Poppins',sans-serif;margin-bottom:1rem;border-bottom:2px solid #ffe0b2;padding-bottom:6px;">
+                <i class="fas fa-store"></i> Business Information
+            </h3>
+            <div class="form-grid">
+                <div><label class="flabel">Business / Brand Name *</label><input type="text" id="ad-biz-name" placeholder="e.g. Accra Hardware Ltd" required></div>
+                <div><label class="flabel">Ad Category *</label>
+                    <select id="ad-category" required>
+                        <option value="">Select Category</option>
+                        <option>Building Materials</option>
+                        <option>Paint & Coatings</option>
+                        <option>Electrical Supplies</option>
+                        <option>Plumbing Supplies</option>
+                        <option>Tools & Equipment</option>
+                        <option>Hardware & Fasteners</option>
+                        <option>Tiles & Flooring</option>
+                        <option>Cement & Blocks</option>
+                        <option>Roofing Materials</option>
+                        <option>Woodwork & Timber</option>
+                        <option>Glass & Aluminum</option>
+                        <option>Safety Equipment</option>
+                        <option>Home Appliances</option>
+                        <option>Interior Décor</option>
+                        <option>Other Supplies</option>
+                    </select>
+                </div>
+                <div><label class="flabel">Contact Name *</label><input type="text" id="ad-contact-name" placeholder="Your full name" required></div>
+                <div><label class="flabel">Phone Number *</label><input type="tel" id="ad-phone" placeholder="024XXXXXXX" required></div>
+                <div><label class="flabel">Email Address *</label><input type="email" id="ad-email" placeholder="business@email.com" required></div>
+                <div><label class="flabel">WhatsApp Number</label><input type="tel" id="ad-whatsapp" placeholder="024XXXXXXX"></div>
+                <div class="form-grid full"><label class="flabel">Website / Social Media Link</label><input type="url" id="ad-website" placeholder="https://yourwebsite.com or facebook page"></div>
+            </div>
+
+            <!-- Ad Content -->
+            <h3 style="color:#FF9900;font-size:0.95rem;font-family:'Poppins',sans-serif;margin:1.5rem 0 1rem;border-bottom:2px solid #ffe0b2;padding-bottom:6px;">
+                <i class="fas fa-ad"></i> Ad Content
+            </h3>
+            <div class="form-grid full">
+                <div><label class="flabel">Ad Tagline (shown in ticker) *</label>
+                    <input type="text" id="ad-tagline" placeholder="e.g. Ghana's #1 Source for Quality Cement & Blocks" maxlength="80" required>
+                    <small style="color:#888;font-size:0.72rem;">Max 80 characters — this scrolls across the homepage ticker</small>
+                </div>
+            </div>
+            <div class="form-grid full" style="margin-top:1rem;">
+                <div><label class="flabel">Full Ad Description *</label>
+                    <textarea id="ad-description" rows="3" placeholder="Describe your products/services, special offers, delivery areas, etc." required></textarea>
+                </div>
+            </div>
+            <div class="form-grid full" style="margin-top:1rem;">
+                <div>
+                    <label class="flabel">Ad Image / Banner (optional)</label>
+                    <div class="photo-upload-box" onclick="document.getElementById('ad-image-file').click()">
+                        <i class="fas fa-image" style="font-size:2rem;color:#ddd;margin-bottom:8px;display:block;"></i>
+                        <p style="font-size:0.85rem;color:#888;">Click to upload your logo or product image<br><small>JPG, PNG up to 3MB</small></p>
+                        <img id="ad-image-preview" class="photo-preview">
+                    </div>
+                    <input type="file" id="ad-image-file" accept="image/*" style="display:none;" onchange="previewAdImage(this)">
+                </div>
+            </div>
+
+            <!-- Package Selection -->
+            <h3 style="color:#FF9900;font-size:0.95rem;font-family:'Poppins',sans-serif;margin:1.5rem 0 1rem;border-bottom:2px solid #ffe0b2;padding-bottom:6px;">
+                <i class="fas fa-box"></i> Choose Package *
+            </h3>
+            <div class="package-select">
+                <div><input type="radio" name="ad-package" id="pkg-basic" class="pkg-radio" value="Basic|100" required>
+                    <label for="pkg-basic"><span class="pkg-name">🥉 Basic</span><span class="pkg-price">GHS 100</span><span class="pkg-dur">per month</span></label></div>
+                <div><input type="radio" name="ad-package" id="pkg-premium" class="pkg-radio" value="Premium|250" checked>
+                    <label for="pkg-premium"><span class="pkg-name">🥇 Premium</span><span class="pkg-price">GHS 250</span><span class="pkg-dur">per month</span></label></div>
+                <div><input type="radio" name="ad-package" id="pkg-diamond" class="pkg-radio" value="Diamond|500">
+                    <label for="pkg-diamond"><span class="pkg-name">💎 Diamond</span><span class="pkg-price">GHS 500</span><span class="pkg-dur">per month</span></label></div>
+            </div>
+
+            <div class="terms-check" style="margin-top:1.5rem;">
+                <input type="checkbox" id="ad-terms" required>
+                <label for="ad-terms" style="font-size:0.85rem;color:#555;">I agree that my advertisement must comply with SkillBridge Africa's content guidelines. No misleading claims, no inappropriate content. Admin reserves the right to reject any application.</label>
+            </div>
+
+            <button type="button" onclick="submitAdvert()" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Advertisement Application
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('shared-css').innerHTML = sharedCSS;
+    document.getElementById('navbar-mount').innerHTML = renderNavbar('home');
+
+    function previewAdImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.getElementById('ad-image-preview');
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function showNotification(msg, type) {
+        const n = document.createElement('div');
+        n.style.cssText = `position:fixed;top:20px;right:20px;z-index:9999;padding:14px 20px;border-radius:10px;font-weight:600;font-size:0.88rem;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,0.15);background:${type==='error'?'#CE1126':type==='info'?'#1e90ff':'#25D366'};color:white;`;
+        n.textContent = msg;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 3500);
+    }
+
+    async function submitAdvert() {
+        const g  = id => (document.getElementById(id)?.value || '').trim();
+        const bizName = g('ad-biz-name');
+        const category = g('ad-category');
+        const contactName = g('ad-contact-name');
+        const phone = g('ad-phone');
+        const email = g('ad-email');
+        const tagline = g('ad-tagline');
+        const description = g('ad-description');
+        const pkgEl = document.querySelector('input[name="ad-package"]:checked');
+
+        if (!bizName)      { showNotification('Enter your business name', 'error'); return; }
+        if (!category)     { showNotification('Select an ad category', 'error'); return; }
+        if (!contactName)  { showNotification('Enter contact name', 'error'); return; }
+        if (!phone)        { showNotification('Enter phone number', 'error'); return; }
+        if (!email)        { showNotification('Enter email address', 'error'); return; }
+        if (!tagline)      { showNotification('Enter your ad tagline', 'error'); return; }
+        if (!description)  { showNotification('Enter ad description', 'error'); return; }
+        if (!pkgEl)        { showNotification('Select a package', 'error'); return; }
+        if (!document.getElementById('ad-terms').checked) { showNotification('Please accept the terms', 'error'); return; }
+
+        const [pkgName, pkgPrice] = pkgEl.value.split('|');
+
+        // Get image data if uploaded
+        let imageData = '';
+        const imgPreview = document.getElementById('ad-image-preview');
+        if (imgPreview.style.display !== 'none' && imgPreview.src) {
+            imageData = imgPreview.src;
+        }
+
+        showNotification('Submitting your application...', 'info');
+
+        try {
+            await initAppData();
+            await addDoc_('advertisements', {
+                businessName: bizName,
+                category,
+                contactName,
+                phone,
+                email,
+                whatsapp:    g('ad-whatsapp'),
+                website:     g('ad-website'),
+                tagline,
+                description,
+                imageData,
+                package:     pkgName,
+                packagePrice: parseInt(pkgPrice),
+                status:      'pending',
+                submittedAt: new Date().toISOString(),
+                expiresAt:   null,
+                approvedAt:  null
+            });
+
+            document.getElementById('advert-form').style.display = 'none';
+            document.getElementById('success-banner').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch(e) {
+            showNotification('Submission failed. Please check your connection and try again.', 'error');
+        }
+    }
+</script>
+</body>
+</html>
