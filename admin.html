@@ -1001,6 +1001,7 @@
                     const contentDocs = await fetchCollection('siteContent');
                     const contactCMS  = contentDocs.find(d => d._docId === 'contact-page') || {};
                     const hiwCMS      = contentDocs.find(d => d._docId === 'how-it-works-page') || {};
+                    const advertCMS   = contentDocs.find(d => d._docId === 'advert-page') || {};
                     const c = (k, def) => contactCMS[k] !== undefined ? contactCMS[k] : def;
                     const h = (k, def) => hiwCMS[k]     !== undefined ? hiwCMS[k]     : def;
 
@@ -1009,9 +1010,10 @@
                         <p style="color:#888;font-size:0.88rem;margin-bottom:1.5rem;">Update the public Contact and How It Works pages. Changes go live immediately.</p>
 
                         <!-- Tabs -->
-                        <div style="display:flex;gap:8px;background:#f0f0f0;padding:6px;border-radius:12px;margin-bottom:1.5rem;max-width:420px;">
+                        <div style="display:flex;gap:8px;background:#f0f0f0;padding:6px;border-radius:12px;margin-bottom:1.5rem;max-width:640px;">
                             <button id="ec-tab-contact" onclick="showEcTab('contact')" style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);">📞 Contact Page</button>
                             <button id="ec-tab-hiw"     onclick="showEcTab('hiw')"     style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;">ℹ️ How It Works</button>
+                            <button id="ec-tab-advert"  onclick="showEcTab('advert')"  style="flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;">📢 Advertisements</button>
                         </div>
 
                         <!-- ====== CONTACT PAGE EDITOR ====== -->
@@ -1119,6 +1121,65 @@
                             </div>
                             <button onclick="saveHowItWorksCMS()" style="padding:12px 28px;background:linear-gradient(135deg,#006600,#009900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
                                 <i class="fas fa-save"></i> Save How It Works Changes
+                            </button>
+                        </div>
+
+                        <!-- ====== ADVERTISEMENT PAGE EDITOR ====== -->
+                        <div id="ec-panel-advert" style="display:none;">
+
+                            <!-- Hero / Banner Section -->
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#FF9900;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🎯 Hero Banner</h3>
+                                <div style="display:grid;gap:1rem;">
+                                    <div><label class="elabel">Page Title</label><input type="text" id="ec-adv-title" value="${advertCMS.title || 'Advertise on SkillBridge Africa'}"></div>
+                                    <div><label class="elabel">Subtitle / Tagline</label><textarea id="ec-adv-subtitle" rows="2">${advertCMS.subtitle || 'Reach thousands of artisans, homeowners, and contractors across all 16 regions of Ghana.'}</textarea></div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing Packages -->
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#FF9900;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">💰 Pricing Packages</h3>
+                                <div style="display:grid;gap:1.2rem;">
+                                    ${['Basic','Premium','Diamond'].map((pkg, idx) => {
+                                        const defaults = {
+                                            Basic:   { price: 100, duration: 'per month', features: 'Homepage ad card\nTicker display\nLogo + description', icon: '🥉' },
+                                            Premium: { price: 250, duration: 'per month', features: 'Featured card position\nTicker + bold highlight\nLogo + image banner\nDirect website link', icon: '🥇' },
+                                            Diamond: { price: 500, duration: 'per month', features: 'Top-of-page placement\nTicker priority slot\nFull banner image\nAll regions targeted\nWhatsApp integration', icon: '💎' }
+                                        };
+                                        const d = defaults[pkg];
+                                        const saved = advertCMS['pkg_'+pkg.toLowerCase()] || {};
+                                        return `
+                                    <div style="background:#f8f9fa;border-radius:10px;padding:1rem;">
+                                        <div style="font-weight:700;color:#FF9900;font-size:0.85rem;margin-bottom:8px;">${d.icon} ${pkg} Package</div>
+                                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+                                            <div><label class="elabel">Price (GHS)</label><input type="number" id="ec-pkg-${pkg.toLowerCase()}-price" value="${saved.price || d.price}" min="0"></div>
+                                            <div><label class="elabel">Duration Label</label><input type="text" id="ec-pkg-${pkg.toLowerCase()}-duration" value="${saved.duration || d.duration}" placeholder="per month"></div>
+                                        </div>
+                                        <div style="margin-top:0.8rem;"><label class="elabel">Features (one per line)</label>
+                                            <textarea id="ec-pkg-${pkg.toLowerCase()}-features" rows="4" style="font-size:0.82rem;">${saved.features || d.features}</textarea>
+                                        </div>
+                                    </div>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+
+                            <!-- Ad Categories -->
+                            <div class="edit-card" style="margin-bottom:1.2rem;">
+                                <h3 style="color:#FF9900;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🏷️ Ad Categories</h3>
+                                <p style="font-size:0.82rem;color:#888;margin-bottom:0.8rem;">One category per line. Suppliers select from this list when applying.</p>
+                                <textarea id="ec-adv-categories" rows="10" style="font-size:0.85rem;">${advertCMS.categories || 'Building Materials\nPaint & Coatings\nElectrical Supplies\nPlumbing Supplies\nTools & Equipment\nHardware & Fasteners\nTiles & Flooring\nCement & Blocks\nRoofing Materials\nWoodwork & Timber\nGlass & Aluminum\nSafety Equipment\nHome Appliances\nInterior Décor\nOther Supplies'}</textarea>
+                            </div>
+
+                            <!-- Terms / Guidelines -->
+                            <div class="edit-card" style="margin-bottom:1.5rem;">
+                                <h3 style="color:#FF9900;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">📋 Terms & Guidelines Text</h3>
+                                <div><label class="elabel">Terms checkbox label (shown on the application form)</label>
+                                    <textarea id="ec-adv-terms" rows="3">${advertCMS.terms || "I agree that my advertisement must comply with SkillBridge Africa's content guidelines. No misleading claims, no inappropriate content. Admin reserves the right to reject any application."}</textarea>
+                                </div>
+                            </div>
+
+                            <button onclick="saveAdvertCMS()" style="padding:12px 28px;background:linear-gradient(135deg,#FF9900,#cc7700);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.95rem;">
+                                <i class="fas fa-save"></i> Save Advertisement Page Changes
                             </button>
                         </div>
                     `;
@@ -2150,12 +2211,13 @@ Please contact the customer to schedule the work.`;
         function showEcTab(tab) {
             document.getElementById('ec-panel-contact').style.display = tab === 'contact' ? 'block' : 'none';
             document.getElementById('ec-panel-hiw').style.display     = tab === 'hiw'     ? 'block' : 'none';
-            document.getElementById('ec-tab-contact').style.cssText = tab === 'contact'
-                ? 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);'
-                : 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;';
-            document.getElementById('ec-tab-hiw').style.cssText = tab === 'hiw'
-                ? 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);'
-                : 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;';
+            document.getElementById('ec-panel-advert').style.display  = tab === 'advert'  ? 'block' : 'none';
+            const active   = 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#FF9900;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+            const inactive = 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:transparent;color:#888;font-weight:600;cursor:pointer;font-family:inherit;';
+            const activeGreen = 'flex:1;padding:10px 16px;border:none;border-radius:9px;background:white;color:#006600;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+            document.getElementById('ec-tab-contact').style.cssText = tab === 'contact' ? activeGreen : inactive;
+            document.getElementById('ec-tab-hiw').style.cssText     = tab === 'hiw'     ? activeGreen : inactive;
+            document.getElementById('ec-tab-advert').style.cssText  = tab === 'advert'  ? active      : inactive;
         }
 
         async function saveContactCMS() {
@@ -2183,6 +2245,27 @@ Please contact the customer to schedule the work.`;
                 updatedAt:       new Date().toISOString()
             });
             showNotification('✅ Contact page updated! All changes are live now.', 'success');
+        }
+
+        async function saveAdvertCMS() {
+            const g = id => (document.getElementById(id)?.value || '');
+            const data = {
+                title:      g('ec-adv-title'),
+                subtitle:   g('ec-adv-subtitle'),
+                categories: g('ec-adv-categories'),
+                terms:      g('ec-adv-terms'),
+                updatedAt:  new Date().toISOString()
+            };
+            // Save each package
+            for (const pkg of ['basic','premium','diamond']) {
+                data[`pkg_${pkg}`] = {
+                    price:    parseFloat(g(`ec-pkg-${pkg}-price`)) || 0,
+                    duration: g(`ec-pkg-${pkg}-duration`),
+                    features: g(`ec-pkg-${pkg}-features`)
+                };
+            }
+            await saveDoc('siteContent', 'advert-page', data);
+            showNotification('✅ Advertisement page updated! Login-advert page now uses these settings.', 'success');
         }
 
         async function saveHowItWorksCMS() {
