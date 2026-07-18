@@ -1,24 +1,29 @@
 // =============================================
-//  firebase-init.js  — load as a regular script
-//  <script src="firebase-init.js"></script>
+//  firebase-init.js
+//  Include in EVERY HTML page BEFORE data.js:
+//    <script type="module" src="firebase-init.js"></script>
+//    <script type="module" src="data.js"></script>
 // =============================================
 
+// ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────────
+// Get this from: Firebase Console → Project Settings → Your Apps → Web App
 const firebaseConfig = {
-    apiKey:            "AIzaSyAk-dVEwGWASpagLsrEfugDd0W6whykWr4",
-    authDomain:        "artisan-connect-34ed5.firebaseapp.com",
-    projectId:         "artisan-connect-34ed5",
-    storageBucket:     "artisan-connect-34ed5.firebasestorage.app",
-    messagingSenderId: "614514628028",
-    appId:             "1:614514628028:web:dcef0d1b15228d52e247b9",
-    measurementId:     "G-GBEJQGVNPX"
+    apiKey:            "PASTE_YOUR_apiKey_HERE",
+    authDomain:        "PASTE_YOUR_authDomain_HERE",
+    projectId:         "PASTE_YOUR_projectId_HERE",
+    storageBucket:     "PASTE_YOUR_storageBucket_HERE",
+    messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
+    appId:             "PASTE_YOUR_appId_HERE"
 };
+// ─────────────────────────────────────────────────────────────────────────────
 
-// Use dynamic import so this file doesn't need type="module"
-(async () => {
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-    const { getFirestore }  = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
-    window.__db = db;
-    console.log("[Firebase] Initialised ✓");
-})();
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// Make Firestore instance available to data.js
+window.__firebaseReady(db);
+
+console.log("[Firebase] Initialised ✓");
