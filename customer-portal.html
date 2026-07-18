@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portal - SkillBridge Africa</title>
+    <title>My Portal - GoArtisan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -496,14 +496,8 @@
                         </div>
                         <div>
                             <label class="flabel">Region / Location</label>
-                            <select id="bh-region" onchange="loadDistrictsIntoSelect(document.getElementById('bh-district'), this.value)" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                            <select id="bh-region" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
                                 <option value="">Select Region</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="flabel">District</label>
-                            <select id="bh-district" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
-                                <option value="">Select Region First</option>
                             </select>
                         </div>
                         <div>
@@ -1211,7 +1205,7 @@
 
         // ---- Unified Paystack helper ----
         function openPaystack({ email, amount, ref, meta, onSuccess }) {
-            const PAYSTACK_KEY = window.SKILLBRIDGE_PAYSTACK_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Set via window.SKILLBRIDGE_PAYSTACK_KEY
+            const PAYSTACK_KEY = window.GOARTISAN_PAYSTACK_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Set via window.GOARTISAN_PAYSTACK_KEY
             if (PAYSTACK_KEY === 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') {
                 showNotification('⚠️ Payment key not configured yet. Please contact admin.', 'error');
                 return;
@@ -1219,7 +1213,7 @@
             const launchPaystack = () => {
                 const handler = PaystackPop.setup({
                     key:      PAYSTACK_KEY,
-                    email:    email || user?.email || client?.email || 'customer@skillbridge.africa',
+                    email:    email || user?.email || client?.email || 'customer@goartisan.gh',
                     amount:   Math.round(parseFloat(amount) * 100),
                     currency: 'GHS',
                     ref:      ref || `SBA-${Date.now()}`,
@@ -1632,19 +1626,18 @@
         }
 
         async function submitBuildHouseRequest() {
-            const type     = document.getElementById('bh-type').value;
-            const rooms    = document.getElementById('bh-bedrooms').value;
-            const region   = document.getElementById('bh-region').value;
-            const district = document.getElementById('bh-district').value;
-            const budget   = document.getElementById('bh-budget').value;
-            const address  = document.getElementById('bh-address').value.trim();
-            const desc     = document.getElementById('bh-desc').value.trim();
+            const type    = document.getElementById('bh-type').value;
+            const rooms   = document.getElementById('bh-bedrooms').value;
+            const region  = document.getElementById('bh-region').value;
+            const budget  = document.getElementById('bh-budget').value;
+            const address = document.getElementById('bh-address').value.trim();
+            const desc    = document.getElementById('bh-desc').value.trim();
             if (!address) { showNotification('Please enter the land address', 'error'); return; }
             if (!desc)    { showNotification('Please describe your project', 'error'); return; }
 
             await addDoc_('buildHouseRequests', {
                 clientName:  user?.name, clientEmail: user?.email, clientPhone: client?.phone || '',
-                projectType: type, bedrooms: rooms, region, district, budget: parseFloat(budget)||0,
+                projectType: type, bedrooms: rooms, region, budget: parseFloat(budget)||0,
                 address, description: desc,
                 status:      'submitted',
                 submittedAt: new Date().toISOString(),
@@ -1655,7 +1648,7 @@
             await addDoc_('adminNotifications', {
                 type:    'build-house',
                 title:   `🏠 New Build House Request from ${user?.name}`,
-                message: `${type} — ${rooms} — ${district ? district + ', ' : ''}${region} — Budget: ₵${budget||'TBD'} — ${address}`,
+                message: `${type} — ${rooms} — Budget: ₵${budget||'TBD'} — ${address}`,
                 date:    new Date().toISOString(),
                 read:    false
             });
@@ -1680,7 +1673,7 @@
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem;">
                             <div>
                                 <div style="font-weight:700;color:#333;font-family:'Poppins',sans-serif;">${r.projectType?.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase())}</div>
-                                <div style="font-size:0.82rem;color:#888;margin-top:3px;">${r.bedrooms} · ${r.district ? r.district + ', ' : ''}${r.region||'—'} · ₵${r.budget?.toLocaleString()||'TBD'} budget</div>
+                                <div style="font-size:0.82rem;color:#888;margin-top:3px;">${r.bedrooms} · ${r.region||'—'} · ₵${r.budget?.toLocaleString()||'TBD'} budget</div>
                                 <div style="font-size:0.78rem;color:#aaa;margin-top:2px;">${r.address?.substring(0,50)||'—'}</div>
                             </div>
                             <span style="background:${r.status==='completed'?'#e6fff0':r.status==='in-progress'?'#fff8e6':'#f0f0f0'};color:${r.status==='completed'?'#25D366':r.status==='in-progress'?'#FF9900':'#888'};padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;">
@@ -1778,7 +1771,7 @@
     <!-- WhatsApp Floating Button — Chat with Admin -->
     <div id="whatsapp-fab" style="position:fixed;bottom:80px;right:24px;z-index:3000;display:flex;flex-direction:column;align-items:flex-end;gap:10px;">
         <div id="whatsapp-menu" style="display:none;flex-direction:column;gap:8px;align-items:flex-end;">
-            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%20SkillBridge%20Africa%20Admin%2C%20I%20need%20help%20with%20my%20account."
+            <a href="https://wa.me/233XXXXXXXXXX?text=Hello%20GoArtisan%20Africa%20Admin%2C%20I%20need%20help%20with%20my%20account."
                target="_blank"
                style="background:white;color:#25D366;padding:10px 16px;border-radius:20px;font-weight:700;font-size:0.85rem;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.15);display:flex;align-items:center;gap:8px;white-space:nowrap;">
                 <i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Chat with Admin
