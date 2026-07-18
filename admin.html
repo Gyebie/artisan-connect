@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - SkillBridge Africa</title>
+    <title>Admin - GoArtisan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -147,7 +147,7 @@
                 <button class="alm-close" onclick="goBack()" title="Back to site">&times;</button>
                 <div class="shield-icon"><i class="fas fa-user-shield"></i></div>
                 <h2>Admin Login</h2>
-                <p>SkillBridge Africa Administration Panel</p>
+                <p>GoArtisan Administration Panel</p>
             </div>
             <div class="alm-body">
                 <div>
@@ -172,11 +172,13 @@
 
         <div class="admin-sidebar" id="admin-sidebar">
             <div class="sidebar-logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
-            <div class="sidebar-sub">SkillBridge Africa Management</div>
+            <div class="sidebar-sub">GoArtisan Management</div>
             <button class="sbtn active" onclick="showSection('dashboard')"><i class="fas fa-chart-bar"></i> Dashboard</button>
             <button class="sbtn" onclick="showSection('job-requests')"><i class="fas fa-clipboard-list"></i> Job Requests <span id="jr-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
             <button class="sbtn" onclick="showSection('artisans')"><i class="fas fa-tools"></i> Artisans</button>
             <button class="sbtn" onclick="showSection('customers')"><i class="fas fa-users"></i> Customers</button>
+            <button class="sbtn" onclick="showSection('user-roles')"><i class="fas fa-user-shield"></i> User Roles</button>
+            <button class="sbtn" onclick="showSection('roles')"><i class="fas fa-user-shield"></i> Role Assignment <span id="roles-badge" style="background:#9b59b6;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
             <button class="sbtn" onclick="showSection('verifications')"><i class="fas fa-check-circle"></i> Verifications <span id="verify-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
             <button class="sbtn" onclick="showSection('work-updates')"><i class="fas fa-camera"></i> Work Updates <span id="wu-badge" style="background:#1e90ff;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
             <button class="sbtn" onclick="showSection('payments')"><i class="fas fa-credit-card"></i> Payments</button>
@@ -210,7 +212,7 @@
                     document.getElementById('admin-overlay').classList.remove('active');
                     document.getElementById('dashboard-wrap').style.display = 'block';
                     showSection('dashboard');
-                    showNotification('Welcome, Admin ARTISANCONNECT! (' + sampleArtisans.length + ' artisans loaded)', 'success');
+                    showNotification('Welcome, Admin GOARTISAN! (' + sampleArtisans.length + ' artisans loaded)', 'success');
                 } catch(err) {
                     console.error('Login error:', err);
                     showNotification('Error loading data. Check internet connection.', 'error');
@@ -488,7 +490,7 @@
                         const pending = tierReqs.filter(r => r.status === 'pending');
                         const el2 = document.getElementById('tier-requests-list');
                         if (!el2) return;
-                        const TIER_COLORS = { SkillBridge:'#006600', Bronze:'#cd7f32', Silver:'#808080', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+                        const TIER_COLORS = { GoArtisan:'#006600', Bronze:'#cd7f32', Silver:'#808080', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
                         el2.innerHTML = pending.length === 0
                             ? `<div style="text-align:center;padding:2rem;color:#aaa;background:white;border-radius:12px;"><i class="fas fa-crown" style="font-size:2rem;margin-bottom:8px;display:block;"></i><p>No pending tier subscription requests.</p></div>`
                             : pending.map(r => `
@@ -1045,15 +1047,15 @@
                             <div class="edit-card" style="margin-bottom:1.2rem;">
                                 <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">📧 Email Addresses</h3>
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                                    <div><label class="elabel">Email 1</label><input type="email" id="ec-email1" value="${c('email1','info@skillbridge.africa')}" placeholder="info@skillbridge.africa"></div>
-                                    <div><label class="elabel">Email 2</label><input type="email" id="ec-email2" value="${c('email2','support@skillbridge.africa')}" placeholder="support@skillbridge.africa"></div>
+                                    <div><label class="elabel">Email 1</label><input type="email" id="ec-email1" value="${c('email1','info@goartisan.gh')}" placeholder="info@goartisan.gh"></div>
+                                    <div><label class="elabel">Email 2</label><input type="email" id="ec-email2" value="${c('email2','support@goartisan.gh')}" placeholder="support@goartisan.gh"></div>
                                 </div>
                             </div>
 
                             <div class="edit-card" style="margin-bottom:1.2rem;">
                                 <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">📍 Office Address</h3>
                                 <div><label class="elabel">Address (use new line for each line)</label>
-                                <textarea id="ec-address" rows="3">${c('address','SkillBridge Africa HQ\nIndependence Avenue, Accra\nGreater Accra Region, Ghana')}</textarea></div>
+                                <textarea id="ec-address" rows="3">${c('address','GoArtisan HQ\nIndependence Avenue, Accra\nGreater Accra Region, Ghana')}</textarea></div>
                             </div>
 
                             <div class="edit-card" style="margin-bottom:1.2rem;">
@@ -1068,11 +1070,11 @@
                             <div class="edit-card" style="margin-bottom:1.2rem;">
                                 <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🌐 Social Media Links</h3>
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                                    <div><label class="elabel">Facebook URL</label><input type="url" id="ec-social-facebook"  value="${c('socialFacebook','https://facebook.com/skillbridgeafrica')}" placeholder="https://facebook.com/..."></div>
-                                    <div><label class="elabel">Twitter / X URL</label><input type="url" id="ec-social-twitter" value="${c('socialTwitter','https://twitter.com/skillbridgeafrica')}" placeholder="https://twitter.com/..."></div>
-                                    <div><label class="elabel">Instagram URL</label><input type="url" id="ec-social-instagram" value="${c('socialInstagram','https://instagram.com/skillbridgeafrica')}" placeholder="https://instagram.com/..."></div>
+                                    <div><label class="elabel">Facebook URL</label><input type="url" id="ec-social-facebook"  value="${c('socialFacebook','https://facebook.com/goartisan')}" placeholder="https://facebook.com/..."></div>
+                                    <div><label class="elabel">Twitter / X URL</label><input type="url" id="ec-social-twitter" value="${c('socialTwitter','https://twitter.com/goartisan')}" placeholder="https://twitter.com/..."></div>
+                                    <div><label class="elabel">Instagram URL</label><input type="url" id="ec-social-instagram" value="${c('socialInstagram','https://instagram.com/goartisan')}" placeholder="https://instagram.com/..."></div>
                                     <div><label class="elabel">WhatsApp Number (digits only)</label><input type="text" id="ec-social-whatsapp" value="${c('socialWhatsApp','233240000000')}" placeholder="233241234567"></div>
-                                    <div><label class="elabel">TikTok URL</label><input type="url" id="ec-social-tiktok" value="${c('socialTikTok','https://tiktok.com/@skillbridgeafrica')}" placeholder="https://tiktok.com/..."></div>
+                                    <div><label class="elabel">TikTok URL</label><input type="url" id="ec-social-tiktok" value="${c('socialTikTok','https://tiktok.com/@goartisan')}" placeholder="https://tiktok.com/..."></div>
                                 </div>
                             </div>
 
@@ -1080,7 +1082,7 @@
                                 <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🗺️ Map / Find Our Office</h3>
                                 <div style="display:grid;gap:1rem;">
                                     <div><label class="elabel">Map Label (address shown under pin)</label>
-                                        <textarea id="ec-map-label" rows="2">${c('mapLabel','SkillBridge Africa HQ — Independence Avenue, Accra\nGreater Accra Region, Ghana')}</textarea></div>
+                                        <textarea id="ec-map-label" rows="2">${c('mapLabel','GoArtisan HQ — Independence Avenue, Accra\nGreater Accra Region, Ghana')}</textarea></div>
                                     <div><label class="elabel">Google Maps Link</label>
                                         <input type="url" id="ec-map-link" value="${c('mapLink','https://maps.google.com/?q=Independence+Avenue+Accra+Ghana')}" placeholder="https://maps.google.com/?q=..."></div>
                                 </div>
@@ -1096,7 +1098,7 @@
                             <div class="edit-card" style="margin-bottom:1.2rem;">
                                 <h3 style="color:#006600;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🎯 Hero Section</h3>
                                 <div style="display:grid;gap:1rem;">
-                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hiw-title" value="${h('heroTitle','How SkillBridge Africa Works')}"></div>
+                                    <div><label class="elabel">Hero Title</label><input type="text" id="ec-hiw-title" value="${h('heroTitle','How GoArtisan Works')}"></div>
                                     <div><label class="elabel">Hero Subtitle</label><textarea id="ec-hiw-sub" rows="2">${h('heroSub',"A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions.")}</textarea></div>
                                 </div>
                             </div>
@@ -1131,7 +1133,7 @@
                             <div class="edit-card" style="margin-bottom:1.2rem;">
                                 <h3 style="color:#FF9900;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">🎯 Hero Banner</h3>
                                 <div style="display:grid;gap:1rem;">
-                                    <div><label class="elabel">Page Title</label><input type="text" id="ec-adv-title" value="${advertCMS.title || 'Advertise on SkillBridge Africa'}"></div>
+                                    <div><label class="elabel">Page Title</label><input type="text" id="ec-adv-title" value="${advertCMS.title || 'Advertise on GoArtisan'}"></div>
                                     <div><label class="elabel">Subtitle / Tagline</label><textarea id="ec-adv-subtitle" rows="2">${advertCMS.subtitle || 'Reach thousands of artisans, homeowners, and contractors across all 16 regions of Ghana.'}</textarea></div>
                                 </div>
                             </div>
@@ -1174,7 +1176,7 @@
                             <div class="edit-card" style="margin-bottom:1.5rem;">
                                 <h3 style="color:#FF9900;font-family:'Poppins',sans-serif;font-size:1rem;margin-bottom:1rem;">📋 Terms & Guidelines Text</h3>
                                 <div><label class="elabel">Terms checkbox label (shown on the application form)</label>
-                                    <textarea id="ec-adv-terms" rows="3">${advertCMS.terms || "I agree that my advertisement must comply with SkillBridge Africa's content guidelines. No misleading claims, no inappropriate content. Admin reserves the right to reject any application."}</textarea>
+                                    <textarea id="ec-adv-terms" rows="3">${advertCMS.terms || "I agree that my advertisement must comply with GoArtisan's content guidelines. No misleading claims, no inappropriate content. Admin reserves the right to reject any application."}</textarea>
                                 </div>
                             </div>
 
@@ -1352,7 +1354,155 @@
                         </div>`;
                     break;
                 } // end customers block
+
+                case 'user-roles': {
+                    const allRoles = await fetchCollection('userRoles');
+                    const roleMap  = {};
+                    allRoles.forEach(r => { roleMap[r.email] = r; });
+
+                    const ROLES = [
+                        { value:'artisan',         label:'🔨 Artisan',         color:'006600', desc:'Receives job requests, posts work updates' },
+                        { value:'customer',         label:'👤 Customer',         color:'1e90ff', desc:'Books artisans, views quotations, makes payments' },
+                        { value:'field_agent',      label:'🚗 Field Agent',      color:'FF9900', desc:'Onboards artisans in assigned region' },
+                        { value:'regional_admin',   label:'🏛️ Regional Admin',   color:'9b59b6', desc:'Manages artisans & jobs in their region' },
+                        { value:'super_admin',      label:'🛡️ Super Admin',      color:'CE1126', desc:'Full platform access — all admin functions' },
+                        { value:'content_editor',   label:'✏️ Content Editor',   color:'25D366', desc:'Edits website content and manages ads' },
+                        { value:'support_agent',    label:'🎧 Support Agent',    color:'cd7f32', desc:'Views jobs, responds to enquiries' },
+                        { value:'finance_officer',  label:'💰 Finance Officer',  color:'1565C0', desc:'Views payments, approves payouts, generates reports' },
+                    ];
+                    const roleColors = Object.fromEntries(ROLES.map(r => [r.value, r.color]));
+
+                    const allUsers = [
+                        ...sampleArtisans.map(a => ({
+                            email: a.email, name: a.name, phone: a.phone||'—',
+                            utype: 'Artisan', currentRole: roleMap[a.email]?.role || 'artisan',
+                            docId: roleMap[a.email]?._docId || ''
+                        })),
+                        ...sampleClients.map(c => ({
+                            email: c.email, name: c.name, phone: c.phone||'—',
+                            utype: 'Customer', currentRole: roleMap[c.email]?.role || 'customer',
+                            docId: roleMap[c.email]?._docId || ''
+                        }))
+                    ].sort((a,b) => a.name.localeCompare(b.name));
+
+                    el.innerHTML = `
+                        <h2 style="color:#006600;margin-bottom:0.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-user-shield"></i> User Role Management</h2>
+                        <p style="color:#888;font-size:0.88rem;margin-bottom:1.2rem;">Assign roles to control what each user can access on the platform.</p>
+
+                        <!-- Role Legend -->
+                        <div class="edit-card" style="margin-bottom:1.2rem;">
+                            <div style="font-weight:700;color:#006600;font-size:0.9rem;margin-bottom:0.8rem;font-family:'Poppins',sans-serif;">Available Roles</div>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;">
+                                ${ROLES.map(r => `
+                                <div style="background:#${r.color}11;border:1.5px solid #${r.color}44;border-radius:8px;padding:8px 12px;">
+                                    <div style="font-weight:700;color:#${r.color};font-size:0.83rem;">${r.label}</div>
+                                    <div style="font-size:0.73rem;color:#666;margin-top:2px;">${r.desc}</div>
+                                </div>`).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Search & Filter -->
+                        <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;">
+                            <input type="text" id="role-search" placeholder="Search name or email…" oninput="filterRoleTable()"
+                                style="flex:1;min-width:180px;padding:9px 14px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:0.85rem;">
+                            <select id="role-filter-type" onchange="filterRoleTable()" style="padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:0.85rem;">
+                                <option value="">All Users</option>
+                                <option value="Artisan">Artisans Only</option>
+                                <option value="Customer">Customers Only</option>
+                            </select>
+                        </div>
+
+                        <!-- Users Table -->
+                        <div class="table-wrap">
+                            <table id="roles-table">
+                                <thead><tr>
+                                    <th>Name</th><th>Email</th><th>Type</th>
+                                    <th>Current Role</th><th>Assign Role</th><th>Action</th>
+                                </tr></thead>
+                                <tbody>
+                                ${allUsers.map((u,i) => `
+                                <tr id="role-row-${i}" data-name="${u.name.toLowerCase()}" data-email="${u.email.toLowerCase()}" data-utype="${u.utype}">
+                                    <td><strong>${u.name}</strong><br><span style="font-size:0.75rem;color:#888;">${u.phone}</span></td>
+                                    <td style="font-size:0.82rem;">${u.email}</td>
+                                    <td><span style="background:#${u.utype==='Artisan'?'006600':'1e90ff'}22;color:#${u.utype==='Artisan'?'006600':'1e90ff'};padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700;">${u.utype}</span></td>
+                                    <td><span id="role-badge-${i}" style="background:#${roleColors[u.currentRole]||'888888'}22;color:#${roleColors[u.currentRole]||'888888'};padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700;">
+                                        ${ROLES.find(r=>r.value===u.currentRole)?.label||u.currentRole}
+                                    </span></td>
+                                    <td>
+                                        <select id="role-select-${i}" style="padding:6px 10px;border:1.5px solid #ddd;border-radius:6px;font-family:inherit;font-size:0.82rem;min-width:160px;">
+                                            ${ROLES.map(r=>`<option value="${r.value}" ${r.value===u.currentRole?'selected':''}>${r.label}</option>`).join('')}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button onclick="saveUserRole(${i},'${u.email}','${u.name}','${u.utype}','${u.docId}')"
+                                            style="padding:6px 14px;background:#006600;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;">
+                                            <i class="fas fa-save"></i> Save
+                                        </button>
+                                    </td>
+                                </tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top:1rem;padding:0.8rem 1.2rem;background:#f0f9f0;border-radius:10px;font-size:0.82rem;color:#555;">
+                            <i class="fas fa-info-circle" style="color:#006600;"></i>
+                            Role changes take effect on the user's next login. Only assign <strong>Super Admin</strong> to trusted team members.
+                        </div>`;
+                    break;
+                } // end user-roles block
+
             }
+        }
+
+        // ---- User Role Management ----
+        async function saveUserRole(idx, email, name, utype, existingDocId) {
+            const sel  = document.getElementById(`role-select-${idx}`);
+            const role = sel?.value;
+            if (!role) return;
+
+            const roleData = { email, name, utype, role, updatedAt: new Date().toISOString() };
+
+            if (existingDocId && existingDocId !== 'null' && existingDocId !== '') {
+                await saveDoc('userRoles', existingDocId, roleData);
+            } else {
+                const newId = await addDoc_('userRoles', roleData);
+                existingDocId = newId;
+            }
+
+            // Update the badge display inline
+            const ROLE_LABELS = {
+                artisan:'🔨 Artisan', customer:'👤 Customer', field_agent:'🚗 Field Agent',
+                regional_admin:'🏛️ Regional Admin', super_admin:'🛡️ Super Admin',
+                content_editor:'✏️ Content Editor', support_agent:'🎧 Support Agent',
+                finance_officer:'💰 Finance Officer'
+            };
+            const ROLE_COLORS = {
+                artisan:'006600', customer:'1e90ff', field_agent:'FF9900',
+                regional_admin:'9b59b6', super_admin:'CE1126', content_editor:'25D366',
+                support_agent:'cd7f32', finance_officer:'1565C0'
+            };
+            const badge = document.getElementById(`role-badge-${idx}`);
+            if (badge) {
+                const col = ROLE_COLORS[role] || '888888';
+                badge.style.background = `#${col}22`;
+                badge.style.color      = `#${col}`;
+                badge.textContent      = ROLE_LABELS[role] || role;
+            }
+
+            showNotification(`✅ Role "${ROLE_LABELS[role]||role}" assigned to ${name}`, 'success');
+        }
+
+        function filterRoleTable() {
+            const search = (document.getElementById('role-search')?.value || '').toLowerCase();
+            const type   = document.getElementById('role-filter-type')?.value || '';
+            const rows   = document.querySelectorAll('#roles-table tbody tr');
+            rows.forEach(row => {
+                const nm    = row.dataset.name  || '';
+                const em    = row.dataset.email || '';
+                const ut    = row.dataset.utype || '';
+                const matchSearch = !search || nm.includes(search) || em.includes(search);
+                const matchType   = !type   || ut === type;
+                row.style.display = (matchSearch && matchType) ? '' : 'none';
+            });
         }
 
         // ---- ECOWAS Card auto-formatter (shared by register & edit forms) ----
@@ -1438,8 +1588,8 @@
                         <div>
                             <label class="elabel">Subscription Tier</label>
                             <select id="ea-tier" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
-                                ${['SkillBridge','Bronze','Silver','Gold','Platinum','Diamond'].map(t =>
-                                    `<option value="${t}" ${(a.subscriptionTier||'SkillBridge')===t?'selected':''}>${t==='Diamond'?'💎 Diamond':t==='Platinum'?'🏆 Platinum':t==='Gold'?'🥇 Gold':t==='Silver'?'🥈 Silver':t==='Bronze'?'🥉 Bronze':'🌿 SkillBridge (Free)'}</option>`
+                                ${['GoArtisan','Bronze','Silver','Gold','Platinum','Diamond'].map(t =>
+                                    `<option value="${t}" ${(a.subscriptionTier||'GoArtisan')===t?'selected':''}>${t==='Diamond'?'💎 Diamond':t==='Platinum'?'🏆 Platinum':t==='Gold'?'🥇 Gold':t==='Silver'?'🥈 Silver':t==='Bronze'?'🥉 Bronze':'🌿 GoArtisan (Free)'}</option>`
                                 ).join('')}
                             </select>
                         </div>
@@ -1476,7 +1626,7 @@
                 skills: g('ea-skills').split(',').map(s => s.trim()).filter(Boolean),
                 bio: g('ea-bio'), address: g('ea-address'),
                 verified: document.getElementById('ea-verified').checked,
-                subscriptionTier: g('ea-tier') || 'SkillBridge',
+                subscriptionTier: g('ea-tier') || 'GoArtisan',
             };
             await saveArtisanProfile(sampleArtisans[idx]);
             showNotification('Artisan updated successfully!', 'success');
@@ -1620,7 +1770,7 @@
                 dailyRate: parseFloat(g('ar-daily-rate')) || 0,
                 bio: g('ar-bio'), idType, idNumber,
                 platformId, idIssueDate: issueDate, idExpiryDate: expiryDate,
-                subscriptionTier: 'SkillBridge',
+                subscriptionTier: 'GoArtisan',
                 rating: 0, completedJobs: 0,
                 verified: document.getElementById('ar-verified').checked,
                 credentials: [], jobRequests: [], payments: [], workUpdates: [], portfolio: [],
@@ -1900,7 +2050,7 @@ Please contact the customer to schedule the work.`;
             doc.rect(0, 0, 210, 32, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-            doc.text('SkillBridge Africa', 14, 13);
+            doc.text('GoArtisan', 14, 13);
             doc.setFontSize(11); doc.setFont('helvetica', 'normal');
             doc.text('Official Service Receipt', 14, 22);
             doc.text(`Date: ${today}`, 196, 22, { align: 'right' });
@@ -1932,11 +2082,11 @@ Please contact the customer to schedule the work.`;
 
             doc.setFontSize(10); doc.setFont('helvetica', 'normal');
             doc.text(`Receipt Reference: ${ref}`, 14, 90);
-            doc.text(`Issued by: SkillBridge Africa Admin`, 14, 97);
+            doc.text(`Issued by: GoArtisan Admin`, 14, 97);
             doc.text(`Payment Status: PAID`, 14, 104);
 
             doc.setFontSize(8); doc.setTextColor(150, 150, 150);
-            doc.text('This is an official receipt from SkillBridge Africa Platform.', 105, 287, { align: 'center' });
+            doc.text('This is an official receipt from GoArtisan Platform.', 105, 287, { align: 'center' });
 
             doc.save(`Receipt_${clientName.replace(/\s/g,'_')}_${today.replace(/\//g,'-')}.pdf`);
 
@@ -1965,7 +2115,7 @@ Please contact the customer to schedule the work.`;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const today = new Date().toLocaleDateString('en-GH');
-            const logo  = 'SkillBridge Africa Platform';
+            const logo  = 'GoArtisan Platform';
 
             // Header helper
             function addHeader(title) {
@@ -2096,7 +2246,7 @@ Please contact the customer to schedule the work.`;
                 doc.setFontSize(13); doc.setFont('helvetica','bold');
                 doc.text(`Total Amount: ${amtNum > 0 ? '₵' + amtNum.toFixed(2) : 'To Be Confirmed'}`, 14, doc.lastAutoTable.finalY + 15);
                 doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(150,150,150);
-                doc.text('SkillBridge Africa Platform — Connecting Clients with Verified Artisans across Ghana', 105, 285, { align: 'center' });
+                doc.text('GoArtisan Platform — Connecting Clients with Verified Artisans across Ghana', 105, 285, { align: 'center' });
                 doc.save(`Invoice_${r.clientName.replace(/ /g,'_')}_${today.replace(/\//g,'-')}.pdf`);
             }
         }
@@ -2424,7 +2574,7 @@ Please contact the customer to schedule the work.`;
             doc.setFillColor(...tc); doc.rect(75, 0, 10, 54, 'F');
 
             doc.setTextColor(255, 215, 0); doc.setFontSize(7); doc.setFont('helvetica','bold');
-            doc.text('SKILLBRIDGE AFRICA', 5, 6);
+            doc.text('GOARTISAN', 5, 6);
             doc.setTextColor(255,255,255); doc.setFontSize(5); doc.setFont('helvetica','normal');
             doc.text('Verified Artisan ID Card', 5, 11);
 
@@ -2445,7 +2595,7 @@ Please contact the customer to schedule the work.`;
             doc.setFontSize(4); doc.setFont('helvetica','normal'); doc.setTextColor(200,200,200);
             doc.text(`ID No.: ${a.idNumber||'—'}  |  Issued: ${a.idIssueDate||'—'}  |  Expires: ${a.idExpiryDate||'—'}`, 5, 51);
 
-            doc.save(`SkillBridge_ID_${a.name.replace(/\s/g,'_')}.pdf`);
+            doc.save(`GoArtisan_ID_${a.name.replace(/\s/g,'_')}.pdf`);
             showNotification(`ID Card PDF for ${a.name} downloaded!`, 'success');
         }
 
@@ -2545,9 +2695,9 @@ Please contact the customer to schedule the work.`;
             doc.setFillColor(0, 102, 0); doc.rect(0, 0, 210, 35, 'F');
             doc.setTextColor(255,255,255);
             doc.setFontSize(20); doc.setFont('helvetica','bold');
-            doc.text('SkillBridge Africa', 14, 14);
+            doc.text('GoArtisan', 14, 14);
             doc.setFontSize(10); doc.setFont('helvetica','normal');
-            doc.text('Connecting Skilled Hands to Every Home', 14, 22);
+            doc.text('Verified Artisans, Just One Tap Away', 14, 22);
             doc.setFontSize(16); doc.setFont('helvetica','bold');
             doc.text('PRICE QUOTATION', 196, 14, { align: 'right' });
             doc.setFontSize(9); doc.setFont('helvetica','normal');
@@ -2611,7 +2761,7 @@ Please contact the customer to schedule the work.`;
 
             // Footer
             doc.setFontSize(7); doc.setTextColor(150,150,150);
-            doc.text('SkillBridge Africa — Connecting Skilled Hands to Every Home', 105, 287, { align:'center' });
+            doc.text('GoArtisan — Verified Artisans, Just One Tap Away', 105, 287, { align:'center' });
             doc.text('This quotation is valid for the stated period. Payment confirms acceptance of terms.', 105, 291, { align:'center' });
 
             const pdfBase64 = doc.output('datauristring');
