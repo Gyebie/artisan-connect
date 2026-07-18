@@ -1,12 +1,12 @@
 // =============================================
 //  paystack-config.js
-//  SkillBridge Africa — Paystack Configuration
+//  GoArtisan — Paystack Configuration
 //  Add this script to all payment pages.
 //  Get your key from: https://dashboard.paystack.com/#/settings/developer
 // =============================================
 
 // ← PASTE YOUR PAYSTACK PUBLIC KEY HERE (starts with pk_test_ or pk_live_)
-window.SKILLBRIDGE_PAYSTACK_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+window.GOARTISAN_PAYSTACK_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
 // Instructions:
 // 1. Go to https://dashboard.paystack.com/#/settings/developer
