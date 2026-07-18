@@ -1,5 +1,5 @@
 // =============================================
-//  GhanaArtisan - Firebase Firestore Backend
+//  GoArtisan - Firebase Firestore Backend
 //  Replace your old data.js with this file.
 //  Follow FIREBASE_SETUP_GUIDE.md to configure.
 // =============================================
@@ -70,7 +70,7 @@ const categories = [
     { id: "homecare",     name: "Home Care",                     icon: "fa-hand-holding-heart" }
 ];
 
-const adminCredentials = { username: "ARTISANCONNECT", password: "3767 ARTISANCONNECT" };
+const adminCredentials = { username: "GOARTISAN", password: "3767 GOARTISAN" };
 
 // ── 4. In-memory caches (populated from Firestore on page load) ───────────────
 let sampleArtisans  = [];
@@ -170,7 +170,7 @@ async function saveArtisanProfile(profile) {
         const merged = { _docId: docId, ...profile };
         if (idx >= 0) sampleArtisans[idx] = merged; else sampleArtisans.push(merged);
         // Keep session storage for current-user quick access
-        sessionStorage.setItem("ghanaArtisanProfile", JSON.stringify(profile));
+        sessionStorage.setItem("goArtisanProfile", JSON.stringify(profile));
     } catch (err) {
         console.error("[Firebase] saveArtisanProfile failed:", err);
         showNotification("Error saving profile. Please try again.", "error");
@@ -179,12 +179,12 @@ async function saveArtisanProfile(profile) {
 
 function loadArtisanProfile() {
     // Returns the currently logged-in artisan from session storage
-    const p = sessionStorage.getItem("ghanaArtisanProfile");
+    const p = sessionStorage.getItem("goArtisanProfile");
     return p ? JSON.parse(p) : null;
 }
 
 function clearArtisanProfile() {
-    sessionStorage.removeItem("ghanaArtisanProfile");
+    sessionStorage.removeItem("goArtisanProfile");
 }
 
 function loadArtisanPool() {
@@ -208,7 +208,7 @@ async function saveClientProfile(profile) {
         const idx = sampleClients.findIndex(c => c.email === profile.email);
         const merged = { _docId: docId, ...profile };
         if (idx >= 0) sampleClients[idx] = merged; else sampleClients.push(merged);
-        sessionStorage.setItem("ghanaClientProfile", JSON.stringify(profile));
+        sessionStorage.setItem("goArtisanClientProfile", JSON.stringify(profile));
     } catch (err) {
         console.error("[Firebase] saveClientProfile failed:", err);
         showNotification("Error saving profile. Please try again.", "error");
@@ -216,12 +216,12 @@ async function saveClientProfile(profile) {
 }
 
 function loadClientProfile() {
-    const p = sessionStorage.getItem("ghanaClientProfile");
+    const p = sessionStorage.getItem("goArtisanClientProfile");
     return p ? JSON.parse(p) : null;
 }
 
 function clearClientProfile() {
-    sessionStorage.removeItem("ghanaClientProfile");
+    sessionStorage.removeItem("goArtisanClientProfile");
 }
 
 /** @deprecated — use initAppData() instead. Kept for backward compatibility. */
@@ -271,14 +271,14 @@ async function updateServiceRequest(docId, changes) {
 // ── 10. Session helpers (use sessionStorage so session ends on tab close) ─────
 
 function saveUser(user) {
-    sessionStorage.setItem("ghanaArtisanUser", JSON.stringify(user));
+    sessionStorage.setItem("goArtisanUser", JSON.stringify(user));
 }
 function loadUser() {
-    const u = sessionStorage.getItem("ghanaArtisanUser");
+    const u = sessionStorage.getItem("goArtisanUser");
     return u ? JSON.parse(u) : null;
 }
 function clearUser() {
-    sessionStorage.removeItem("ghanaArtisanUser");
+    sessionStorage.removeItem("goArtisanUser");
 }
 
 // ── 11. Shared UI helpers (unchanged) ─────────────────────────────────────────
