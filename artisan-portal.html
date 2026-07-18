@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artisan Dashboard - SkillBridge Africa</title>
+    <title>Artisan Dashboard - GoArtisan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -357,7 +357,7 @@
                     <div style="margin-bottom:1.5rem;">
                         <label class="flabel">Subscription Plan</label>
                         <p style="font-size:0.78rem;color:#888;margin:4px 0 10px;">
-                            🌿 <strong>SkillBridge (Free)</strong> is the default plan. Upgrade to a paid tier to get more visibility, priority placement, and more job requests. Payment is processed via Paystack and requires admin approval.
+                            🌿 <strong>GoArtisan (Free)</strong> is the default plan. Upgrade to a paid tier to get more visibility, priority placement, and more job requests. Payment is processed via Paystack and requires admin approval.
                         </p>
                         <div id="subscription-tier-display"></div>
                     </div>
@@ -1092,7 +1092,7 @@
             doc.rect(0, 0, 210, 32, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-            doc.text('SkillBridge Africa', 14, 13);
+            doc.text('GoArtisan', 14, 13);
             doc.setFontSize(11); doc.setFont('helvetica', 'normal');
             doc.text('Monthly Payslip', 14, 22);
             doc.text(`Generated: ${today}`, 196, 22, { align: 'right' });
@@ -1126,9 +1126,9 @@
 
             // Footer
             doc.setFontSize(8); doc.setTextColor(150, 150, 150);
-            doc.text('SkillBridge Africa Platform — Connecting Clients with Verified Artisans across Ghana', 105, 287, { align: 'center' });
+            doc.text('GoArtisan Platform — Connecting Clients with Verified Artisans across Ghana', 105, 287, { align: 'center' });
 
-            doc.save(`SkillBridge Africa_Payslip_${artisan.name.replace(/\s/g,'_')}_${month.replace(/\s/g,'_')}.pdf`);
+            doc.save(`GoArtisan_Payslip_${artisan.name.replace(/\s/g,'_')}_${month.replace(/\s/g,'_')}.pdf`);
             showNotification('Payslip downloaded as PDF!', 'success');
         }
 
@@ -1201,11 +1201,11 @@
                 artisan.idExpiryDate = artisan.idExpiryDate || new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
                 changed = true;
             }
-            // Fix old accounts that defaulted to Bronze — should be SkillBridge (free)
+            // Fix old accounts that defaulted to Bronze — should be GoArtisan (free)
             if (!artisan.subscriptionTier || artisan.subscriptionTier === 'Bronze') {
-                // Only reset to SkillBridge if no payment was ever made
+                // Only reset to GoArtisan if no payment was ever made
                 if (!artisan.pendingTierRef && !artisan.pendingTierPaid) {
-                    artisan.subscriptionTier = 'SkillBridge';
+                    artisan.subscriptionTier = 'GoArtisan';
                     changed = true;
                 }
             }
@@ -1215,16 +1215,16 @@
         function renderIDCard() {
             const el = document.getElementById('id-card-content');
             if (!artisan) { el.innerHTML = '<p style="color:#CE1126;text-align:center;padding:2rem;">Please reload the page and try again.</p>'; return; }
-            const tier       = artisan.subscriptionTier || 'SkillBridge';
-            const tierColors = { SkillBridge:'#006600', Bronze:'#cd7f32', Silver:'#808080', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
-            const tierLabel  = tier === 'SkillBridge' ? '🌿 Free' : tier;
+            const tier       = artisan.subscriptionTier || 'GoArtisan';
+            const tierColors = { GoArtisan:'#006600', Bronze:'#cd7f32', Silver:'#808080', Gold:'#FFD700', Platinum:'#1e90ff', Diamond:'#9b59b6' };
+            const tierLabel  = tier === 'GoArtisan' ? '🌿 Free' : tier;
             const platformId = artisan.platformId || generatePlatformId(artisan) || '—';
             el.innerHTML = `
                 <div style="background:linear-gradient(135deg,#006600 0%,#004d00 60%,#FFD700 100%);border-radius:16px;padding:1.5rem;color:white;max-width:340px;margin:0 auto;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
                     <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:rgba(255,215,0,0.08);border-radius:50%;transform:translate(30px,-30px);"></div>
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
                         <div>
-                            <div style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;margin-bottom:2px;">SKILLBRIDGE AFRICA</div>
+                            <div style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;margin-bottom:2px;">GOARTISAN</div>
                             <div style="font-size:0.72rem;opacity:0.75;">Verified Artisan ID Card</div>
                         </div>
                         <span style="background:${tierColors[tier]||'#006600'};color:${(tier==='Gold'||tier==='Bronze')?'#333':'white'};padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;">${tierLabel}</span>
@@ -1254,7 +1254,7 @@
                     </div>
                     <div style="margin-top:0.8rem;text-align:center;">
                         <i class="fas fa-check-circle" style="color:#FFD700;"></i>
-                        <span style="font-size:0.72rem;margin-left:4px;">Verified & Approved by SkillBridge Africa</span>
+                        <span style="font-size:0.72rem;margin-left:4px;">Verified & Approved by GoArtisan</span>
                     </div>
                 </div>`;
         }
@@ -1281,7 +1281,7 @@
             // Header
             doc.setTextColor(255, 215, 0);
             doc.setFontSize(7); doc.setFont('helvetica','bold');
-            doc.text('SKILLBRIDGE AFRICA', 5, 6);
+            doc.text('GOARTISAN', 5, 6);
             doc.setTextColor(255,255,255);
             doc.setFontSize(5); doc.setFont('helvetica','normal');
             doc.text('Verified Artisan ID Card', 5, 11);
@@ -1314,7 +1314,7 @@
             const expDate = artisan.idExpiryDate || new Date(Date.now()+365*24*60*60*1000).toISOString().split('T')[0];
             doc.text(`Issued: ${issDate}   Expires: ${expDate}`, 5, 51);
 
-            doc.save(`SkillBridge_ID_${artisan.name.replace(/\s/g,'_')}.pdf`);
+            doc.save(`GoArtisan_ID_${artisan.name.replace(/\s/g,'_')}.pdf`);
             showNotification('ID Card downloaded as PDF!', 'success');
         }
 
@@ -1416,7 +1416,7 @@
 
         // ---- Subscription Tier System ----
         const TIER_CONFIG = {
-            'SkillBridge': { price: 0,    color: '#006600', icon: '🌿', label: 'Free', features: ['Listed on platform','Basic profile','Up to 5 job requests/month'] },
+            'GoArtisan': { price: 0,    color: '#006600', icon: '🌿', label: 'Free', features: ['Listed on platform','Basic profile','Up to 5 job requests/month'] },
             'Bronze':      { price: 50,   color: '#cd7f32', icon: '🥉', label: 'GHS 50/month', features: ['All Free features','Priority in search results','Up to 20 jobs/month','Verified badge'] },
             'Silver':      { price: 100,  color: '#808080', icon: '🥈', label: 'GHS 100/month', features: ['All Bronze features','Featured in region','Unlimited job requests','Portfolio gallery'] },
             'Gold':        { price: 200,  color: '#FFD700', icon: '🥇', label: 'GHS 200/month', features: ['All Silver features','Top search placement','Dedicated support','Monthly performance report'] },
@@ -1427,9 +1427,9 @@
         function renderSubscriptionTiers() {
             const el = document.getElementById('subscription-tier-display');
             if (!el) return;
-            // Normalize: if tier is Bronze but no payment ref, treat as SkillBridge
+            // Normalize: if tier is Bronze but no payment ref, treat as GoArtisan
         const rawTier = artisan?.subscriptionTier;
-        const current = (!rawTier || rawTier === 'SkillBridge') ? 'SkillBridge' : rawTier;
+        const current = (!rawTier || rawTier === 'GoArtisan') ? 'GoArtisan' : rawTier;
             const pending  = artisan?.pendingTier;
 
             el.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:8px;';
@@ -1454,7 +1454,7 @@
                         : isPending
                         ? `<div style="text-align:center;padding:6px;background:#fff8e6;border-radius:8px;font-size:0.72rem;font-weight:700;color:#FF9900;">Awaiting Admin Approval</div>`
                         : isFree
-                        ? `<button onclick="subscribeToTier('SkillBridge',0)" style="width:100%;padding:7px;background:#006600;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.75rem;font-family:inherit;">Downgrade to Free</button>`
+                        ? `<button onclick="subscribeToTier('GoArtisan',0)" style="width:100%;padding:7px;background:#006600;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.75rem;font-family:inherit;">Downgrade to Free</button>`
                         : `<button onclick="subscribeToTier('${name}',${cfg.price})" style="width:100%;padding:7px;background:linear-gradient(135deg,${cfg.color},${cfg.color}cc);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.75rem;font-family:inherit;">Subscribe — GHS ${cfg.price}</button>`
                     }
                 </div>`;
@@ -1463,18 +1463,18 @@
 
         function subscribeToTier(tierName, amount) {
             if (amount === 0) {
-                if (confirm('Downgrade to the free SkillBridge plan?')) {
-                    artisan.subscriptionTier = 'SkillBridge';
+                if (confirm('Downgrade to the free GoArtisan plan?')) {
+                    artisan.subscriptionTier = 'GoArtisan';
                     artisan.pendingTier = null;
                     saveArtisanProfile(artisan).then(() => {
-                        showNotification('Downgraded to free SkillBridge plan.', 'info');
+                        showNotification('Downgraded to free GoArtisan plan.', 'info');
                         renderSubscriptionTiers();
                     });
                 }
                 return;
             }
 
-            const PAYSTACK_KEY = window.SKILLBRIDGE_PAYSTACK_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Set via window.SKILLBRIDGE_PAYSTACK_KEY or replace directly
+            const PAYSTACK_KEY = window.GOARTISAN_PAYSTACK_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // ← Set via window.GOARTISAN_PAYSTACK_KEY or replace directly
 
             // Check if key is still placeholder
             if (PAYSTACK_KEY === 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') {
@@ -1490,7 +1490,7 @@
                 }
                 const handler = PaystackPop.setup({
                     key:      PAYSTACK_KEY,
-                    email:    artisan?.email || 'artisan@skillbridge.africa',
+                    email:    artisan?.email || 'artisan@goartisan.gh',
                     amount:   Math.round(amount * 100),
                     currency: 'GHS',
                     ref:      `TIER-${tierName}-${Date.now()}`,
