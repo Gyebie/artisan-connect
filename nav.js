@@ -1,5 +1,5 @@
 // =============================================
-//  SkillBridge Africa - Shared Navigation
+//  GoArtisan - Shared Navigation
 // =============================================
 
 function renderNavbar(activePage) {
@@ -13,7 +13,7 @@ function renderNavbar(activePage) {
                 <div class="nav-container">
                     <a href="index.html" class="logo" style="font-size:1.4rem;">
                         <i class="fas fa-hands-helping" style="-webkit-text-fill-color:#006600;color:#006600;"></i>
-                        SkillBridge Africa
+                        GoArtisan
                     </a>
                     <div style="display:flex;align-items:center;gap:0.8rem;">
                         <div class="user-pill">
@@ -39,7 +39,7 @@ function renderNavbar(activePage) {
                 <div class="nav-container">
                     <a href="index.html" class="logo" style="font-size:1.4rem;">
                         <i class="fas fa-hands-helping" style="-webkit-text-fill-color:#006600;color:#006600;"></i>
-                        SkillBridge Africa
+                        GoArtisan
                     </a>
                     <div style="display:flex;align-items:center;gap:0.8rem;">
                         <div class="user-pill" style="background:rgba(0,102,0,0.08);color:#006600;border:1px solid rgba(0,102,0,0.2);">
@@ -102,7 +102,7 @@ function renderNavbar(activePage) {
             <div class="nav-container">
                 <a href="index.html" class="logo">
                     <i class="fas fa-hands-helping" style="-webkit-text-fill-color:#006600;color:#006600;"></i>
-                    SkillBridge Africa
+                    GoArtisan
                 </a>
                 <div class="nav-links">
                     ${links}
