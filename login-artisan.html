@@ -700,6 +700,10 @@
             const password = document.getElementById('l-password').value;
             if (!email || !password) { showNotification('Please enter your email/phone and password', 'error'); return; }
 
+            // Always reload fresh data from Firebase before checking credentials
+            showNotification('Checking credentials...', 'info');
+            try { await initAppData(); } catch(e) { /* continue with cached data */ }
+
             // Check Firestore-loaded artisans (in sampleArtisans after initAppData)
             let artisan = sampleArtisans.find(a => (a.email === email || a.phone === email) && a.password === password);
 
