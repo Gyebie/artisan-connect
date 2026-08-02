@@ -453,6 +453,7 @@
             const identifier = document.getElementById('fp-identifier').value.trim();
             if (!identifier) { showNotification('Please enter your email or phone', 'error'); return; }
 
+            try { await initAppData(); } catch(e) {}
             let client = sampleClients.find(c => c.email === identifier || c.phone === identifier);
             if (!client) {
                 const saved = loadClientProfile();
@@ -529,6 +530,7 @@
             if (!email || !password) { showNotification('Please enter your email/phone and password', 'error'); return; }
 
             // Check Firestore-loaded clients
+            try { await initAppData(); } catch(e) {}
             let client = sampleClients.find(c => (c.email === email || c.phone === email) && c.password === password);
 
             // Fallback: check session profile (e.g. just registered this session)
