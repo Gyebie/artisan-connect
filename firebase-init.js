@@ -1,30 +1,255 @@
-// =============================================
-//  firebase-init.js
-//  Include in EVERY HTML page BEFORE data.js:
-//    <script type="module" src="firebase-init.js"></script>
-//    <script type="module" src="data.js"></script>
-// =============================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - GoArtisan</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="firebase-init.js"></script>
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        .hero-how {
+            background: var(--gradient-primary);
+            padding: 8rem 5% 4rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        .hero-how::after {
+            content:''; position:absolute; bottom:-1px; left:0; right:0; height:40px;
+            background: var(--light); clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .hero-how h1 { font-family:'Poppins',sans-serif; font-size:clamp(1.8rem,4vw,3rem); margin-bottom:1rem; }
+        .hero-how p  { opacity:.9; font-size:1.1rem; max-width:600px; margin:0 auto; }
 
-// ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────────
-// Get this from: Firebase Console → Project Settings → Your Apps → Web App
-const firebaseConfig = {
-    apiKey:            "AIzaSyAk-dVEwGWASpagLsrEfugDdOW6whykWr4",
-    authDomain:        "artisan-connect-34ed5.firebaseapp.com",
-    projectId:         "artisan-connect-34ed5",
-    storageBucket:     "artisan-connect-34ed5.firebasestorage.app",
-    messagingSenderId: "614514628028",
-    appId:             "1:614514628028:web:dcef0d1b15228d52e247b9",
-    measurementId:     "G-GBEJQGVNPX"
-};
-// ─────────────────────────────────────────────────────────────────────────────
+        .content-section { padding: 4rem 5%; max-width: 1000px; margin: 0 auto; }
 
-import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        /* Steps */
+        .steps-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem; margin-bottom: 4rem;
+        }
+        .step-card {
+            background: white; border-radius: 15px; padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07); text-align: center;
+            border-top: 5px solid #006600; position: relative; overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .step-card:nth-child(2) { border-top-color: #FF9900; }
+        .step-card:nth-child(3) { border-top-color: #CE1126; }
+        .step-card:nth-child(4) { border-top-color: #006600; }
+        .step-card:hover { transform: translateY(-5px); }
+        .step-num {
+            width: 50px; height: 50px; border-radius: 50%; background: #006600;
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; font-weight: 700; margin: 0 auto 1rem;
+        }
+        .step-card:nth-child(2) .step-num { background: #FF9900; }
+        .step-card:nth-child(3) .step-num { background: #CE1126; }
+        .step-card h3 { color: #006600; margin-bottom: 0.7rem; font-family:'Poppins',sans-serif; }
+        .step-card:nth-child(2) h3 { color: #FF9900; }
+        .step-card:nth-child(3) h3 { color: #CE1126; }
+        .step-card p  { color: #666; font-size: 0.95rem; line-height: 1.6; }
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+        /* Roles */
+        .roles-section {
+            background: white; border-radius: 15px; padding: 3rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07); margin-bottom: 3rem;
+        }
+        .roles-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem; margin-top: 2rem;
+        }
+        .role-card {
+            padding: 2rem; border-radius: 12px; text-align: center;
+        }
+        .role-card.artisan { background: rgba(0,102,0,0.05); border: 2px solid rgba(0,102,0,0.2); }
+        .role-card.client  { background: rgba(255,153,0,0.05); border: 2px solid rgba(255,153,0,0.2); }
+        .role-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .role-card.artisan .role-icon { color: #006600; }
+        .role-card.client  .role-icon { color: #FF9900; }
+        .role-card h3 { margin-bottom: 1rem; font-family:'Poppins',sans-serif; }
+        .role-card.artisan h3 { color: #006600; }
+        .role-card.client  h3 { color: #FF9900; }
+        .role-card ul { list-style: none; text-align: left; }
+        .role-card ul li { color: #555; padding: 6px 0; font-size: 0.95rem; display:flex;align-items:center;gap:8px; }
+        .role-card ul li::before { content:'✓'; font-weight:700; }
+        .role-card.artisan ul li::before { color:#006600; }
+        .role-card.client  ul li::before { color:#FF9900; }
 
-// Make Firestore instance available to data.js (data.js polls window.__db)
-window.__db = db;
+        /* ID Verification section */
+        .verify-section {
+            background: #006600; color: white; border-radius: 15px;
+            padding: 3rem; margin-bottom: 3rem; text-align: center;
+        }
+        .verify-section h2 { font-family:'Poppins',sans-serif; margin-bottom:1rem; }
+        .verify-section p  { opacity:.9; max-width:600px; margin:0 auto 2rem; line-height:1.7; }
+        .id-types {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem;
+        }
+        .id-type-badge {
+            background: rgba(255,255,255,0.15); padding: 8px 18px;
+            border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.3);
+        }
 
-console.log("[Firebase] Initialised ✓");
+        /* Categories */
+        .categories-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem; margin-top: 1.5rem;
+        }
+        .cat-card {
+            background: white; border-radius: 10px; padding: 1.2rem;
+            text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+            border: 1px solid rgba(0,102,0,0.1); transition: all 0.2s;
+            text-decoration: none;
+        }
+        .cat-card:hover { border-color: #006600; transform: translateY(-3px); }
+        .cat-card i { font-size: 1.6rem; color: #006600; margin-bottom: 0.5rem; display:block; }
+        .cat-card span { color: #333; font-size: 0.85rem; font-weight: 500; }
+
+        /* CTA */
+        .cta-row {
+            display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+
+    <div class="page-wrapper">
+        <!-- Hero -->
+        <div class="hero-how">
+            <h1 id="cms-hiw-title">How GoArtisan Works</h1>
+            <p id="cms-hiw-sub">A transparent, verified platform connecting Ghana's skilled workforce with clients across all 16 regions.</p>
+        </div>
+
+        <div class="content-section">
+            <!-- Steps -->
+            <h2 class="section-title" style="margin-bottom:0.5rem;">Simple 4-Step Process</h2>
+            <p class="section-sub">Whether you're hiring or offering services</p>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <h3 id="cms-step1-title">Register &amp; Verify</h3>
+                    <p id="cms-step1-desc">Create your account and upload a valid Ghana ID card. Our admin team verifies your identity within 24 hours.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <h3 id="cms-step2-title">Build Your Profile</h3>
+                    <p id="cms-step2-desc">Add your skills, experience, service category, and set your rate. Upload credentials and certificates.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <h3 id="cms-step3-title">Get Hired</h3>
+                    <p id="cms-step3-desc">Clients search by region and skill. You receive job requests directly and can accept or decline.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <h3 id="cms-step4-title">Get Paid</h3>
+                    <p id="cms-step4-desc">Receive secure payments via Paystack — Ghana's leading payment platform — directly to your account.</p>
+                </div>
+            </div>
+
+            <!-- Roles -->
+            <div class="roles-section">
+                <h2 class="section-title" style="text-align:left;margin-bottom:0;">Who Is It For?</h2>
+                <div class="roles-grid">
+                    <div class="role-card artisan">
+                        <div class="role-icon"><i class="fas fa-tools"></i></div>
+                        <h3>Artisans</h3>
+                        <ul>
+                            <li>Register and get ID-verified</li>
+                            <li>List your skills &amp; set your rate</li>
+                            <li>Receive job requests from clients</li>
+                            <li>Accept or decline requests</li>
+                            <li>Get paid securely via Paystack</li>
+                            <li>Build reviews &amp; grow your business</li>
+                        </ul>
+                    </div>
+                    <div class="role-card client">
+                        <div class="role-icon"><i class="fas fa-user-tie"></i></div>
+                        <h3>Clients</h3>
+                        <ul>
+                            <li>Create a free client account</li>
+                            <li>Search artisans by region &amp; skill</li>
+                            <li>View verified profiles &amp; ratings</li>
+                            <li>Send service requests directly</li>
+                            <li>Pay securely after job completion</li>
+                            <li>Leave ratings and reviews</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ID Verification -->
+            <div class="verify-section">
+                <h2><i class="fas fa-id-card"></i> ID Verification</h2>
+                <p>Every artisan on GoArtisan is verified using a valid Ghana government-issued ID. This ensures trust, safety, and accountability for both clients and artisans.</p>
+                <div class="id-types">
+                    <span class="id-type-badge"><i class="fas fa-check"></i> ECOWAS Card</span>
+                    <span class="id-type-badge"><i class="fas fa-check"></i> Voter's ID</span>
+                    <span class="id-type-badge"><i class="fas fa-check"></i> Driver's License</span>
+                    <span class="id-type-badge"><i class="fas fa-check"></i> Ghana Passport</span>
+                    <span class="id-type-badge"><i class="fas fa-check"></i> NHIS Card</span>
+                    <span class="id-type-badge"><i class="fas fa-check"></i> SSNIT Card</span>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <h2 class="section-title">Service Categories</h2>
+            <p class="section-sub">Find experts in 15 skilled trades across Ghana</p>
+            <div class="categories-grid">
+                <!-- Injected by JS -->
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-row">
+                <a href="login-artisan.html?tab=register" class="ghana-btn">
+                    <i class="fas fa-tools"></i> Register as Artisan
+                </a>
+                <a href="find-artisans.html" class="ghana-btn secondary">
+                    <i class="fas fa-search"></i> Find an Artisan
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+        document.getElementById('navbar-mount').innerHTML = renderNavbar('how-it-works');
+
+        // Populate categories
+        const grid = document.querySelector('.categories-grid');
+        categories.forEach(c => {
+            const a = document.createElement('a');
+            a.className = 'cat-card';
+            a.href = `find-artisans.html?category=${c.id}`;
+            a.innerHTML = `<i class="fas ${c.icon}"></i><span>${c.name}</span>`;
+            grid.appendChild(a);
+        });
+
+        // ---- Load editable content set by admin ----
+        (async function loadHowItWorksCMS() {
+            try {
+                await initAppData();
+                const docs = await fetchCollection('siteContent');
+                const cms  = docs.find(d => d._docId === 'how-it-works-page') || {};
+                if (cms.heroTitle) document.getElementById('cms-hiw-title').textContent = cms.heroTitle;
+                if (cms.heroSub)   document.getElementById('cms-hiw-sub').textContent   = cms.heroSub;
+                for (let i = 1; i <= 4; i++) {
+                    if (cms['step'+i+'Title']) document.getElementById(`cms-step${i}-title`).textContent = cms['step'+i+'Title'];
+                    if (cms['step'+i+'Desc'])  document.getElementById(`cms-step${i}-desc`).textContent  = cms['step'+i+'Desc'];
+                }
+            } catch(e) { /* fall back to default static content silently */ }
+        })();
+    </script>
+</body>
+</html>
