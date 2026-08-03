@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login - GoArtisan</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23006600%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%25%22 dominant-baseline=%22auto%22 text-anchor=%22middle%22>🤝</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="firebase-init.js"></script>
+    <script src="data.js"></script>
+    <script src="nav.js"></script>
+    <style id="shared-css"></style>
+    <style>
+        .page-bg {
+            min-height: 100vh;
+            display: grid; grid-template-columns: 1fr 1fr;
+            padding-top: 65px;
+        }
+        @media(max-width: 860px) { .page-bg { grid-template-columns: 1fr; } }
+
+        /* ---- Left panel ---- */
+        .left-panel {
+            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%);
+            padding: 3rem; display: flex; flex-direction: column;
+            justify-content: center; position: relative; overflow: hidden;
+        }
+        .left-panel::before {
+            content: ''; position: absolute; top: -80px; right: -80px;
+            width: 300px; height: 300px; border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .left-panel::after {
+            content: ''; position: absolute; bottom: -60px; left: -60px;
+            width: 250px; height: 250px; border-radius: 50%;
+            background: rgba(155,89,182,0.15);
+        }
+        @media(max-width: 860px) { .left-panel { display: none; } }
+
+        .left-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.9rem;
+            margin-bottom: 3rem; transition: color 0.2s;
+        }
+        .left-back:hover { color: white; }
+
+        .left-icon {
+            width: 90px; height: 90px; background: rgba(255,255,255,0.12);
+            border-radius: 24px; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; color: white; margin-bottom: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .left-panel h2 {
+            font-family: 'Poppins', sans-serif; color: white;
+            font-size: 2.2rem; margin-bottom: 1rem; line-height: 1.25;
+        }
+        .left-panel h2 span { color: #9b59b6; }
+        .left-panel p { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2.5rem; }
+
+        .left-perks { list-style: none; }
+        .left-perks li {
+            display: flex; align-items: center; gap: 12px;
+            color: rgba(255,255,255,0.9); font-size: 0.9rem; padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .left-perks li:last-child { border-bottom: none; }
+        .left-perks li .perk-icon {
+            width: 32px; height: 32px; background: rgba(255,255,255,0.15);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; color: white; flex-shrink: 0;
+        }
+
+        .left-trust {
+            margin-top: 2.5rem; background: rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .left-trust p {
+            color: white; font-size: 0.85rem; font-weight: 600;
+            margin-bottom: 0; opacity: 0.9;
+        }
+
+        /* ---- Right panel ---- */
+        .right-panel {
+            background: #fafafa; padding: 2.5rem;
+            display: flex; flex-direction: column; justify-content: center; overflow-y: auto;
+        }
+        .form-box { max-width: 420px; margin: 0 auto; width: 100%; }
+
+        .mobile-back {
+            display: none; align-items: center; gap: 8px;
+            color: #16213e; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        @media(max-width: 860px) { .mobile-back { display: inline-flex; } }
+
+        .form-title { font-family: 'Poppins', sans-serif; color: #16213e; font-size: 1.5rem; margin-bottom: 0.3rem; }
+        .form-sub   { color: #888; font-size: 0.88rem; margin-bottom: 1.8rem; line-height: 1.5; }
+
+        .form-stack { display: flex; flex-direction: column; gap: 1rem; }
+        .flabel { color: #555; font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 4px; }
+        .form-stack input {
+            width: 100%; padding: 12px 14px; border: 1.5px solid #ddd; border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-size: 0.95rem;
+        }
+        .form-stack input:focus { outline: none; border-color: #9b59b6; }
+
+        .pw-wrap { position: relative; }
+        .pw-wrap input { padding-right: 44px; }
+        .pw-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #888; cursor: pointer; font-size: 0.95rem; padding: 4px;
+        }
+        .pw-toggle:hover { color: #9b59b6; }
+
+        .submit-btn {
+            width: 100%; padding: 14px; background: #16213e; color: white; border: none;
+            border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(22,33,62,0.35);
+        }
+        .submit-btn:hover { background: #0f3460; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(22,33,62,0.4); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .switch-hint { text-align: center; color: #888; font-size: 0.85rem; margin-top: 0.6rem; }
+        .switch-hint a { color: #9b59b6; font-weight: 600; cursor: pointer; text-decoration: none; }
+
+        .role-strip { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .role-tag {
+            background: rgba(155,89,182,0.1); color: #9b59b6;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 600;
+            border: 1px solid rgba(155,89,182,0.2);
+        }
+
+        .flag-stripe { height: 5px; background: var(--gradient-ghana); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div id="navbar-mount"></div>
+    <div class="flag-stripe"></div>
+
+    <div class="page-bg">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <a href="index.html" class="left-back"><i class="fas fa-arrow-left"></i> Back to website</a>
+            <div class="left-icon"><i class="fas fa-user-shield"></i></div>
+            <h2>Staff <span>Portal</span></h2>
+            <p>Sign in with the account your Super Admin created for you to access your tools on the GoArtisan platform.</p>
+            <ul class="left-perks">
+                <li><span class="perk-icon"><i class="fas fa-car"></i></span> Field Agent</li>
+                <li><span class="perk-icon"><i class="fas fa-university"></i></span> Regional Admin</li>
+                <li><span class="perk-icon"><i class="fas fa-edit"></i></span> Content Editor</li>
+                <li><span class="perk-icon"><i class="fas fa-headset"></i></span> Support Agent</li>
+                <li><span class="perk-icon"><i class="fas fa-coins"></i></span> Finance Officer</li>
+            </ul>
+            <div class="left-trust">
+                <p><i class="fas fa-info-circle"></i> Don't have an account? Ask your Super Admin to add you under Role Assignment.</p>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="form-box">
+                <a href="index.html" class="mobile-back"><i class="fas fa-arrow-left"></i> Back</a>
+
+                <h2 class="form-title">Staff Login</h2>
+                <p class="form-sub">Sign in to your role-based GoArtisan dashboard.</p>
+
+                <div class="role-strip">
+                    <span class="role-tag">Field Agent</span>
+                    <span class="role-tag">Regional Admin</span>
+                    <span class="role-tag">Content Editor</span>
+                    <span class="role-tag">Support Agent</span>
+                    <span class="role-tag">Finance Officer</span>
+                </div>
+
+                <div class="form-stack">
+                    <div>
+                        <label class="flabel">Email</label>
+                        <input type="text" id="s-email" placeholder="Enter your work email">
+                    </div>
+                    <div>
+                        <label class="flabel">Password</label>
+                        <div class="pw-wrap">
+                            <input type="password" id="s-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter') doStaffLogin()">
+                            <button class="pw-toggle" type="button" onclick="togglePw('s-password', this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <button class="submit-btn" id="s-login-btn" onclick="doStaffLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <p class="switch-hint">Super Admin? <a href="admin.html">Login here instead</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shared-css').innerHTML = sharedCSS;
+
+        function togglePw(id, btn) {
+            const input = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        const ROLE_LABELS = {
+            super_admin:'Super Admin', regional_admin:'Regional Admin', field_agent:'Field Agent',
+            content_editor:'Content Editor', support_agent:'Support Agent', finance_officer:'Finance Officer'
+        };
+
+        async function doStaffLogin() {
+            const email    = document.getElementById('s-email').value.trim();
+            const password = document.getElementById('s-password').value;
+            if (!email || !password) { showNotification('Please enter your email and password', 'error'); return; }
+
+            const btn = document.getElementById('s-login-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
+            try {
+                const staffUsers = await fetchCollection('staffUsers');
+                const match = staffUsers.find(s => s.email === email && s.password === password);
+
+                if (!match) {
+                    showNotification('Invalid email or password', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                    return;
+                }
+
+                sessionStorage.setItem('goArtisanStaffSession', JSON.stringify({
+                    email: match.email, name: match.name, role: match.role, builtin: false
+                }));
+                showNotification(`Welcome, ${match.name}! (${ROLE_LABELS[match.role] || match.role})`, 'success');
+                window.location.href = 'admin.html';
+            } catch (err) {
+                console.error('[Staff Login] failed:', err);
+                showNotification('Could not load staff accounts. Check your internet connection.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+            }
+        }
+    </script>
+</body>
+</html>
