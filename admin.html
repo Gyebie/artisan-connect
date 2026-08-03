@@ -161,6 +161,10 @@
                 <button class="alm-btn" onclick="doAdminLogin()">
                     <i class="fas fa-sign-in-alt"></i> Login as Admin
                 </button>
+                <p style="text-align:center;font-size:0.82rem;color:#888;margin-top:0.9rem;">
+                    Field Agent / Regional Admin / Content Editor / Support Agent / Finance Officer?
+                    <a href="login-staff.html" style="color:#006600;font-weight:700;text-decoration:none;">Staff Login</a>
+                </p>
                 <a href="index.html" class="alm-back"><i class="fas fa-arrow-left"></i> Back to Website</a>
             </div>
         </div>
@@ -173,20 +177,19 @@
         <div class="admin-sidebar" id="admin-sidebar">
             <div class="sidebar-logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
             <div class="sidebar-sub">GoArtisan Management</div>
-            <button class="sbtn active" onclick="showSection('dashboard')"><i class="fas fa-chart-bar"></i> Dashboard</button>
-            <button class="sbtn" onclick="showSection('job-requests')"><i class="fas fa-clipboard-list"></i> Job Requests <span id="jr-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
-            <button class="sbtn" onclick="showSection('artisans')"><i class="fas fa-tools"></i> Artisans</button>
-            <button class="sbtn" onclick="showSection('customers')"><i class="fas fa-users"></i> Customers</button>
-            <button class="sbtn" onclick="showSection('user-roles')"><i class="fas fa-user-shield"></i> User Roles</button>
-            <button class="sbtn" onclick="showSection('user-roles')"><i class="fas fa-user-shield"></i> Role Assignment <span id="roles-badge" style="background:#9b59b6;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
-            <button class="sbtn" onclick="showSection('verifications')"><i class="fas fa-check-circle"></i> Verifications <span id="verify-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
-            <button class="sbtn" onclick="showSection('work-updates')"><i class="fas fa-camera"></i> Work Updates <span id="wu-badge" style="background:#1e90ff;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
-            <button class="sbtn" onclick="showSection('payments')"><i class="fas fa-credit-card"></i> Payments</button>
-            <button class="sbtn" onclick="showSection('build-house')"><i class="fas fa-home"></i> Build House <span id="bh-badge" style="background:#9b59b6;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
-            <button class="sbtn" onclick="showSection('edit-content')"><i class="fas fa-edit"></i> Edit Content</button>
-            <button class="sbtn" onclick="showSection('advertisements')"><i class="fas fa-bullhorn"></i> Advertisements <span id="ads-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
-            <button class="sbtn" onclick="showSection('reports')"><i class="fas fa-file-alt"></i> Reports</button>
-            <button class="sbtn" onclick="showSection('register-artisan')"><i class="fas fa-user-plus"></i> Register Artisan</button>
+            <button class="sbtn active" data-section="dashboard" onclick="showSection('dashboard')"><i class="fas fa-chart-bar"></i> Dashboard</button>
+            <button class="sbtn" data-section="job-requests" onclick="showSection('job-requests')"><i class="fas fa-clipboard-list"></i> Job Requests <span id="jr-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
+            <button class="sbtn" data-section="artisans" onclick="showSection('artisans')"><i class="fas fa-tools"></i> Artisans</button>
+            <button class="sbtn" data-section="customers" onclick="showSection('customers')"><i class="fas fa-users"></i> Customers</button>
+            <button class="sbtn" data-section="user-roles" onclick="showSection('user-roles')"><i class="fas fa-user-shield"></i> Role Assignment <span id="roles-badge" style="background:#9b59b6;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
+            <button class="sbtn" data-section="verifications" onclick="showSection('verifications')"><i class="fas fa-check-circle"></i> Verifications <span id="verify-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
+            <button class="sbtn" data-section="work-updates" onclick="showSection('work-updates')"><i class="fas fa-camera"></i> Work Updates <span id="wu-badge" style="background:#1e90ff;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;"></span></button>
+            <button class="sbtn" data-section="payments" onclick="showSection('payments')"><i class="fas fa-credit-card"></i> Payments</button>
+            <button class="sbtn" data-section="build-house" onclick="showSection('build-house')"><i class="fas fa-home"></i> Build House <span id="bh-badge" style="background:#9b59b6;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
+            <button class="sbtn" data-section="edit-content" onclick="showSection('edit-content')"><i class="fas fa-edit"></i> Edit Content</button>
+            <button class="sbtn" data-section="advertisements" onclick="showSection('advertisements')"><i class="fas fa-bullhorn"></i> Advertisements <span id="ads-badge" style="background:#FF9900;color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;"></span></button>
+            <button class="sbtn" data-section="reports" onclick="showSection('reports')"><i class="fas fa-file-alt"></i> Reports</button>
+            <button class="sbtn" data-section="register-artisan" onclick="showSection('register-artisan')"><i class="fas fa-user-plus"></i> Register Artisan</button>
             <button class="sbtn logout" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
 
@@ -198,7 +201,41 @@
 
         function goBack() { window.location.href = 'index.html'; }
 
-        // ---- Admin Login ----
+        // ---- Role-Based Access Control ----
+        // Client-side UI gating only — see note at bottom of file.
+        const ROLE_PERMISSIONS = {
+            super_admin:     ['dashboard','job-requests','artisans','customers','user-roles','verifications','work-updates','payments','build-house','edit-content','advertisements','reports','register-artisan'],
+            regional_admin:  ['dashboard','job-requests','artisans','customers','verifications','work-updates','reports'],
+            field_agent:     ['dashboard','artisans','verifications','register-artisan'],
+            content_editor:  ['dashboard','edit-content','advertisements'],
+            support_agent:   ['dashboard','job-requests','customers','work-updates'],
+            finance_officer: ['dashboard','payments','reports'],
+        };
+        const ROLE_LABELS_FULL = {
+            super_admin:'Super Admin', regional_admin:'Regional Admin', field_agent:'Field Agent',
+            content_editor:'Content Editor', support_agent:'Support Agent', finance_officer:'Finance Officer'
+        };
+
+        function getStaffSession() {
+            try { return JSON.parse(sessionStorage.getItem('goArtisanStaffSession') || 'null'); }
+            catch(e) { return null; }
+        }
+
+        function allowedSections() {
+            const session = getStaffSession();
+            if (!session) return ROLE_PERMISSIONS.super_admin; // pre-login state; overlay blocks access regardless
+            return ROLE_PERMISSIONS[session.role] || [];
+        }
+
+        // Hide sidebar buttons + badges the current role isn't permitted to see
+        function applyRolePermissions() {
+            const allowed = allowedSections();
+            document.querySelectorAll('.sbtn:not(.logout)').forEach(b => {
+                b.style.display = allowed.includes(b.dataset.section) ? '' : 'none';
+            });
+        }
+
+        // ---- Admin Login (built-in Super Admin credential) ----
         async function doAdminLogin() {
             const u = document.getElementById('admin-username').value.trim();
             const p = document.getElementById('admin-password').value;
@@ -209,8 +246,12 @@
                 showNotification('Loading data from Firebase...', 'info');
                 try {
                     await initAppData();
+                    sessionStorage.setItem('goArtisanStaffSession', JSON.stringify({
+                        email: 'admin@goartisan.local', name: 'Admin GOARTISAN', role: 'super_admin', builtin: true
+                    }));
                     document.getElementById('admin-overlay').classList.remove('active');
                     document.getElementById('dashboard-wrap').style.display = 'block';
+                    applyRolePermissions();
                     showSection('dashboard');
                     showNotification('Welcome, Admin GOARTISAN! (' + sampleArtisans.length + ' artisans loaded)', 'success');
                 } catch(err) {
@@ -223,8 +264,33 @@
             }
         }
 
+        // ---- Bootstrap: resume a staff session (arriving from login-staff.html, or reloading this tab) ----
+        async function bootstrapStaffSession() {
+            const session = getStaffSession();
+            if (!session || session.builtin) return; // no session, or it's the built-in admin (uses the login form instead)
+            try {
+                await initAppData();
+                document.getElementById('admin-overlay').classList.remove('active');
+                document.getElementById('dashboard-wrap').style.display = 'block';
+                applyRolePermissions();
+                const allowed = allowedSections();
+                showSection(allowed.includes('dashboard') ? 'dashboard' : allowed[0]);
+                showNotification(`Welcome, ${session.name}! (${ROLE_LABELS_FULL[session.role]||session.role})`, 'success');
+            } catch (err) {
+                console.error('Staff session bootstrap failed:', err);
+                showNotification('Error loading data. Check internet connection.', 'error');
+            }
+        }
+        bootstrapStaffSession();
+
         function adminLogout() {
+            const session = getStaffSession();
+            sessionStorage.removeItem('goArtisanStaffSession');
             document.getElementById('dashboard-wrap').style.display = 'none';
+            if (session && !session.builtin) {
+                window.location.href = 'login-staff.html';
+                return;
+            }
             document.getElementById('admin-username').value = '';
             document.getElementById('admin-password').value = '';
             document.getElementById('admin-overlay').classList.add('active');
@@ -236,11 +302,9 @@
         }
 
         function setActiveBtn(section) {
-            document.querySelectorAll('.sbtn:not(.logout)').forEach(b => b.classList.remove('active'));
-            const map  = ['dashboard','job-requests','artisans','verifications','work-updates','payments','reports','register-artisan'];
-            const btns = document.querySelectorAll('.sbtn:not(.logout)');
-            const idx  = map.indexOf(section);
-            if (idx >= 0 && btns[idx]) btns[idx].classList.add('active');
+            document.querySelectorAll('.sbtn:not(.logout)').forEach(b => {
+                b.classList.toggle('active', b.dataset.section === section);
+            });
 
             // Update pending job requests badge
             const pendingJobs = serviceRequests.filter(r => r.status === 'pending_admin').length;
@@ -273,6 +337,10 @@
 
         // ---- Section renderer ----
         async function showSection(section) {
+            if (!allowedSections().includes(section)) {
+                showNotification("You don't have permission to view that section.", 'error');
+                return;
+            }
             setActiveBtn(section);
             const el       = document.getElementById('admin-content');
             const pending  = sampleArtisans.filter(a => !a.verified);
@@ -1357,6 +1425,7 @@
 
                 case 'user-roles': {
                     const allRoles = await fetchCollection('userRoles');
+                    const staffUsers = await fetchCollection('staffUsers');
                     const roleMap  = {};
                     allRoles.forEach(r => { roleMap[r.email] = r; });
 
@@ -1382,12 +1451,24 @@
                             email: c.email, name: c.name, phone: c.phone||'—',
                             utype: 'Customer', currentRole: roleMap[c.email]?.role || 'customer',
                             docId: roleMap[c.email]?._docId || ''
+                        })),
+                        ...staffUsers.map(s => ({
+                            email: s.email, name: s.name, phone: s.phone||'—',
+                            utype: 'Staff', currentRole: roleMap[s.email]?.role || s.role || 'support_agent',
+                            docId: roleMap[s.email]?._docId || ''
                         }))
                     ].sort((a,b) => a.name.localeCompare(b.name));
 
                     el.innerHTML = `
-                        <h2 style="color:#006600;margin-bottom:0.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-user-shield"></i> User Role Management</h2>
-                        <p style="color:#888;font-size:0.88rem;margin-bottom:1.2rem;">Assign roles to control what each user can access on the platform.</p>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.5rem;">
+                            <div>
+                                <h2 style="color:#006600;margin-bottom:0.5rem;font-family:'Poppins',sans-serif;"><i class="fas fa-user-shield"></i> User Role Management</h2>
+                                <p style="color:#888;font-size:0.88rem;">Assign roles to control what each user can access on the platform.</p>
+                            </div>
+                            <button onclick="showAddUserModal()" style="padding:11px 20px;background:#006600;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem;white-space:nowrap;">
+                                <i class="fas fa-user-plus"></i> Add User
+                            </button>
+                        </div>
 
                         <!-- Role Legend -->
                         <div class="edit-card" style="margin-bottom:1.2rem;">
@@ -1409,6 +1490,7 @@
                                 <option value="">All Users</option>
                                 <option value="Artisan">Artisans Only</option>
                                 <option value="Customer">Customers Only</option>
+                                <option value="Staff">Staff Only</option>
                             </select>
                         </div>
 
@@ -1424,7 +1506,7 @@
                                 <tr id="role-row-${i}" data-name="${u.name.toLowerCase()}" data-email="${u.email.toLowerCase()}" data-utype="${u.utype}">
                                     <td><strong>${u.name}</strong><br><span style="font-size:0.75rem;color:#888;">${u.phone}</span></td>
                                     <td style="font-size:0.82rem;">${u.email}</td>
-                                    <td><span style="background:#${u.utype==='Artisan'?'006600':'1e90ff'}22;color:#${u.utype==='Artisan'?'006600':'1e90ff'};padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700;">${u.utype}</span></td>
+                                    <td><span style="background:#${u.utype==='Artisan'?'006600':u.utype==='Customer'?'1e90ff':'9b59b6'}22;color:#${u.utype==='Artisan'?'006600':u.utype==='Customer'?'1e90ff':'9b59b6'};padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700;">${u.utype}</span></td>
                                     <td><span id="role-badge-${i}" style="background:#${roleColors[u.currentRole]||'888888'}22;color:#${roleColors[u.currentRole]||'888888'};padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700;">
                                         ${ROLES.find(r=>r.value===u.currentRole)?.label||u.currentRole}
                                     </span></td>
@@ -1446,6 +1528,46 @@
                         <div style="margin-top:1rem;padding:0.8rem 1.2rem;background:#f0f9f0;border-radius:10px;font-size:0.82rem;color:#555;">
                             <i class="fas fa-info-circle" style="color:#006600;"></i>
                             Role changes take effect on the user's next login. Only assign <strong>Super Admin</strong> to trusted team members.
+                        </div>
+
+                        <!-- Add User Modal -->
+                        <div id="add-user-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;padding:1.5rem;" onclick="closeAddUserModal(event)">
+                            <div style="background:white;border-radius:16px;max-width:460px;width:100%;padding:0;overflow:hidden;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);" onclick="event.stopPropagation()">
+                                <div style="background:linear-gradient(135deg,#006600,#25D366);padding:1.5rem 2rem;color:white;">
+                                    <h3 style="font-family:'Poppins',sans-serif;margin-bottom:0.2rem;"><i class="fas fa-user-plus"></i> Add New User</h3>
+                                    <p style="opacity:.85;font-size:0.85rem;">Create a staff account and assign a role — no artisan or customer registration needed.</p>
+                                </div>
+                                <div style="padding:1.8rem;display:flex;flex-direction:column;gap:0.9rem;max-height:65vh;overflow-y:auto;">
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Full Name</label>
+                                        <input type="text" id="au-name" placeholder="e.g. Kwame Asante" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Email</label>
+                                        <input type="email" id="au-email" placeholder="name@example.com" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Phone</label>
+                                        <input type="text" id="au-phone" placeholder="024XXXXXXX" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Temporary Password</label>
+                                        <input type="text" id="au-password" placeholder="Min. 8 characters" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Assign Role</label>
+                                        <select id="au-role" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                            ${ROLES.filter(r => r.value !== 'artisan' && r.value !== 'customer').map(r => `<option value="${r.value}">${r.label}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <div style="display:flex;gap:0.8rem;margin-top:0.3rem;">
+                                        <button onclick="submitAddUser()" style="flex:1;padding:12px;background:#006600;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;">
+                                            <i class="fas fa-check"></i> Create User
+                                        </button>
+                                        <button onclick="closeAddUserModal()" style="padding:12px 20px;background:#eee;color:#555;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>`;
                     break;
                 } // end user-roles block
@@ -1503,6 +1625,56 @@
                 const matchType   = !type   || ut === type;
                 row.style.display = (matchSearch && matchType) ? '' : 'none';
             });
+        }
+
+        // ---- Add User (Staff / Field Agent / Regional Admin / Content Editor / Support Agent / Finance Officer) ----
+        function showAddUserModal() {
+            document.getElementById('au-name').value = '';
+            document.getElementById('au-email').value = '';
+            document.getElementById('au-phone').value = '';
+            document.getElementById('au-password').value = '';
+            document.getElementById('au-role').value = 'field_agent';
+            document.getElementById('add-user-overlay').style.display = 'flex';
+        }
+
+        function closeAddUserModal(e) {
+            if (!e || e.target === document.getElementById('add-user-overlay')) {
+                document.getElementById('add-user-overlay').style.display = 'none';
+            }
+        }
+
+        async function submitAddUser() {
+            const name     = document.getElementById('au-name').value.trim();
+            const email    = document.getElementById('au-email').value.trim();
+            const phone    = document.getElementById('au-phone').value.trim();
+            const password = document.getElementById('au-password').value;
+            const role     = document.getElementById('au-role').value;
+
+            if (!name)     { showNotification('Please enter the user\'s full name', 'error'); return; }
+            if (!email)    { showNotification('Please enter an email address', 'error'); return; }
+            if (!phone)    { showNotification('Please enter a phone number', 'error'); return; }
+            if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+
+            // Check for duplicate email across artisans, clients, and existing staff
+            const staffUsers = await fetchCollection('staffUsers');
+            const emailTaken = sampleArtisans.some(a => a.email === email)
+                             || sampleClients.some(c => c.email === email)
+                             || staffUsers.some(s => s.email === email);
+            if (emailTaken) { showNotification('A user with this email already exists', 'error'); return; }
+
+            const docId = email.replace(/[.#$/[\]]/g, "_");
+            const staffData = { name, email, phone, password, role, createdAt: new Date().toISOString() };
+
+            try {
+                await saveDoc('staffUsers', docId, staffData);
+                await saveDoc('userRoles', docId, { email, name, utype: 'Staff', role, updatedAt: new Date().toISOString() });
+                document.getElementById('add-user-overlay').style.display = 'none';
+                showNotification(`✅ User "${name}" created and assigned as ${role.replace('_',' ')}`, 'success');
+                showSection('user-roles');
+            } catch (err) {
+                console.error('[Admin] submitAddUser failed:', err);
+                showNotification('Error creating user. Please try again.', 'error');
+            }
         }
 
         // ---- ECOWAS Card auto-formatter (shared by register & edit forms) ----
