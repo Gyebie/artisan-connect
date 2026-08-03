@@ -8,12 +8,13 @@
 // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────────
 // Get this from: Firebase Console → Project Settings → Your Apps → Web App
 const firebaseConfig = {
-    apiKey:            "PASTE_YOUR_apiKey_HERE",
-    authDomain:        "PASTE_YOUR_authDomain_HERE",
-    projectId:         "PASTE_YOUR_projectId_HERE",
-    storageBucket:     "PASTE_YOUR_storageBucket_HERE",
-    messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
-    appId:             "PASTE_YOUR_appId_HERE"
+    apiKey:            "AIzaSyAk-dVEwGWASpagLsrEfugDdOW6whykWr4",
+    authDomain:        "artisan-connect-34ed5.firebaseapp.com",
+    projectId:         "artisan-connect-34ed5",
+    storageBucket:     "artisan-connect-34ed5.firebasestorage.app",
+    messagingSenderId: "614514628028",
+    appId:             "1:614514628028:web:dcef0d1b15228d52e247b9",
+    measurementId:     "G-GBEJQGVNPX"
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -23,7 +24,7 @@ import { getFirestore }    from "https://www.gstatic.com/firebasejs/10.12.0/fire
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// Make Firestore instance available to data.js
-window.__firebaseReady(db);
+// Make Firestore instance available to data.js (data.js polls window.__db)
+window.__db = db;
 
 console.log("[Firebase] Initialised ✓");
