@@ -1577,15 +1577,58 @@
                                             ${ROLES.map(r=>`<option value="${r.value}" ${r.value===u.currentRole?'selected':''}>${r.label}</option>`).join('')}
                                         </select>
                                     </td>
-                                    <td>
+                                    <td style="white-space:nowrap;">
                                         <button onclick="saveUserRole(${i},'${u.email}','${u.name}','${u.utype}','${u.docId}')"
-                                            style="padding:6px 14px;background:#006600;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;">
+                                            style="padding:6px 12px;background:#006600;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;margin-bottom:4px;">
                                             <i class="fas fa-save"></i> Save
                                         </button>
+                                        ${u.utype === 'Staff' ? `
+                                        <button onclick="showEditStaffModal('${u.docId}')"
+                                            style="padding:6px 12px;background:#1565C0;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;margin-bottom:4px;">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button onclick="deleteStaffUser('${u.docId}','${u.name.replace(/'/g,`&#39;`)}')"
+                                            style="padding:6px 12px;background:#CE1126;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem;">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>` : ''}
                                     </td>
                                 </tr>`).join('')}
                                 </tbody>
                             </table>
+                        </div>
+                        <!-- Edit Staff Modal -->
+                        <div id="edit-staff-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;padding:1.5rem;" onclick="closeEditStaffModal(event)">
+                            <div style="background:white;border-radius:16px;max-width:460px;width:100%;padding:0;overflow:hidden;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);" onclick="event.stopPropagation()">
+                                <div style="background:linear-gradient(135deg,#1565C0,#1e90ff);padding:1.5rem 2rem;color:white;">
+                                    <h3 style="font-family:'Poppins',sans-serif;margin-bottom:0.2rem;"><i class="fas fa-edit"></i> Edit Staff Member</h3>
+                                    <p style="opacity:.85;font-size:0.85rem;">Update this team member's details. Leave password blank to keep it unchanged.</p>
+                                </div>
+                                <div style="padding:1.8rem;display:flex;flex-direction:column;gap:0.9rem;max-height:65vh;overflow-y:auto;">
+                                    <input type="hidden" id="es-docid">
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Full Name</label>
+                                        <input type="text" id="es-name" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Email (cannot be changed)</label>
+                                        <input type="email" id="es-email" disabled style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;background:#f5f5f5;color:#888;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Phone</label>
+                                        <input type="text" id="es-phone" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                    </div>
+                                    <div>
+                                        <label style="color:#555;font-weight:600;font-size:0.82rem;display:block;margin-bottom:4px;">Reset Password (optional)</label>
+                                        <input type="text" id="es-password" placeholder="Leave blank to keep current password" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;">
+                                    </div>
+                                    <div style="display:flex;gap:0.8rem;margin-top:0.3rem;">
+                                        <button onclick="saveEditStaff()" style="flex:1;padding:12px;background:#1565C0;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;">
+                                            <i class="fas fa-check"></i> Save Changes
+                                        </button>
+                                        <button onclick="closeEditStaffModal()" style="padding:12px 20px;background:#eee;color:#555;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div style="margin-top:1rem;padding:0.8rem 1.2rem;background:#f0f9f0;border-radius:10px;font-size:0.82rem;color:#555;">
                             <i class="fas fa-info-circle" style="color:#006600;"></i>
@@ -1731,6 +1774,65 @@
             } catch (err) {
                 console.error('[My Profile] saveMyPassword failed:', err);
                 showNotification('Error updating password. Please try again.', 'error');
+            }
+        }
+
+        // ---- Edit / Delete Staff ----
+        async function showEditStaffModal(docId) {
+            const staffUsers = await fetchCollection('staffUsers');
+            const rec = staffUsers.find(s => s._docId === docId);
+            if (!rec) { showNotification('Could not find this staff record.', 'error'); return; }
+
+            document.getElementById('es-docid').value = docId;
+            document.getElementById('es-name').value = rec.name || '';
+            document.getElementById('es-email').value = rec.email || '';
+            document.getElementById('es-phone').value = rec.phone || '';
+            document.getElementById('es-password').value = '';
+            document.getElementById('edit-staff-overlay').style.display = 'flex';
+        }
+
+        function closeEditStaffModal(e) {
+            if (!e || e.target === document.getElementById('edit-staff-overlay')) {
+                document.getElementById('edit-staff-overlay').style.display = 'none';
+            }
+        }
+
+        async function saveEditStaff() {
+            const docId    = document.getElementById('es-docid').value;
+            const name     = document.getElementById('es-name').value.trim();
+            const phone    = document.getElementById('es-phone').value.trim();
+            const password = document.getElementById('es-password').value;
+
+            if (!name)  { showNotification("Please enter the user's full name", 'error'); return; }
+            if (!phone) { showNotification('Please enter a phone number', 'error'); return; }
+            if (password && password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+
+            const updates = { name, phone };
+            if (password) updates.password = password;
+
+            try {
+                await saveDoc('staffUsers', docId, updates);
+                // Keep the name shown in userRoles / the table in sync too
+                await saveDoc('userRoles', docId, { name });
+                document.getElementById('edit-staff-overlay').style.display = 'none';
+                showNotification(`✅ "${name}" updated`, 'success');
+                showSection('user-roles');
+            } catch (err) {
+                console.error('[Admin] saveEditStaff failed:', err);
+                showNotification('Error saving changes. Please try again.', 'error');
+            }
+        }
+
+        async function deleteStaffUser(docId, name) {
+            if (!confirm(`Delete staff account "${name}"? This removes their login and role permanently. This cannot be undone.`)) return;
+            try {
+                await deleteDoc_('staffUsers', docId);
+                await deleteDoc_('userRoles', docId);
+                showNotification(`Staff account "${name}" deleted.`, 'success');
+                showSection('user-roles');
+            } catch (err) {
+                console.error('[Admin] deleteStaffUser failed:', err);
+                showNotification('Error deleting staff account. Please try again.', 'error');
             }
         }
 
