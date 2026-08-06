@@ -129,6 +129,35 @@ async function deleteDoc_(collectionName, docId) {
     await deleteDoc(doc(d, collectionName, docId));
 }
 
+/**
+ * GoArtisan policy: one email / one phone number = one account, platform-wide —
+ * whether that account is an Artisan, a Customer, or Staff. This checks all three
+ * collections and returns a human-readable conflict message, or null if both are free.
+ * Pass excludeDocId when editing an existing record, so it doesn't flag itself.
+ */
+async function checkIdentifierConflict(email, phone, excludeDocId = null) {
+    email = (email || '').trim().toLowerCase();
+    phone = (phone || '').trim();
+
+    const staff = await fetchCollection('staffUsers');
+    const pools = [
+        { list: sampleArtisans || [], label: 'Artisan' },
+        { list: sampleClients  || [], label: 'Customer' },
+        { list: staff,                label: 'Staff' },
+    ];
+
+    for (const { list, label } of pools) {
+        for (const rec of list) {
+            if (excludeDocId && rec._docId === excludeDocId) continue;
+            const recEmail = (rec.email || '').trim().toLowerCase();
+            const recPhone = (rec.phone || '').trim();
+            if (email && recEmail && recEmail === email) return `This email is already registered to a ${label} account.`;
+            if (phone && recPhone && recPhone === phone) return `This phone number is already registered to a ${label} account.`;
+        }
+    }
+    return null;
+}
+
 // ── 6. Initialise: load all data from Firestore into memory ──────────────────
 
 /**
