@@ -1807,6 +1807,9 @@
             if (!phone) { showNotification('Please enter a phone number', 'error'); return; }
             if (password && password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
 
+            const conflict = await checkIdentifierConflict(null, phone, docId);
+            if (conflict) { showNotification(conflict, 'error'); return; }
+
             const updates = { name, phone };
             if (password) updates.password = password;
 
@@ -1848,12 +1851,9 @@
             if (!phone)    { showNotification('Please enter a phone number', 'error'); return; }
             if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
 
-            // Check for duplicate email across artisans, clients, and existing staff
-            const staffUsers = await fetchCollection('staffUsers');
-            const emailTaken = sampleArtisans.some(a => a.email === email)
-                             || sampleClients.some(c => c.email === email)
-                             || staffUsers.some(s => s.email === email);
-            if (emailTaken) { showNotification('A user with this email already exists', 'error'); return; }
+            // Check for duplicate email/phone across artisans, clients, and existing staff
+            const conflict = await checkIdentifierConflict(email, phone);
+            if (conflict) { showNotification(conflict, 'error'); return; }
 
             const docId = email.replace(/[.#$/[\]]/g, "_");
             const staffData = { name, email, phone, password, role, createdAt: new Date().toISOString() };
@@ -1927,14 +1927,8 @@
                                 <small style="color:#aaa;font-size:0.72rem;">Based on economic activity in ${a.district||'their district'}, ${a.region||'their region'}. NOT shown publicly.</small>
                             </div>
                             <div><label class="elabel">ID Type</label>
-                                <select id="ea-id-type" onchange="adminIdTypeChange('ea')">
-                                    <option value="ecowascard" ${(a.idType==='ecowascard'||a.idType==='ghanacard')?'selected':''}>ECOWAS Card</option>
-                                    <option value="voters_id"         ${a.idType==='voters_id'?'selected':''}>Voter's ID</option>
-                                    <option value="drivers_license"   ${a.idType==='drivers_license'?'selected':''}>Driver's License</option>
-                                    <option value="passport"          ${a.idType==='passport'?'selected':''}>Passport</option>
-                                    <option value="nhis"              ${a.idType==='nhis'?'selected':''}>NHIS Card</option>
-                                    <option value="ssnit"             ${a.idType==='ssnit'?'selected':''}>SSNIT Card</option>
-                                    <option value="birth_certificate" ${a.idType==='birth_certificate'?'selected':''}>Birth Certificate</option>
+                                <select id="ea-id-type" onchange="adminIdTypeChange('ea')" disabled>
+                                    <option value="ecowascard" selected>ECOWAS Card (only accepted ID)</option>
                                 </select>
                             </div>
                             <div>
@@ -1981,13 +1975,24 @@
             const idx = sampleArtisans.findIndex(a => a.id === artisanId);
             if (idx === -1) return;
             const g = id => document.getElementById(id).value;
+            const name = g('ea-name').trim(), email = g('ea-email').trim(), phone = g('ea-phone').trim();
+            const idNumber = g('ea-id-number').trim();
+
+            if (!validateEcowasCard(idNumber)) {
+                showNotification('ECOWAS Card must be in format: GHA-721233479-8', 'error'); return;
+            }
+            const conflict = await checkIdentifierConflict(email, phone, sampleArtisans[idx]._docId);
+            if (conflict) { showNotification(conflict, 'error'); return; }
+            const idOwner = sampleArtisans.find(a => a.idNumber === idNumber && a._docId !== sampleArtisans[idx]._docId);
+            if (idOwner) { showNotification('This ECOWAS Card is already registered to another artisan', 'error'); return; }
+
             sampleArtisans[idx] = {
                 ...sampleArtisans[idx],
-                name: g('ea-name'), email: g('ea-email'), phone: g('ea-phone'),
+                name, email, phone,
                 category: g('ea-category'), region: g('ea-region'), district: g('ea-district'),
                 experience: parseInt(g('ea-exp')) || 0,
                 dailyRate:  parseFloat(g('ea-daily-rate')) || 0,
-                idType: g('ea-id-type'), idNumber: g('ea-id-number'),
+                idType: 'ecowascard', idNumber,
                 skills: g('ea-skills').split(',').map(s => s.trim()).filter(Boolean),
                 bio: g('ea-bio'), address: g('ea-address'),
                 verified: document.getElementById('ea-verified').checked,
@@ -2069,12 +2074,15 @@
             const idx = sampleClients.findIndex(c => c.id === customerId);
             if (idx === -1) return;
             const g = id => document.getElementById(id).value;
+            const name = g('ec-name').trim(), email = g('ec-email').trim(), phone = g('ec-phone').trim();
             const newPw = g('ec-password');
+
+            const conflict = await checkIdentifierConflict(email, phone, sampleClients[idx]._docId);
+            if (conflict) { showNotification(conflict, 'error'); return; }
+
             sampleClients[idx] = {
                 ...sampleClients[idx],
-                name:     g('ec-name'),
-                email:    g('ec-email'),
-                phone:    g('ec-phone'),
+                name, email, phone,
                 region:   g('ec-region'),
                 district: g('ec-district'),
                 ...(newPw ? { password: newPw } : {})
@@ -2111,8 +2119,8 @@
             const idType   = 'ecowascard';
             const idNumber = g('ar-id-number').trim();
 
-            if (sampleArtisans.find(a => a.email === email)) { showNotification('Artisan with this email already exists', 'error'); return; }
-            if (phone && sampleArtisans.find(a => a.phone === phone)) { showNotification('Artisan with this phone number already exists', 'error'); return; }
+            const conflict = await checkIdentifierConflict(email, phone);
+            if (conflict) { showNotification(conflict, 'error'); return; }
             if (!idNumber) { showNotification('Please enter the ID Number', 'error'); return; }
             if (sampleArtisans.find(a => a.idNumber === idNumber)) { showNotification('This ECOWAS Card has already been registered', 'error'); return; }
             if (!validateEcowasCard(idNumber)) {
