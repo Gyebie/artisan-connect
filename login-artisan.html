@@ -310,15 +310,8 @@
                                 <div class="form-stack">
                                     <div>
                                         <label class="flabel">ID Card Type</label>
-                                        <select id="r-id-type" onchange="onIdTypeChange()">
-                                            <option value="">Select ID Type</option>
-                                            <option value="ecowascard" selected>ECOWAS Card</option>
-                                            <option value="voters_id">Voter's ID Card</option>
-                                            <option value="drivers_license">Driver's License</option>
-                                            <option value="passport">Ghana Passport</option>
-                                            <option value="nhis">NHIS Card</option>
-                                            <option value="ssnit">SSNIT Card</option>
-                                            <option value="birth_certificate">Birth Certificate</option>
+                                        <select id="r-id-type" onchange="onIdTypeChange()" disabled>
+                                            <option value="ecowascard" selected>ECOWAS Card (only accepted ID)</option>
                                         </select>
                                     </div>
                                     <div class="fg2">
@@ -744,10 +737,8 @@
             if (!name)                { showNotification('Please enter your full name', 'error'); return; }
             if (!email)               { showNotification('Please enter your email', 'error'); return; }
             if (!phone)               { showNotification('Please enter your phone number', 'error'); return; }
-            if (!idType)              { showNotification('Please select your ID Card Type', 'error'); return; }
-            if (!idNumber)            { showNotification('Please enter your ID Number', 'error'); return; }
-            // Validate ECOWAS card format
-            if (idType === 'ecowascard' && !validateEcowasCard(idNumber)) {
+            if (!idNumber)            { showNotification('Please enter your ECOWAS Card Number', 'error'); return; }
+            if (!validateEcowasCard(idNumber)) {
                 showNotification('ECOWAS Card must be in format: GHA-721233479-8', 'error'); return;
             }
             if (!region || !district) { showNotification('Please select your Region and District', 'error'); return; }
@@ -755,7 +746,12 @@
             if (!password || password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
             if (password !== confirm)  { showNotification('Passwords do not match!', 'error'); return; }
             if (!document.getElementById('r-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
-            if (sampleArtisans.find(a => a.email === email)) { showNotification('An account with this email already exists', 'error'); return; }
+
+            const conflict = await checkIdentifierConflict(email, phone);
+            if (conflict) { showNotification(conflict, 'error'); return; }
+            if (sampleArtisans.find(a => a.idNumber === idNumber)) {
+                showNotification('This ECOWAS Card has already been registered', 'error'); return;
+            }
 
             // Capture profile pic as base64
             let profilePicData = null;
