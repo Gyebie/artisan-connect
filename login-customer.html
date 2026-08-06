@@ -576,12 +576,9 @@
             if (password !== confirm) { showNotification('Passwords do not match!', 'error'); return; }
             if (!document.getElementById('r-terms').checked) { showNotification('Please accept the Terms of Service', 'error'); return; }
 
-            // Check Firestore cache and session for duplicate emails
-            const existingInMemory = sampleClients.find(c => c.email === email);
-            const existingInStorage = loadClientProfile();
-            if (existingInMemory || (existingInStorage && existingInStorage.email === email)) {
-                showNotification('An account with this email already exists', 'error'); return;
-            }
+            // Check across Artisan, Customer, and Staff accounts platform-wide
+            const conflict = await checkIdentifierConflict(email, phone);
+            if (conflict) { showNotification(conflict, 'error'); return; }
 
             const newClient = {
                 id: Date.now(), name, email, phone, password,
