@@ -175,6 +175,25 @@
         .empty-state{text-align:center;padding:2.5rem;color:#aaa;}
         .empty-state i{font-size:2.8rem;margin-bottom:0.8rem;display:block;opacity:0.35;}
         .empty-state p{font-size:0.88rem;}
+
+        /* ---- Printing the ID card ---- */
+        /* Browsers strip background colors/gradients when printing by default; these two
+           properties tell them not to. This alone isn't enough on Chrome unless the person
+           also has "Background graphics" checked in the print dialog, so downloadIDCard()
+           (PDF) is the more reliable route — this just makes window.print() match too. */
+        @media print {
+            body * { visibility: hidden; }
+            #id-card-content, #id-card-content * {
+                visibility: visible;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            #id-card-content {
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                width: 340px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1201,9 +1220,11 @@
                 artisan.idExpiryDate = artisan.idExpiryDate || new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
                 changed = true;
             }
-            // Fix old accounts that defaulted to Bronze — should be GoArtisan (free)
-            if (!artisan.subscriptionTier || artisan.subscriptionTier === 'Bronze') {
-                // Only reset to GoArtisan if no payment was ever made
+            // Fix old/unrecognized subscription tiers (e.g. legacy 'Bronze' default, or leftover
+            // 'SkillBridge' values from before the platform was renamed to GoArtisan) — reset to
+            // GoArtisan (free) unless a real tier payment is on record.
+            const knownTiers = ['GoArtisan','Silver','Gold','Platinum','Diamond'];
+            if (!artisan.subscriptionTier || !knownTiers.includes(artisan.subscriptionTier)) {
                 if (!artisan.pendingTierRef && !artisan.pendingTierPaid) {
                     artisan.subscriptionTier = 'GoArtisan';
                     changed = true;
@@ -1259,63 +1280,46 @@
                 </div>`;
         }
 
-        async function downloadIDCard() {
+        async function downloadIDCard(evt) {
             if (!artisan?.verified) return;
-            if (!window.jspdf) {
-                await new Promise((resolve, reject) => {
-                    const s1 = document.createElement('script');
-                    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-                    s1.onload = resolve; s1.onerror = reject;
-                    document.head.appendChild(s1);
-                });
+            const btn = evt?.currentTarget;
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
+
+            try {
+                if (!window.jspdf) {
+                    await new Promise((resolve, reject) => {
+                        const s1 = document.createElement('script');
+                        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                        s1.onload = resolve; s1.onerror = reject;
+                        document.head.appendChild(s1);
+                    });
+                }
+                if (!window.html2canvas) {
+                    await new Promise((resolve, reject) => {
+                        const s2 = document.createElement('script');
+                        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                        s2.onload = resolve; s2.onerror = reject;
+                        document.head.appendChild(s2);
+                    });
+                }
+
+                // Capture the actual on-screen card — same gradient, same colors, pixel for pixel —
+                // instead of manually redrawing it, so the PDF can never drift out of sync with what's shown.
+                const cardEl = document.querySelector('#id-card-content > div');
+                const canvas = await html2canvas(cardEl, { scale: 3, backgroundColor: null, useCORS: true });
+                const imgData = canvas.toDataURL('image/png');
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85, 54] }); // Credit card size
+                doc.addImage(imgData, 'PNG', 0, 0, 85, 54);
+                doc.save(`GoArtisan_ID_${artisan.name.replace(/\s/g,'_')}.pdf`);
+                showNotification('ID Card downloaded as PDF!', 'success');
+            } catch (err) {
+                console.error('[ID Card] downloadIDCard failed:', err);
+                showNotification('Could not generate the PDF. Please try again.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Download PDF'; }
             }
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85, 54] }); // Credit card size
-
-            // Background
-            doc.setFillColor(0, 77, 0);
-            doc.rect(0, 0, 85, 54, 'F');
-            doc.setFillColor(0, 102, 0);
-            doc.rect(0, 0, 85, 16, 'F');
-
-            // Header
-            doc.setTextColor(255, 215, 0);
-            doc.setFontSize(7); doc.setFont('helvetica','bold');
-            doc.text('GOARTISAN', 5, 6);
-            doc.setTextColor(255,255,255);
-            doc.setFontSize(5); doc.setFont('helvetica','normal');
-            doc.text('Verified Artisan ID Card', 5, 11);
-
-            // Photo placeholder
-            doc.setFillColor(255,255,255);
-            doc.rect(5, 19, 18, 22, 'F');
-            const idCardPhoto = artisan.profilePic || artisan.profilePhoto;
-            if (idCardPhoto && idCardPhoto.startsWith('data:image')) {
-                try { doc.addImage(idCardPhoto, 'JPEG', 5, 19, 18, 22); } catch(e) {}
-            }
-
-            // Name & details
-            doc.setTextColor(255,255,255);
-            doc.setFontSize(9); doc.setFont('helvetica','bold');
-            doc.text(artisan.name, 27, 24);
-            doc.setFontSize(6); doc.setFont('helvetica','normal');
-            doc.text(artisan.category || '—', 27, 29);
-            doc.text(artisan.region || '—', 27, 33);
-
-            // ID info
-            doc.setFillColor(0,0,0,0.3);
-            doc.setFontSize(5);
-            doc.text('ID NUMBER', 27, 40);
-            doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(255,215,0);
-            doc.text(artisan.platformId || generatePlatformId(artisan), 27, 45);
-
-            doc.setFontSize(4); doc.setFont('helvetica','normal'); doc.setTextColor(200,200,200);
-            const issDate = artisan.idIssueDate || new Date().toISOString().split('T')[0];
-            const expDate = artisan.idExpiryDate || new Date(Date.now()+365*24*60*60*1000).toISOString().split('T')[0];
-            doc.text(`Issued: ${issDate}   Expires: ${expDate}`, 5, 51);
-
-            doc.save(`GoArtisan_ID_${artisan.name.replace(/\s/g,'_')}.pdf`);
-            showNotification('ID Card downloaded as PDF!', 'success');
         }
 
         // ---- Portfolio ----
@@ -1566,7 +1570,7 @@
             </div>
             <div id="id-card-content"></div>
             <div style="display:flex;gap:10px;margin-top:1.2rem;">
-                <button onclick="downloadIDCard()" style="flex:1;padding:12px;background:linear-gradient(135deg,#006600,#009900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
+                <button onclick="downloadIDCard(event)" style="flex:1;padding:12px;background:linear-gradient(135deg,#006600,#009900);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">
                     <i class="fas fa-download"></i> Download PDF
                 </button>
                 <button onclick="window.print()" style="flex:1;padding:12px;background:#f0f0f0;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;color:#333;">
