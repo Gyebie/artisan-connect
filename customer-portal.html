@@ -495,9 +495,15 @@
                             </select>
                         </div>
                         <div>
-                            <label class="flabel">Region / Location</label>
-                            <select id="bh-region" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                            <label class="flabel">Region</label>
+                            <select id="bh-region" onchange="loadDistrictsIntoSelect(document.getElementById('bh-district'), this.value)" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
                                 <option value="">Select Region</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flabel">District</label>
+                            <select id="bh-district" style="width:100%;padding:9px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:inherit;">
+                                <option value="">Select District</option>
                             </select>
                         </div>
                         <div>
@@ -810,7 +816,7 @@
             if (id === 'payments')       renderPayments();
             if (id === 'work-updates')   renderCustomerWorkUpdates();
             if (id === 'quotations')     renderQuotations();
-            if (id === 'build-house')    { loadRegionsIntoSelect(document.getElementById('bh-region')); renderBuildHouseProjects(); }
+            if (id === 'build-house')    { loadRegionsIntoSelect(document.getElementById('bh-region')); document.getElementById('bh-district').innerHTML = "<option value=''>Select District</option>"; renderBuildHouseProjects(); }
 
             // Update pending badge
             const pending = myRequests().filter(r => r.status === 'pending_admin').length;
@@ -1010,17 +1016,23 @@
             navigator.geolocation.getCurrentPosition(
                 async (pos) => {
                     const { latitude, longitude } = pos.coords;
+                    const mapsLink = `https://maps.google.com/?q=${latitude},${longitude}`;
                     try {
                         const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
                         const data = await res.json();
-                        const addr = data.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                        // Always keep the exact coordinates/map link alongside the readable address —
+                        // OpenStreetMap's address text for Ghana is often coarse (a town or area, not a
+                        // precise spot), so on its own it can read as "not the exact location."
+                        const addr = data.display_name
+                            ? `${data.display_name} — 📍 Exact location: ${mapsLink}`
+                            : `📍 GPS: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${mapsLink}`;
                         document.getElementById('req-addr').value = addr;
-                        status.textContent   = '✅ Location detected successfully!';
+                        status.textContent   = '✅ Exact location detected and attached!';
                         status.style.color   = '#006600';
                         btn.innerHTML = '<i class="fas fa-check"></i> Location Added';
                         btn.style.background = '#e6f4e6';
                     } catch {
-                        document.getElementById('req-addr').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+                        document.getElementById('req-addr').value = `📍 GPS: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${mapsLink}`;
                         status.textContent = '✅ GPS coordinates added.';
                         btn.innerHTML = '<i class="fas fa-check"></i> Location Added';
                     }
@@ -1613,13 +1625,17 @@
         function useLocationForBuildHouse() {
             if (!navigator.geolocation) { showNotification('Geolocation not supported', 'error'); return; }
             navigator.geolocation.getCurrentPosition(async pos => {
+                const { latitude, longitude } = pos.coords;
+                const mapsLink = `https://maps.google.com/?q=${latitude},${longitude}`;
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
                     const d = await res.json();
-                    document.getElementById('bh-address').value = d.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                    showNotification('Location detected!', 'success');
+                    document.getElementById('bh-address').value = d.display_name
+                        ? `${d.display_name} — 📍 Exact location: ${mapsLink}`
+                        : `📍 GPS: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${mapsLink}`;
+                    showNotification('Exact location detected and attached!', 'success');
                 } catch {
-                    document.getElementById('bh-address').value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+                    document.getElementById('bh-address').value = `📍 GPS: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} — ${mapsLink}`;
                     showNotification('GPS coordinates added.', 'success');
                 }
             }, () => showNotification('Could not get location', 'error'), { enableHighAccuracy: true });
@@ -1629,15 +1645,18 @@
             const type    = document.getElementById('bh-type').value;
             const rooms   = document.getElementById('bh-bedrooms').value;
             const region  = document.getElementById('bh-region').value;
+            const district = document.getElementById('bh-district').value;
             const budget  = document.getElementById('bh-budget').value;
             const address = document.getElementById('bh-address').value.trim();
             const desc    = document.getElementById('bh-desc').value.trim();
+            if (!region)  { showNotification('Please select a Region', 'error'); return; }
+            if (!district) { showNotification('Please select a District', 'error'); return; }
             if (!address) { showNotification('Please enter the land address', 'error'); return; }
             if (!desc)    { showNotification('Please describe your project', 'error'); return; }
 
             await addDoc_('buildHouseRequests', {
                 clientName:  user?.name, clientEmail: user?.email, clientPhone: client?.phone || '',
-                projectType: type, bedrooms: rooms, region, budget: parseFloat(budget)||0,
+                projectType: type, bedrooms: rooms, region, district, budget: parseFloat(budget)||0,
                 address, description: desc,
                 status:      'submitted',
                 submittedAt: new Date().toISOString(),
@@ -1648,12 +1667,13 @@
             await addDoc_('adminNotifications', {
                 type:    'build-house',
                 title:   `🏠 New Build House Request from ${user?.name}`,
-                message: `${type} — ${rooms} — Budget: ₵${budget||'TBD'} — ${address}`,
+                message: `${type} — ${rooms} — ${district}, ${region} — Budget: ₵${budget||'TBD'} — ${address}`,
                 date:    new Date().toISOString(),
                 read:    false
             });
 
             ['bh-budget','bh-address','bh-desc'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('bh-district').innerHTML = "<option value=''>Select District</option>";
             showNotification('🏠 Project request submitted! Admin will contact you within 24 hours.', 'success');
             renderBuildHouseProjects();
         }
